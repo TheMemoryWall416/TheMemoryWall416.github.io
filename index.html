@@ -2,20 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Memory Wall</title>
+    <style>
+        body { margin: 0; background-color: #0b0b0c; color: #ffffff; font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .wall-container { display: flex; flex-direction: column; gap: 4px; padding: 50px; }
+        .wall-row { display: flex; gap: 4px; }
+        .brick-slot { width: 60px; height: 26px; border: 1px dashed #333; }
+        .brick-slot.filled { background: #333; border: 1px solid #555; }
+    </style>
 </head>
 <body>
     <h1>THE MEMORY WALL</h1>
+    <div class="wall-container" id="wallContainer">
+        <div class="wall-row"></div><div class="wall-row"></div><div class="wall-row"></div><div class="wall-row"></div><div class="wall-row"></div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-       
         const SUPABASE_URL = 'https://supabase.com/dashboard/project/yojxagqrxpjuwjanczah/settings/general'; 
         const SUPABASE_KEY = 'yojxagqrxpjuwjanczah'; 
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function loadWall() {
             const { data } = await supabase.from('bricks').select('*').eq('status', 'approved');
-            console.log("Wall loaded:", data);
+            console.log("Loaded bricks:", data);
         }
         loadWall();
     </script>
