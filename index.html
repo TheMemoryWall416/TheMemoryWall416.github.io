@@ -8,7 +8,7 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #121212;
+            background-color: #0f0f11;
             color: #ffffff;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             display: flex;
@@ -19,74 +19,92 @@
 
         header {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 20px;
             max-width: 800px;
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             margin: 0 0 10px 0;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
+            color: #e5e5e5;
         }
 
         header p {
-            color: #aaaaaa;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin: 0;
-        }
-
-        /* The Grid Container */
-        .wall-container {
-            width: 90%;
-            max-width: 1200px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            margin-bottom: 50px;
-        }
-
-        /* Individual Brick Design */
-        .brick {
-            background-color: #1e1e1e;
-            border: 1px solid #333333;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        /* Hover Effect to make it feel alive */
-        .brick:hover {
-            transform: translateY(-5px);
-            border-color: #00ff88;
-            cursor: pointer;
-        }
-
-        .photo-placeholder {
-            width: 80px;
-            height: 80px;
-            background-color: #2a2a2a;
-            border-radius: 50%;
-            margin: 0 auto 15px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666666;
-            font-size: 1.5rem;
-        }
-
-        .brick h3 {
-            margin: 0 0 5px 0;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
-        }
-
-        .brick p {
-            margin: 0;
             color: #888888;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* The Brick Wall Container */
+        .wall-container {
+            width: 95%;
+            max-width: 1400px;
+            padding: 10px;
+            margin-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px; /* Space between rows */
+        }
+
+        /* A single row of bricks */
+        .wall-row {
+            display: flex;
+            gap: 6px; /* Space between individual bricks */
+            width: 100%;
+        }
+
+        /* This is the magic trick: offsets every second row to create the interlocking look */
+        .wall-row:nth-child(even) {
+            transform: translateX(45px);
+            width: calc(100% - 45px);
+        }
+
+        /* Mini Compact Brick Design */
+        .brick {
+            flex: 1;
+            min-width: 90px;
+            max-width: 110px;
+            height: 55px; /* Shorter, realistic brick ratio */
+            background: linear-gradient(135deg, #2c2523 0%, #1e1918 100%); /* Real stone/clay undertone */
+            border: 1px solid #3a312e;
+            border-radius: 3px;
+            box-shadow: inset 1px 1px 0px rgba(255,255,255,0.05), 0px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2px 4px;
+            box-sizing: border-box;
+            transition: all 0.15s ease;
+        }
+
+        /* Interactive Hover */
+        .brick:hover {
+            transform: scale(1.08);
+            border-color: #00ff88;
+            box-shadow: 0px 4px 12px rgba(0, 255, 136, 0.2);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Tiny Text to Fit Millions of Records */
+        .brick .name {
+            font-size: 0.65rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            color: #e0e0e0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .brick .dates {
+            font-size: 0.5rem;
+            color: #8a827f;
+            margin-top: 2px;
         }
     </style>
 </head>
@@ -94,33 +112,43 @@
 
     <header>
         <h1>THE MEMORY WALL</h1>
-        <p>A global monument built to honor, remember, and celebrate the lives of those who live forever in our hearts.</p>
+        <p>A massive, interlocking global monument of remembrance.</p>
     </header>
 
     <div class="wall-container">
         
-        <div class="brick">
-            <div class="photo-placeholder">🕊️</div>
-            <h3>John Doe</h3>
-            <p>1950 - 2024</p>
+        <div class="wall-row">
+            <div class="brick"><div class="name">J. Doe</div><div class="dates">1950-2024</div></div>
+            <div class="brick"><div class="name">A. Smith</div><div class="dates">1965-2023</div></div>
+            <div class="brick"><div class="name">R. Johnson</div><div class="dates">1942-2025</div></div>
+            <div class="brick"><div class="name">M. Davis</div><div class="dates">1988-2021</div></div>
+            <div class="brick"><div class="name">T. Brown</div><div class="dates">1935-2019</div></div>
+            <div class="brick"><div class="name">E. Wilson</div><div class="dates">1972-2024</div></div>
         </div>
 
-        <div class="brick">
-            <div class="photo-placeholder">🕊️</div>
-            <h3>Jane Smith</h3>
-            <p>1965 - 2023</p>
+        <div class="wall-row">
+            <div class="brick"><div class="name">B. Jones</div><div class="dates">1955-2020</div></div>
+            <div class="brick"><div class="name">K. Miller</div><div class="dates">1990-2023</div></div>
+            <div class="brick"><div class="name">P. Garcia</div><div class="dates">1947-2018</div></div>
+            <div class="brick"><div class="name">S. Martinez</div><div class="dates">1963-2025</div></div>
+            <div class="brick"><div class="name">J. Anderson</div><div class="dates">1981-2022</div></div>
         </div>
 
-        <div class="brick">
-            <div class="photo-placeholder">🕊️</div>
-            <h3>Robert Johnson</h3>
-            <p>1942 - 2025</p>
+        <div class="wall-row">
+            <div class="brick"><div class="name">C. Taylor</div><div class="dates">1939-2016</div></div>
+            <div class="brick"><div class="name">D. Thomas</div><div class="dates">1952-2021</div></div>
+            <div class="brick"><div class="name">M. White</div><div class="dates">1976-2024</div></div>
+            <div class="brick"><div class="name">L. Harris</div><div class="dates">1984-2023</div></div>
+            <div class="brick"><div class="name">R. Martin</div><div class="dates">1960-2019</div></div>
+            <div class="brick"><div class="name">O. Clark</div><div class="dates">1945-2022</div></div>
         </div>
 
-        <div class="brick">
-            <div class="photo-placeholder">🕊️</div>
-            <h3>Mary Williams</h3>
-            <p>1978 - 2024</p>
+        <div class="wall-row">
+            <div class="brick"><div class="name">A. Lewis</div><div class="dates">1968-2024</div></div>
+            <div class="brick"><div class="name">N. Robinson</div><div class="dates">1951-2017</div></div>
+            <div class="brick"><div class="name">E. Walker</div><div class="dates">1993-2025</div></div>
+            <div class="brick"><div class="name">B. Young</div><div class="dates">1940-2020</div></div>
+            <div class="brick"><div class="name">H. Allen</div><div class="dates">1975-2023</div></div>
         </div>
 
     </div>
