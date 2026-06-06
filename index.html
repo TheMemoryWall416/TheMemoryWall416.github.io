@@ -15,6 +15,7 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         header {
@@ -53,31 +54,53 @@
             background-color: #00cc6e;
         }
 
-        /* Fixed Wall Container holding exactly 10 layers */
-        .wall-container {
+        /* --- THE SLIDE WINDOW CONTAINER --- */
+        .wall-viewport {
             width: 100%;
-            max-width: 1000px;
-            padding: 20px;
+            max-width: 100vw;
+            overflow-x: auto; /* Enables the horizontal sliding bar */
+            padding: 40px 0;
             box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        /* Styling the Slide Bar to look premium */
+        .wall-viewport::-webkit-scrollbar {
+            height: 8px;
+        }
+        .wall-viewport::-webkit-scrollbar-track {
+            background: #111115;
+        }
+        .wall-viewport::-webkit-scrollbar-thumb {
+            background: #33333b;
+            border-radius: 4px;
+        }
+        .wall-viewport::-webkit-scrollbar-thumb:hover {
+            background: #00ff88; /* Glows green when sliding */
+        }
+
+        /* The actual massive 10-layer grid container */
+        .wall-container {
             display: flex;
             flex-direction: column;
             gap: 4px;
+            padding: 0 50px; /* Padding at the starting and ending horizon edges */
+            width: max-content; /* Allows the wall to expand horizontally infinitely */
         }
 
         .wall-row {
             display: flex;
             gap: 4px;
-            width: 100%;
-            justify-content: center;
         }
 
-        /* Alternating row shift for interlocking look */
+        /* Alternating row shift for perfect interlocking masonry */
         .wall-row:nth-child(even) {
             transform: translateX(32px);
         }
 
-        /* Slots are ready-made spaces waiting for data */
+        /* Fixed Dimensions for the Micro Bricks */
         .brick-slot {
+            flex: shrink 0;
             width: 60px;
             height: 26px;
             border-radius: 1px;
@@ -85,13 +108,11 @@
             transition: all 0.15s ease;
         }
 
-        /* An empty slot looks like a ghost/mortar outline */
         .brick-slot.empty {
             background-color: transparent;
-            border: 1px dashed #222227;
+            border: 1px dashed #1c1c22;
         }
 
-        /* Once filled, it turns into a real solid brick */
         .brick-slot.filled {
             background: linear-gradient(135deg, #241e1c 0%, #161312 100%);
             border: 1px solid #2e2624;
@@ -174,21 +195,23 @@
 
     <header>
         <h1>THE MEMORY WALL</h1>
-        <p>A 10-layer monument building from the ground up.</p>
+        <p>Scroll horizontally to explore the endless monument.</p>
         <button class="add-brick-btn" id="openFormBtn">+ Add a Brick</button>
     </header>
 
-    <div class="wall-container" id="wallContainer">
-        <div class="wall-row" data-row-index="1"><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div></div>
-        <div class="wall-row" data-row-index="2"><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div></div>
-        <div class="wall-row" data-row-index="3"><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div></div>
-        <div class="wall-row" data-row-index="4"><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div></div>
-        <div class="wall-row" data-row-index="5"><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div></div>
-        <div class="wall-row" data-row-index="6"><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div></div>
-        <div class="wall-row" data-row-index="7"><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div></div>
-        <div class="wall-row" data-row-index="8"><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div></div>
-        <div class="wall-row" data-row-index="9"><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div></div>
-        <div class="wall-row" data-row-index="10"><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div><div class="brick-slot empty"></div></div>
+    <div class="wall-viewport">
+        <div class="wall-container" id="wallContainer">
+            <div class="wall-row" data-row-index="1"></div>
+            <div class="wall-row" data-row-index="2"></div>
+            <div class="wall-row" data-row-index="3"></div>
+            <div class="wall-row" data-row-index="4"></div>
+            <div class="wall-row" data-row-index="5"></div>
+            <div class="wall-row" data-row-index="6"></div>
+            <div class="wall-row" data-row-index="7"></div>
+            <div class="wall-row" data-row-index="8"></div>
+            <div class="wall-row" data-row-index="9"></div>
+            <div class="wall-row" data-row-index="10"></div>
+        </div>
     </div>
 
     <div class="modal-overlay" id="viewModal">
@@ -223,6 +246,18 @@
         const modalName = document.getElementById('modalName');
         const modalDates = document.getElementById('modalDates');
 
+        // Dynamically load an incredibly wide grid (60 columns out of the box)
+        const initialColumns = 60;
+        const rows = wallContainer.querySelectorAll('.wall-row');
+        
+        rows.forEach(row => {
+            for (let i = 0; i < initialColumns; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'brick-slot empty';
+                row.appendChild(slot);
+            }
+        });
+
         // Manage Form Overlay
         document.getElementById('openFormBtn').addEventListener('click', () => formModal.classList.add('active'));
         document.getElementById('closeFormBtn').addEventListener('click', () => formModal.classList.remove('active'));
@@ -256,11 +291,9 @@
 
             // Find the correct target slot going bottom-to-top, left-to-right
             let targetSlot = null;
-            const totalColumns = 12; // 12 columns per layer
+            const totalColumns = wallContainer.querySelector('.wall-row').children.length;
 
-            // Outer Loop: Move Column by Column (left to right)
             for (let col = 0; col < totalColumns; col++) {
-                // Inner Loop: Search rows from bottom layer (RowIndex 10) up to top layer (RowIndex 1)
                 for (let r = 10; r >= 1; r--) {
                     const row = wallContainer.querySelector(`[data-row-index="${r}"]`);
                     const slot = row.children[col];
@@ -270,11 +303,10 @@
                         break;
                     }
                 }
-                if (targetSlot) break; // Found our lowest empty spot in this column!
+                if (targetSlot) break;
             }
 
             if (targetSlot) {
-                // Transform the ghost slot into an active brick
                 targetSlot.classList.remove('empty');
                 targetSlot.classList.add('filled');
                 targetSlot.setAttribute('data-full-name', name);
@@ -288,7 +320,6 @@
                 alert("This section of the monument is fully built!");
             }
 
-            // Clean up and hide form
             document.getElementById('brickForm').reset();
             formModal.classList.remove('active');
         });
