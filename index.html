@@ -36,36 +36,29 @@
             margin: 0;
         }
 
-        /* The Ultra-Dense Brick Wall Container */
+        /* The Perfect Brick Wall Container */
         .wall-container {
-            width: 98%;
-            max-width: 1600px;
-            padding: 20px 0;
-            margin-bottom: 50px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
-            gap: 3px; /* Microscopic gap between rows */
-            overflow-x: hidden;
+            gap: 4px; /* Vertical mortar line */
         }
 
-        /* A single tight row of bricks */
+        /* Explicit row layout using flex to lock sizes */
         .wall-row {
             display: flex;
-            gap: 3px; /* Microscopic gap between individual bricks */
+            gap: 4px; /* Horizontal mortar line */
             width: 100%;
             justify-content: center;
         }
 
-        /* Interlocking offset trick */
-        .wall-row:nth-child(even) {
-            transform: translateX(25px);
-        }
-
-        /* Micro Brick Design */
+        /* Micro Full Brick */
         .brick {
-            flex: none;
-            width: 50px;       /* Incredibly narrow */
-            height: 24px;      /* Very short */
+            width: 60px;
+            height: 26px;
             background: linear-gradient(135deg, #241e1c 0%, #161312 100%);
             border: 1px solid #2e2624;
             border-radius: 1px;
@@ -77,9 +70,19 @@
             transition: all 0.1s ease;
         }
 
-        /* Powerful Hover to make tiny bricks readable when targeted */
+        /* Half Brick for the edge offsets */
+        .brick-half {
+            width: 28px; /* Exactly half width minus accounting for the gap */
+            height: 26px;
+            background: linear-gradient(135deg, #1f1a18 0%, #12100f 100%);
+            border: 1px solid #241e1d;
+            border-radius: 1px;
+            box-sizing: border-box;
+        }
+
+        /* High-power pop-out hover effect */
         .brick:hover {
-            transform: scale(2); /* Pops out to double size so you can read it! */
+            transform: scale(2);
             background: #00ff88;
             border-color: #ffffff;
             box-shadow: 0px 0px 15px rgba(0, 255, 136, 0.6);
@@ -92,9 +95,8 @@
             font-weight: bold;
         }
 
-        /* Tiny Text Asset */
         .name {
-            font-size: 0.45rem; /* Micro font */
+            font-size: 0.45rem;
             letter-spacing: 0.2px;
             color: #a0a0a0;
             white-space: nowrap;
@@ -102,7 +104,7 @@
             text-overflow: ellipsis;
             width: 100%;
             padding: 0 2px;
-            pointer-events: none; /* Smooths out hover scaling */
+            pointer-events: none;
         }
     </style>
 </head>
@@ -129,6 +131,7 @@
         </div>
 
         <div class="wall-row">
+            <div class="brick-half"></div>
             <div class="brick"><div class="name">J.Ande</div></div>
             <div class="brick"><div class="name">C.Tayl</div></div>
             <div class="brick"><div class="name">D.Thom</div></div>
@@ -138,6 +141,7 @@
             <div class="brick"><div class="name">O.Clar</div></div>
             <div class="brick"><div class="name">A.Lewi</div></div>
             <div class="brick"><div class="name">N.Robi</div></div>
+            <div class="brick-half"></div>
         </div>
 
         <div class="wall-row">
@@ -154,6 +158,7 @@
         </div>
 
         <div class="wall-row">
+            <div class="brick-half"></div>
             <div class="brick"><div class="name">B.Bake</div></div>
             <div class="brick"><div class="name">S.Gonz</div></div>
             <div class="brick"><div class="name">A.Nels</div></div>
@@ -163,6 +168,7 @@
             <div class="brick"><div class="name">M.Robe</div></div>
             <div class="brick"><div class="name">T.Turn</div></div>
             <div class="brick"><div class="name">R.Phil</div></div>
+            <div class="brick-half"></div>
         </div>
 
     </div>
