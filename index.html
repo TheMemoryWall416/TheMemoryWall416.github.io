@@ -3,37 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Memory Wall</title>
+    <title>The Memory Wall - Test Mode</title>
     <style>
         body { margin: 0; background-color: #0b0b0c; color: #ffffff; font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .wall-container { display: flex; flex-direction: column; gap: 4px; padding: 50px; }
         .wall-row { display: flex; gap: 4px; }
-        .brick-slot { width: 60px; height: 26px; border: 1px dashed #333; }
-        .brick-slot.filled { background: #333; border: 1px solid #555; }
     </style>
 </head>
 <body>
     <h1>THE MEMORY WALL</h1>
-    <div class="wall-container" id="wallContainer">
-        <div class="wall-row"></div><div class="wall-row"></div><div class="wall-row"></div><div class="wall-row"></div><div class="wall-row"></div>
-    </div>
+    <div class="wall-container" id="wallContainer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
-        const SUPABASE_URL = 'https://yojxagqrxpjuwjanczah.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvanhhZ3FyeHBqdXdqYW5jemFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjM0MDgsImV4cCI6MjA5NjMzOTQwOH0.QZds9Ssj0rJ2yMhLo9XTGENVa_DraETfiBfBa03FBaQ'; 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        console.log("1. Script is officially loading!");
 
-        async function loadWall() {
-            const { data, error } = await supabase.from('bricks').select('*');
-            
-            if (error) {
-                console.error("Database Error:", error);
+        try {
+            // REPLACE THESE TWO LINES WITH YOUR ACTUAL DATA
+            const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co'; 
+            const SUPABASE_KEY = 'YOUR_EYJ_KEY'; 
+
+            if (typeof supabase === 'undefined') {
+                console.error("2. ERROR: The Supabase library did not load at all.");
             } else {
-                console.log("Loaded bricks:", data);
+                console.log("2. Supabase library is loaded.");
+                const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log("3. Client created successfully.");
+                
+                // Test fetching data
+                client.from('bricks').select('*').then(result => {
+                    console.log("4. Fetch result:", result);
+                }).catch(err => {
+                    console.error("4. Fetch error:", err);
+                });
             }
+        } catch (e) {
+            console.error("FATAL ERROR:", e);
         }
-        loadWall();
     </script>
 </body>
 </html>
