@@ -46,7 +46,6 @@
             margin-bottom: 10px;
         }
 
-        /* Sleek Segmented Switch Button */
         .wall-toggle-switch {
             display: flex;
             background-color: #16161a;
@@ -72,7 +71,6 @@
             color: #000000;
         }
 
-        /* The Pet Wall Specific Active Theme Toggle */
         body.pet-mode-active .toggle-btn.active {
             background-color: #00ff88;
             color: #000000;
@@ -150,7 +148,6 @@
             cursor: pointer;
         }
 
-        /* Hover glows white for human, neon green for pet */
         .brick-slot.filled:hover {
             transform: scale(1.8);
             background: #ffffff;
@@ -276,7 +273,7 @@
                 <label>Years</label>
                 <input type="text" id="inputYears" placeholder="e.g. 1945 - 2026" required>
                 
-                <button type="submit" class="submit-btn" id="formSubmitBtn">Place onto Wall</button>
+                <button type="submit" class="submit-btn">Place onto Wall</button>
             </form>
             <button class="close-btn" id="closeFormBtn" style="margin-top: 15px; width: 100%;">Cancel</button>
         </div>
@@ -296,10 +293,9 @@
         const formTitle = document.getElementById('formTitle');
 
         const initialColumns = 60;
-        let masterLedgerData = [];
-        let currentSection = 'human'; // 'human' or 'animal'
+        let currentSection = 'human'; // Tracks our view: 'human' or 'animal'
 
-        // 1. Clear and Build out the skeleton grid structures
+        // 1. Build out the blank skeletal spaces
         function resetSkeletonGrid() {
             const rows = wallContainer.querySelectorAll('.wall-row');
             rows.forEach(row => {
@@ -312,7 +308,7 @@
             });
         }
 
-        // Find next empty space from bottom-up
+        // Find next empty grid space from bottom-to-top
         function findNextEmptySlot() {
             let targetSlot = null;
             for (let col = 0; col < initialColumns; col++) {
@@ -350,5 +346,40 @@
             slot.appendChild(nameDiv);
         }
 
-        // 2. Render only the bricks matching the active section toggle
-        function renderActiveWall
+        // 2. Fetch data file dynamically depending on which switch is active
+        function loadAndRenderWall() {
+            resetSkeletonGrid();
+            
+            // Choose file name dynamically based on section state
+            const targetFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
+            
+            fetch(targetFile)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(item => {
+                        const targetSlot = findNextEmptySlot();
+                        if (targetSlot) {
+                            populateSlot(targetSlot, item.name, item.years, currentSection);
+                        }
+                    });
+                })
+                .catch(err => console.error("Error reading ledger file:", err));
+        }
+
+        // Load human wall out of the box
+        loadAndRenderWall();
+
+        // 3. Tab Switching Events
+        humanWallBtn.addEventListener('click', () => {
+            if (currentSection === 'human') return;
+            currentSection = 'human';
+            document.body.classList.remove('pet-mode-active');
+            humanWallBtn.classList.add('active');
+            petWallBtn.classList.remove('active');
+            loadAndRenderWall();
+        });
+
+        petWallBtn.addEventListener('click', () => {
+            if (currentSection === 'animal') return;
+            currentSection = 'animal';
+            document.body.classList.add
