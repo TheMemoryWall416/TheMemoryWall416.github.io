@@ -33,7 +33,25 @@
         header p {
             color: #666666;
             font-size: 0.9rem;
-            margin: 0;
+            margin: 0 0 15px 0;
+        }
+
+        /* Action Button */
+        .add-brick-btn {
+            background-color: #00ff88;
+            color: #000000;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .add-brick-btn:hover {
+            transform: scale(1.05);
+            background-color: #00cc6e;
         }
 
         /* The Perfect Brick Wall Container */
@@ -105,7 +123,7 @@
             pointer-events: none;
         }
 
-        /* --- POPUP MODAL STYLES --- */
+        /* --- OVERLAY MODALS (Form & Viewer) --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -118,11 +136,10 @@
             align-items: center;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.2s ease;
             z-index: 1000;
         }
 
-        /* When active, show the modal */
         .modal-overlay.active {
             opacity: 1;
             pointer-events: auto;
@@ -137,17 +154,45 @@
             padding: 25px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
         }
 
-        .modal-overlay.active .modal-card {
-            transform: translateY(0);
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+            margin-top: 15px;
+        }
+
+        label {
+            font-size: 0.8rem;
+            color: #aaaaaa;
+        }
+
+        input {
+            background-color: #222227;
+            border: 1px solid #444;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .submit-btn {
+            background-color: #00ff88;
+            color: black;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
         }
 
         .modal-photo {
-            width: 90px;
-            height: 90px;
+            width: 80px;
+            height: 80px;
             background-color: #222227;
             border: 1px solid #444;
             border-radius: 50%;
@@ -158,103 +203,154 @@
             font-size: 2rem;
         }
 
-        .modal-name {
-            font-size: 1.4rem;
-            margin: 0 0 5px 0;
-            color: #ffffff;
-            letter-spacing: 1px;
-        }
-
-        .modal-dates {
-            font-size: 0.9rem;
-            color: #00ff88;
-            margin: 0 0 20px 0;
-            letter-spacing: 1px;
-        }
-
-        .close-btn {
-            background-color: #222227;
-            color: #aaaaaa;
-            border: 1px solid #444;
-            padding: 8px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: background 0.2s;
-        }
-
-        .close-btn:hover {
-            background-color: #ff3344;
-            color: #ffffff;
-            border-color: #ff3344;
-        }
+        .modal-name { font-size: 1.4rem; margin: 0 0 5px 0; }
+        .modal-dates { font-size: 0.9rem; color: #00ff88; margin: 0 0 20px 0; }
+        .close-btn { background-color: #222227; color: #aaa; border: 1px solid #444; padding: 6px 15px; border-radius: 4px; cursor: pointer; }
+        .close-btn:hover { background-color: #ff3344; color: white; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>THE MEMORY WALL</h1>
-        <p>Click a brick to view their memorial record.</p>
+        <p>A massive, microscopic interlocking global monument.</p>
+        <button class="add-brick-btn" id="openFormBtn">+ Add a Brick</button>
     </header>
 
-    <div class="wall-container">
+    <div class="wall-container" id="wallContainer">
         <div class="wall-row">
             <div class="brick" data-full-name="John Doe" data-years="1950 - 2024"><div class="name">J.Doe</div></div>
             <div class="brick" data-full-name="Alice Smith" data-years="1965 - 2023"><div class="name">A.Smith</div></div>
             <div class="brick" data-full-name="Robert Johnson" data-years="1942 - 2025"><div class="name">R.Johns</div></div>
-            <div class="brick" data-full-name="Michael Davis" data-years="1988 - 2021"><div class="name">M.Davis</div></div>
         </div>
-
         <div class="wall-row">
             <div class="brick-half"></div>
             <div class="brick" data-full-name="James Anderson" data-years="1981 - 2022"><div class="name">J.Ande</div></div>
             <div class="brick" data-full-name="Clara Taylor" data-years="1939 - 2016"><div class="name">C.Tayl</div></div>
-            <div class="brick" data-full-name="David Thomas" data-years="1952 - 2021"><div class="name">D.Thom</div></div>
             <div class="brick-half"></div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-overlay" id="viewModal">
         <div class="modal-card">
             <div class="modal-photo">🕊️</div>
-            <h2 class="modal-name" id="modalName">Name Placeholder</h2>
-            <div class="modal-dates" id="modalDates">Years Placeholder</div>
-            <button class="close-btn" id="closeBtn">Close</button>
+            <h2 class="modal-name" id="modalName">Name</h2>
+            <div class="modal-dates" id="modalDates">Years</div>
+            <button class="close-btn" id="closeViewBtn">Close</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="formModal">
+        <div class="modal-card">
+            <h3 style="margin: 0; letter-spacing: 1px;">LAY A NEW BRICK</h3>
+            <form id="brickForm">
+                <label>Full Name</label>
+                <input type="text" id="inputName" placeholder="e.g. Jane Miller" required>
+                
+                <label>Years (e.g. 1960 - 2026)</label>
+                <input type="text" id="inputYears" placeholder="e.g. 1960 - 2026" required>
+                
+                <button type="submit" class="submit-btn">Place onto Wall</button>
+            </form>
+            <button class="close-btn" id="closeFormBtn" style="margin-top: 15px; width: 100%;">Cancel</button>
         </div>
     </div>
 
     <script>
-        const bricks = document.querySelectorAll('.brick');
-        const modalOverlay = document.getElementById('modalOverlay');
+        const wallContainer = document.getElementById('wallContainer');
+        const viewModal = document.getElementById('viewModal');
+        const formModal = document.getElementById('formModal');
         const modalName = document.getElementById('modalName');
         const modalDates = document.getElementById('modalDates');
-        const closeBtn = document.getElementById('closeBtn');
 
-        // Open modal on click
-        bricks.forEach(brick => {
-            brick.addEventListener('click', () => {
-                const fullName = brick.getAttribute('data-full-name');
-                const years = brick.getAttribute('data-years');
-                
-                modalName.textContent = fullName;
-                modalDates.textContent = years;
-                
-                modalOverlay.classList.add('active');
-            });
-        });
+        // Open/Close Form Modal
+        document.getElementById('openFormBtn').addEventListener('click', () => formModal.classList.add('active'));
+        document.getElementById('closeFormBtn').addEventListener('click', () => formModal.classList.remove('active'));
 
-        // Close modal on button click
-        closeBtn.addEventListener('click', () => {
-            modalOverlay.classList.remove('active');
-        });
+        // Close View Modal
+        document.getElementById('closeViewBtn').addEventListener('click', () => viewModal.classList.remove('active'));
 
-        // Close modal if clicking outside the card
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                modalOverlay.classList.remove('active');
+        // Handle clicking on bricks (delegated to container so new bricks work automatically!)
+        wallContainer.addEventListener('click', (e) => {
+            const brick = e.target.closest('.brick');
+            if (brick) {
+                modalName.textContent = brick.getAttribute('data-full-name');
+                modalDates.textContent = brick.getAttribute('data-years');
+                viewModal.classList.add('active');
             }
         });
-    </script>
 
+        // Form submission to dynamically create a brick
+        document.getElementById('brickForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('inputName').value;
+            const years = document.getElementById('inputYears').value;
+
+            // Generate short display name (e.g., "Jane Miller" -> "J.Mill")
+            const nameParts = name.trim().split(' ');
+            let shortName = name;
+            if (nameParts.length > 1) {
+                shortName = nameParts[0][0] + '.' + nameParts[nameParts.length - 1].substring(0, 4);
+            } else {
+                shortName = name.substring(0, 6);
+            }
+
+            // Create brick elements
+            const newBrick = document.createElement('div');
+            newBrick.className = 'brick';
+            newBrick.setAttribute('data-full-name', name);
+            newBrick.setAttribute('data-years', years);
+            
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'name';
+            nameDiv.textContent = shortName;
+            newBrick.appendChild(nameDiv);
+
+            // Find the last row to place it in, or make a new row if it gets full
+            let rows = wallContainer.querySelectorAll('.wall-row');
+            let targetRow = rows[rows.length - 1];
+            
+            // To maintain interlocking design, check how many elements are in the row
+            // If the row has 6 items, let's start a new row!
+            const brickCount = targetRow.querySelectorAll('.brick').length;
+            if (brickCount >= 6) {
+                const newRow = document.createElement('div');
+                newRow.className = 'wall-row';
+                
+                // If the previous row was standard, make this one interlocking (add half bricks)
+                if (!targetRow.querySelector('.brick-half')) {
+                    const half1 = document.createElement('div');
+                    half1.className = 'brick-half';
+                    const half2 = document.createElement('div');
+                    half2.className = 'brick-half';
+                    newRow.appendChild(half1);
+                    newRow.appendChild(newBrick);
+                    newRow.appendChild(half2);
+                } else {
+                    newRow.appendChild(newBrick);
+                }
+                wallContainer.appendChild(newRow);
+            } else {
+                // Insert right before the trailing half-brick if it's an offset row
+                const trailingHalf = targetRow.querySelector('.brick-half:last-child');
+                if (trailingHalf) {
+                    targetRow.insertBefore(newBrick, trailingHalf);
+                } else {
+                    targetRow.appendChild(newBrick);
+                }
+            }
+
+            // Reset form and close
+            document.getElementById('brickForm').reset();
+            formModal.classList.remove('active');
+        });
+
+        // Close if clicking outside cards
+        window.addEventListener('click', (e) => {
+            if (e.target === viewModal) viewModal.classList.remove('active');
+            if (e.target === formModal) formModal.classList.remove('active');
+        });
+    </script>
 </body>
 </html>
