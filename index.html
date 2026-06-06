@@ -4,43 +4,53 @@
     <meta charset="UTF-8">
     <title>The Memory Wall</title>
     <style>
-        body { background-color: #0b0b0c; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
-        .wall-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px; justify-content: center; }
-        .brick { width: 100px; height: 50px; background-color: #333; display: flex; align-items: center; justify-content: center; border: 1px solid #555; }
+        body { background-color: #0b0b0c; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .input-area { margin-bottom: 30px; }
+        .wall-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; width: 100%; max-width: 800px; }
+        .brick { width: 100px; height: 50px; background-color: #333; display: flex; align-items: center; justify-content: center; border: 1px solid #555; text-align: center; font-size: 12px; }
     </style>
 </head>
 <body>
 
     <h1>THE MEMORY WALL</h1>
+
+    <div class="input-area">
+        <input type="text" id="brickInput" placeholder="Enter a memory...">
+        <button onclick="addBrick()">Add to Wall</button>
+    </div>
+
     <div class="wall-container" id="wall"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // 1. SETUP: Replace with your actual project details
         const SUPABASE_URL = 'https://yojxagqrxpjuwjanczah.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvanhhZ3FyeHBqdXdqYW5jemFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3NjM0MDgsImV4cCI6MjA5NjMzOTQwOH0.QZds9Ssj0rJ2yMhLo9XTGENVa_DraETfiBfBa03FBaQ'; 
-
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // 1. Load existing bricks
         async function loadWall() {
-            // 2. FETCH: Get data from your 'bricks' table
-            const { data, error } = await supabase
-                .from('bricks')
-                .select('*');
-
-            if (error) {
-                console.error("Error fetching bricks:", error);
-                return;
-            }
-
-            // 3. DISPLAY: Add data to the page
+            const { data, error } = await supabase.from('bricks').select('*');
+            if (error) { console.error(error); return; }
+            
             const wall = document.getElementById('wall');
+            wall.innerHTML = ''; // Clear current wall
             data.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'brick';
-                div.textContent = item.message; // Make sure this matches your column name
+                div.textContent = item.message; // Ensure this column is named 'message'
                 wall.appendChild(div);
             });
+        }
+
+        // 2. Add a new brick
+        async function addBrick() {
+            const text = document.getElementById('brickInput').value;
+            const { error } = await supabase.from('bricks').insert([{ message: text }]);
+            if (error) { alert("Error adding brick: " + error.message); }
+            else { 
+                document.getElementById('brickInput').value = ''; 
+                loadWall(); // Refresh the wall
+            }
         }
 
         loadWall();
