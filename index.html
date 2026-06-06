@@ -25,8 +25,13 @@
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function loadWall() {
-            const { data } = await supabase.from('bricks').select('*').eq('status', 'approved');
-            console.log("Loaded bricks:", data);
+            const { data, error } = await supabase.from('bricks').select('*');
+            
+            if (error) {
+                console.error("Database Error:", error);
+            } else {
+                console.log("Loaded bricks:", data);
+            }
         }
         loadWall();
     </script>
