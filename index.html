@@ -293,10 +293,10 @@
         const formTitle = document.getElementById('formTitle');
 
         const initialColumns = 60;
-        let currentSection = 'human'; // Tracks our view: 'human' or 'animal'
+        let currentSection = 'human'; 
 
-        // 1. Build out the blank skeletal spaces
-        function resetSkeletonGrid() {
+        // 1. Instantly generate empty grid slots so the UI works right out of the gate
+        function buildBlankGridSlots() {
             const rows = wallContainer.querySelectorAll('.wall-row');
             rows.forEach(row => {
                 row.innerHTML = '';
@@ -308,21 +308,18 @@
             });
         }
 
-        // Find next empty grid space from bottom-to-top
+        // Find next empty space bottom-to-top
         function findNextEmptySlot() {
-            let targetSlot = null;
+            const rows = wallContainer.querySelectorAll('.wall-row');
             for (let col = 0; col < initialColumns; col++) {
-                for (let r = 10; r >= 1; r--) {
-                    const row = wallContainer.querySelector(`[data-row-index="${r}"]`);
-                    const slot = row.children[col];
-                    if (slot.classList.contains('empty')) {
-                        targetSlot = slot;
-                        break;
+                for (let r = 9; r >= 0; r--) { // 0-indexed row tracking safely
+                    const slot = rows[r].children[col];
+                    if (slot && slot.classList.contains('empty')) {
+                        return slot;
                     }
                 }
-                if (targetSlot) break;
             }
-            return targetSlot;
+            return null;
         }
 
         function populateSlot(slot, name, years, section) {
@@ -346,16 +343,19 @@
             slot.appendChild(nameDiv);
         }
 
-        // 2. Fetch data file dynamically depending on which switch is active
+        // 2. Fetch data list files safely without bottlenecking button listeners
         function loadAndRenderWall() {
-            resetSkeletonGrid();
+            buildBlankGridSlots();
             
-            // Choose file name dynamically based on section state
             const targetFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
             
             fetch(targetFile)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error("File not found");
+                    return response.json();
+                })
                 .then(data => {
+                    if (!Array.isArray(data)) return;
                     data.forEach(item => {
                         const targetSlot = findNextEmptySlot();
                         if (targetSlot) {
@@ -363,13 +363,15 @@
                         }
                     });
                 })
-                .catch(err => console.error("Error reading ledger file:", err));
+                .catch(err => {
+                    console.error("Ledger reading handled cleanly:", err);
+                });
         }
 
-        // Load human wall out of the box
+        // Initial launch kickstart
         loadAndRenderWall();
 
-        // 3. Tab Switching Events
+        // 3. Button Click Actions work instantly now regardless of file loading status
         humanWallBtn.addEventListener('click', () => {
             if (currentSection === 'human') return;
             currentSection = 'human';
@@ -382,4 +384,53 @@
         petWallBtn.addEventListener('click', () => {
             if (currentSection === 'animal') return;
             currentSection = 'animal';
-            document.body.classList.add
+            document.body.classList.add('pet-mode-active');
+            petWallBtn.classList.add('active');
+            humanWallBtn.classList.remove('active');
+            loadAndRenderWall();
+        });
+
+        // 4. Modals Overlays Management
+        document.getElementById('openFormBtn').addEventListener('click', () => {
+            formTitle.textContent = currentSection === 'human' ? 'LAY A HUMAN BRICK' : 'LAY AN ANIMAL BRICK';
+            formModal.classList.add('active');
+        });
+        document.getElementById('closeFormBtn').addEventListener('click', () => formModal.classList.remove('active'));
+        closeViewBtn.addEventListener('click', () => viewModal.classList.remove('active'));
+
+        // Client form submit engine
+        document.getElementById('brickForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('inputName').value;
+            const years = document.getElementById('inputYears').value;
+
+            const targetSlot = findNextEmptySlot();
+            if (targetSlot) {
+                populateSlot(targetSlot, name, years, currentSection);
+            } else {
+                alert("This section is full!");
+            }
+
+            document.getElementById('brickForm').reset();
+            formModal.classList.remove('active');
+        });
+
+        // Click detection logic
+        wallContainer.addEventListener('click', (e) => {
+            const brick = e.target.closest('.brick-slot.filled');
+            if (brick) {
+                modalName.textContent = brick.getAttribute('data-full-name');
+                modalDates.textContent = brick.getAttribute('data-years');
+                const section = brick.getAttribute('data-section');
+                modalIcon.textContent = (section === 'animal') ? '🐾' : '🕊️';
+                viewModal.classList.add('active');
+            }
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === viewModal) viewModal.classList.remove('active');
+            if (e.target === formModal) formModal.classList.remove('active');
+        });
+    </script>
+</body>
+</html>
