@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Grandpa Arthur",
+    "years": "1935 - 2021",
+    "section": "human"
+  },
+  {
+    "id": 2,
+    "name": "Sarah Jenkins",
+    "years": "1960 - 2024",
+    "section": "human"
+  },
+  {
+    "id": 3,
+    "name": "Max",
+    "years": "2010 - 2025",
+    "section": "animal"
+  },
+  {
+    "id": 4,
+    "name": "Captain Miller",
+    "years": "1942 - 2018",
+    "section": "human"
+  },
+  {
+    "id": 5,
+    "name": "Bella",
+    "years": "2012 - 2026",
+    "section": "animal"
+  }
+]
