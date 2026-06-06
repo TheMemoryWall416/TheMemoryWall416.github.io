@@ -37,6 +37,23 @@
             margin: 0 0 15px 0;
         }
 
+        .add-brick-btn {
+            background-color: #00ff88;
+            color: #000000;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .add-brick-btn:hover {
+            transform: scale(1.05);
+            background-color: #00cc6e;
+        }
+
         /* --- THE SLIDE WINDOW CONTAINER --- */
         .wall-viewport {
             width: 100%;
@@ -117,7 +134,7 @@
             pointer-events: none;
         }
 
-        /* --- POPUP MODAL --- */
+        /* --- POPUP MODALS --- */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -149,6 +166,11 @@
             text-align: center;
         }
 
+        form { display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 15px; }
+        label { font-size: 0.8rem; color: #aaaaaa; }
+        input { background-color: #222227; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; font-size: 0.9rem; }
+        select { background-color: #222227; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; font-size: 0.9rem; }
+        .submit-btn { background-color: #00ff88; color: black; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; }
         .modal-photo { width: 80px; height: 80px; background-color: #222227; border: 1px solid #444; border-radius: 50%; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; font-size: 2rem; }
         .modal-name { font-size: 1.4rem; margin: 0 0 5px 0; color: white; }
         .modal-dates { font-size: 0.9rem; color: #00ff88; margin: 0 0 20px 0; }
@@ -161,6 +183,7 @@
     <header>
         <h1>THE MEMORY WALL</h1>
         <p>A global monument powered by our live data ledger.</p>
+        <button class="add-brick-btn" id="openFormBtn">+ Add a Brick</button>
     </header>
 
     <div class="wall-viewport">
@@ -187,17 +210,41 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="formModal">
+        <div class="modal-card">
+            <h3 style="margin: 0; letter-spacing: 1px;">LAY A NEW BRICK</h3>
+            <form id="brickForm">
+                <label>Full Name</label>
+                <input type="text" id="inputName" placeholder="e.g. Samuel Evans" required>
+                
+                <label>Years</label>
+                <input type="text" id="inputYears" placeholder="e.g. 1945 - 2026" required>
+
+                <label>Section</label>
+                <select id="inputSection">
+                    <option value="human">Human Memorial</option>
+                    <option value="animal">Animal Memorial</option>
+                </select>
+                
+                <button type="submit" class="submit-btn">Place onto Wall</button>
+            </form>
+            <button class="close-btn" id="closeFormBtn" style="margin-top: 15px; width: 100%;">Cancel</button>
+        </div>
+    </div>
+
     <script>
         const wallContainer = document.getElementById('wallContainer');
         const viewModal = document.getElementById('viewModal');
+        const formModal = document.getElementById('formModal');
         const modalName = document.getElementById('modalName');
         const modalDates = document.getElementById('modalDates');
         const modalIcon = document.getElementById('modalIcon');
         const closeViewBtn = document.getElementById('closeViewBtn');
 
-        // 1. Preload 60 empty columns across all 10 rows
         const initialColumns = 60;
         const rows = wallContainer.querySelectorAll('.wall-row');
+        
+        // 1. Preload 60 empty columns across all 10 rows
         rows.forEach(row => {
             for (let i = 0; i < initialColumns; i++) {
                 const slot = document.createElement('div');
@@ -206,71 +253,99 @@
             }
         });
 
-        // 2. Fetch the data ledger and automatically build the bricks
+        // Helper function to find the next empty slot from bottom-up
+        function findNextEmptySlot() {
+            let targetSlot = null;
+            for (let col = 0; col < initialColumns; col++) {
+                for (let r = 10; r >= 1; r--) {
+                    const row = wallContainer.querySelector(`[data-row-index="${r}"]`);
+                    const slot = row.children[col];
+                    if (slot.classList.contains('empty')) {
+                        targetSlot = slot;
+                        break;
+                    }
+                }
+                if (targetSlot) break;
+            }
+            return targetSlot;
+        }
+
+        // Helper function to inject brick data into a specific slot
+        function populateSlot(slot, name, years, section) {
+            const nameParts = name.trim().split(' ');
+            let shortName = name;
+            if (nameParts.length > 1) {
+                shortName = nameParts[0][0] + '.' + nameParts[nameParts.length - 1].substring(0, 4);
+            } else {
+                shortName = name.substring(0, 6);
+            }
+
+            slot.classList.remove('empty');
+            slot.classList.add('filled');
+            slot.setAttribute('data-full-name', name);
+            slot.setAttribute('data-years', years);
+            slot.setAttribute('data-section', section);
+            
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'name';
+            nameDiv.textContent = shortName;
+            slot.innerHTML = ''; // Clear out any old content
+            slot.appendChild(nameDiv);
+        }
+
+        // 2. Fetch the data ledger and automatically build the initial bricks
         fetch('wall-data.json')
             .then(response => response.json())
             .then(data => {
                 data.forEach(item => {
-                    // Generate shortened name for micro layout
-                    const nameParts = item.name.trim().split(' ');
-                    let shortName = item.name;
-                    if (nameParts.length > 1) {
-                        shortName = nameParts[0][0] + '.' + nameParts[nameParts.length - 1].substring(0, 4);
-                    } else {
-                        shortName = item.name.substring(0, 6);
-                    }
-
-                    // Find the first available empty slot from bottom-to-top, left-to-right
-                    let targetSlot = null;
-                    for (let col = 0; col < initialColumns; col++) {
-                        for (let r = 10; r >= 1; r--) {
-                            const row = wallContainer.querySelector(`[data-row-index="${r}"]`);
-                            const slot = row.children[col];
-                            if (slot.classList.contains('empty')) {
-                                targetSlot = slot;
-                                break;
-                            }
-                        }
-                        if (targetSlot) break;
-                    }
-
-                    // Fill the slot with the ledger data
+                    const targetSlot = findNextEmptySlot();
                     if (targetSlot) {
-                        targetSlot.classList.remove('empty');
-                        targetSlot.classList.add('filled');
-                        targetSlot.setAttribute('data-full-name', item.name);
-                        targetSlot.setAttribute('data-years', item.years);
-                        targetSlot.setAttribute('data-section', item.section);
-                        
-                        const nameDiv = document.createElement('div');
-                        nameDiv.className = 'name';
-                        nameDiv.textContent = shortName;
-                        targetSlot.appendChild(nameDiv);
+                        populateSlot(targetSlot, item.name, item.years, item.section);
                     }
                 });
             })
             .catch(err => console.error("Error reading ledger data:", err));
 
-        // 3. Handle Interactive Clicks
+        // 3. Manage Form Overlay
+        document.getElementById('openFormBtn').addEventListener('click', () => formModal.classList.add('active'));
+        document.getElementById('closeFormBtn').addEventListener('click', () => formModal.classList.remove('active'));
+        closeViewBtn.addEventListener('click', () => viewModal.classList.remove('active'));
+
+        // 4. Form submission to dynamically create a preview brick on screen
+        document.getElementById('brickForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('inputName').value;
+            const years = document.getElementById('inputYears').value;
+            const section = document.getElementById('inputSection').value;
+
+            const targetSlot = findNextEmptySlot();
+            if (targetSlot) {
+                populateSlot(targetSlot, name, years, section);
+            } else {
+                alert("This section of the monument is fully built!");
+            }
+
+            document.getElementById('brickForm').reset();
+            formModal.classList.remove('active');
+        });
+
+        // 5. Handle Interactive Clicks
         wallContainer.addEventListener('click', (e) => {
             const brick = e.target.closest('.brick-slot.filled');
             if (brick) {
-                const name = brick.getAttribute('data-full-name');
-                const years = brick.getAttribute('data-years');
+                modalName.textContent = brick.getAttribute('data-full-name');
+                modalDates.textContent = brick.getAttribute('data-years');
                 const section = brick.getAttribute('data-section');
-
-                modalName.textContent = name;
-                modalDates.textContent = years;
-                
-                // Show a pet emoji if it's from the animal section!
                 modalIcon.textContent = (section === 'animal') ? '🐾' : '🕊️';
-                
                 viewModal.classList.add('active');
             }
         });
 
-        closeViewBtn.addEventListener('click', () => viewModal.classList.remove('active'));
-        window.addEventListener('click', (e) => { if (e.target === viewModal) viewModal.classList.remove('active'); });
+        window.addEventListener('click', (e) => {
+            if (e.target === viewModal) viewModal.classList.remove('active');
+            if (e.target === formModal) formModal.classList.remove('active');
+        });
     </script>
 </body>
 </html>
