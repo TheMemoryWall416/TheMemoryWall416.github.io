@@ -3,57 +3,62 @@
 <head>
     <title>Memory Wall</title>
     <style>
-        body { background: #0b0b0c; color: white; font-family: sans-serif; text-align: center; }
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .brick { border: 1px solid #333; padding: 10px; margin: 5px; display: inline-block; }
+        body { background: #1a1a1a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        
+        /* The Wall Grid */
+        #wall { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+            gap: 15px; 
+            width: 90%; 
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        /* The Brick Style */
+        .brick { 
+            background: #333; 
+            padding: 20px; 
+            border-radius: 4px; 
+            border-left: 5px solid #ffcc00; 
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            word-wrap: break-word;
+        }
+
+        /* The Input Area */
+        .controls { margin-top: 30px; padding: 20px; background: #222; border-radius: 8px; }
+        input { padding: 10px; width: 250px; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div>
-            <input type="password" id="passInput" placeholder="Password...">
-            <button onclick="checkPass()">Enter</button>
-        </div>
+    <div class="controls">
+        <h1>Memory Wall</h1>
+        <input id="brickInput" placeholder="Enter a memory...">
+        <button onclick="saveBrick()">Add Brick</button>
     </div>
 
-    <h1>Memory Wall</h1>
-    <input id="brickInput" placeholder="Write a memory...">
-    <button onclick="saveBrick()">Add Brick</button>
     <div id="wall"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // --- PASTE YOUR CONFIG HERE ---
-        const firebaseConfig = { 
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_ID",
-            appId: "YOUR_APP_ID"
-        };
-
+        const firebaseConfig = { /* YOUR EXISTING CONFIG HERE */ };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Password Check
-        window.checkPass = () => {
-            if(document.getElementById('passInput').value === "1234") { // Change this password
-                document.getElementById('login-screen').style.display = 'none';
-            }
-        };
-
-        // Add Memory
         window.saveBrick = async () => {
             const text = document.getElementById('brickInput').value;
-            await addDoc(collection(db, "bricks"), { text: text, date: Date.now() });
+            if (text.trim() === "") return; // Don't add empty bricks
+            await addDoc(collection(db, "bricks"), { text: text, createdAt: Date.now() });
+            document.getElementById('brickInput').value = '';
         };
 
-        // Real-time Update
-        onSnapshot(collection(db, "bricks"), (snapshot) => {
+        // Get bricks ordered by time
+        const q = query(collection(db, "bricks"), orderBy("createdAt", "desc"));
+
+        onSnapshot(q, (snapshot) => {
             const wall = document.getElementById('wall');
             wall.innerHTML = '';
             snapshot.forEach(doc => {
