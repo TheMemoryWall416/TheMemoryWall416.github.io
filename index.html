@@ -46,14 +46,15 @@
 
         /* --- FIXED HEADER CONTAINER --- */
         header {
-            position: relative; /* Serves as anchor blueprint for absolute layouts */
+            position: relative; 
             width: 100%;
             max-width: 1200px;
+            height: 220px; /* FIXED: Holds enough space open vertically so nothing overlaps below */
             padding: 20px;
             box-sizing: border-box;
             margin-top: 20px;
             display: flex;
-            justify-content: center; /* Forces the header-center to stay dead center */
+            justify-content: center; 
         }
 
         .header-center {
@@ -62,18 +63,18 @@
             z-index: 2;
         }
 
-        /* FIXED & ENLARGED: Spotlight Showcase Card pinned absolutely to the left side */
+        /* Spotlight Showcase Card pinned absolutely to the left side */
         .spotlight-card {
             position: absolute;
             left: 20px;
-            top: 60px; /* Dropped below the top navigation line */
-            width: 160px; /* Increased scale size */
+            top: 60px; 
+            width: 160px; 
             background-color: #16161a;
             border: 1px solid #33333b;
             border-radius: 8px;
             padding: 16px;
             display: flex;
-            flex-direction: column; /* Stack vertically to mimic mockup architecture */
+            flex-direction: column; 
             align-items: center;
             text-align: center;
             box-sizing: border-box;
@@ -87,7 +88,7 @@
         }
 
         .spotlight-photo {
-            width: 75px; /* Bigger frame */
+            width: 75px; 
             height: 75px;
             background-color: #222227;
             border: 1px solid #444;
@@ -115,7 +116,7 @@
         }
 
         .spotlight-name {
-            font-size: 1rem; /* Clearer prominence */
+            font-size: 1rem; 
             font-weight: bold;
             color: #ffffff;
             white-space: nowrap;
@@ -339,7 +340,7 @@
 
         /* Responsive safety fallback for small mobile screens */
         @media (max-width: 820px) {
-            header { display: flex; flex-direction: column; align-items: center; }
+            header { height: auto; display: flex; flex-direction: column; align-items: center; }
             .spotlight-card { position: relative; left: auto; top: auto; margin: 20px auto 10px auto; }
         }
     </style>
@@ -356,349 +357,4 @@
             <div class="spotlight-photo" id="spotlightIcon">🕊️</div>
             <div class="spotlight-info">
                 <div class="spotlight-title" id="spotlightTag">Spotlight</div>
-                <div class="spotlight-name" id="spotlightName">...</div>
-                <div class="spotlight-dates" id="spotlightDates">...</div>
-            </div>
-        </div>
-
-        <div class="header-center">
-            <h1>THE MEMORY WALL</h1>
-            <p>A global monument stretching infinitely into the horizon.</p>
-            
-            <div class="controls-container">
-                <div class="wall-toggle-switch">
-                    <button class="toggle-btn active" id="humanWallBtn">Human Monument</button>
-                    <button class="toggle-btn" id="petWallBtn">Animal Wall</button>
-                </div>
-                <button class="add-brick-btn" id="openFormBtn">+ Add Brick</button>
-            </div>
-
-            <div id="brickCounter" style="font-size: 0.9rem; color: #ffffff; margin-top: 10px; letter-spacing: 1px; font-weight: bold;">
-                Souls Honored: 0
-            </div>
-        </div>
-    </header>
-
-    <div class="wall-viewport" id="wallViewport">
-        <div class="wall-container" id="wallContainer">
-            <div class="wall-row" data-row-index="1"></div>
-            <div class="wall-row" data-row-index="2"></div>
-            <div class="wall-row" data-row-index="3"></div>
-            <div class="wall-row" data-row-index="4"></div>
-            <div class="wall-row" data-row-index="5"></div>
-            <div class="wall-row" data-row-index="6"></div>
-            <div class="wall-row" data-row-index="7"></div>
-            <div class="wall-row" data-row-index="8"></div>
-            <div class="wall-row" data-row-index="9"></div>
-            <div class="wall-row" data-row-index="10"></div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="viewModal">
-        <div class="modal-card">
-            <div class="modal-photo" id="modalIcon">🕊️</div>
-            <h2 class="modal-name" id="modalName">Name</h2>
-            <div class="modal-dates" id="modalDates">Years</div>
-            <button class="close-btn" id="closeViewBtn">Close</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="formModal">
-        <div class="modal-card">
-            <h3 id="formTitle" style="margin: 0; letter-spacing: 1px;">LAY A HUMAN BRICK</h3>
-            <form id="brickForm">
-                <label>Full Name</label>
-                <input type="text" id="inputName" placeholder="e.g. Samuel Evans" required>
-                
-                <label>Years</label>
-                <input type="text" id="inputYears" placeholder="e.g. 1945 - 2026" required>
-                
-                <button type="submit" class="submit-btn">Place onto Wall</button>
-            </form>
-            <button class="close-btn" id="closeFormBtn" style="margin-top: 15px; width: 100%;">Cancel</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="aboutModal">
-        <div class="modal-card" style="max-width: 400px;">
-            <h3 style="margin: 0 0 15px 0; letter-spacing: 1px;">ABOUT THE WALL</h3>
-            <div class="about-text">
-                <p><strong>The Memory Wall</strong> is a digital sanctuary and global monument built to outlast generations. It serves as an infinite canvas stretching across space and time, keeping memories alive forever.</p>
-                <p>Every digital brick laid here preserves the legacy of a soul honored or a pet remembered, standing permanently as part of an unbreakable collective horizon.</p>
-            </div>
-            <button class="close-btn" id="closeAboutBtn" style="width: 100%;">Close</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="contactModal">
-        <div class="modal-card" style="max-width: 360px;">
-            <h3 style="margin: 0; letter-spacing: 1px;">GET IN TOUCH</h3>
-            <form id="contactForm">
-                <label>Your Name</label>
-                <input type="text" id="contactName" placeholder="e.g. Jane Doe" required>
-                
-                <label>Email Address</label>
-                <input type="email" id="contactEmail" placeholder="e.g. jane@example.com" required>
-                
-                <label>Reason for Contact</label>
-                <select id="contactReason" required>
-                    <option value="" disabled selected>Select a category...</option>
-                    <option value="Suggestion">Suggestion / Idea</option>
-                    <option value="Question">General Question</option>
-                    <option value="Complaint">Complaint</option>
-                    <option value="Support">Technical Issue</option>
-                </select>
-                
-                <label>Message</label>
-                <textarea id="contactMessage" placeholder="Write your thoughts here..." required></textarea>
-                
-                <button type="submit" class="submit-btn">Send Message</button>
-            </form>
-            <button class="close-btn" id="closeContactBtn" style="margin-top: 15px; width: 100%;">Cancel</button>
-        </div>
-    </div>
-
-    <script>
-        const wallViewport = document.getElementById('wallViewport');
-        const wallContainer = document.getElementById('wallContainer');
-        const viewModal = document.getElementById('viewModal');
-        const formModal = document.getElementById('formModal');
-        const aboutModal = document.getElementById('aboutModal');
-        const contactModal = document.getElementById('contactModal');
-        
-        const modalName = document.getElementById('modalName');
-        const modalDates = document.getElementById('modalDates');
-        const modalIcon = document.getElementById('modalIcon');
-        const closeViewBtn = document.getElementById('closeViewBtn');
-        
-        const humanWallBtn = document.getElementById('humanWallBtn');
-        const petWallBtn = document.getElementById('petWallBtn');
-        const formTitle = document.getElementById('formTitle');
-
-        const spotlightCard = document.getElementById('spotlightCard');
-        const spotlightIcon = document.getElementById('spotlightIcon');
-        const spotlightName = document.getElementById('spotlightName');
-        const spotlightDates = document.getElementById('spotlightDates');
-        const spotlightTag = document.getElementById('spotlightTag');
-
-        let totalColumns = 0;
-        let currentSection = 'human'; 
-        let activeWallData = []; 
-        let spotlightInterval = null;
-
-        function expandGridColumns(count) {
-            const rows = wallContainer.querySelectorAll('.wall-row');
-            rows.forEach(row => {
-                for (let i = 0; i < count; i++) {
-                    const slot = document.createElement('div');
-                    slot.className = 'brick-slot empty';
-                    row.appendChild(slot);
-                }
-            });
-            totalColumns += count;
-        }
-
-        function buildBlankGridSlots() {
-            totalColumns = 0;
-            const rows = wallContainer.querySelectorAll('.wall-row');
-            rows.forEach(row => row.innerHTML = '');
-            expandGridColumns(60); 
-        }
-
-        function findNextEmptySlot() {
-            const rows = wallContainer.querySelectorAll('.wall-row');
-            for (let col = 0; col < totalColumns; col++) {
-                for (let r = 9; r >= 0; r--) { 
-                    const slot = rows[r].children[col];
-                    if (slot && slot.classList.contains('empty')) {
-                        return slot;
-                    }
-                }
-            }
-            expandGridColumns(20);
-            return findNextEmptySlot();
-        }
-
-        function populateSlot(slot, name, years, section) {
-            const nameParts = name.trim().split(' ');
-            let shortName = name;
-            if (nameParts.length > 1) {
-                shortName = nameParts[0][0] + '.' + nameParts[nameParts.length - 1].substring(0, 4);
-            } else {
-                shortName = name.substring(0, 6);
-            }
-
-            slot.classList.remove('empty');
-            slot.classList.add('filled');
-            slot.setAttribute('data-full-name', name);
-            slot.setAttribute('data-years', years);
-            slot.setAttribute('data-section', section);
-            
-            slot.innerHTML = ''; 
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'name';
-            nameDiv.textContent = shortName;
-            slot.appendChild(nameDiv);
-        }
-
-        function runSpotlightEngine() {
-            if (spotlightInterval) clearInterval(spotlightInterval);
-            
-            function updateSpotlight() {
-                if (activeWallData.length === 0) {
-                    spotlightCard.classList.remove('visible');
-                    return;
-                }
-                
-                const randomIndex = Math.floor(Math.random() * activeWallData.length);
-                const chosenOne = activeWallData[randomIndex];
-                
-                spotlightName.textContent = chosenOne.name;
-                spotlightDates.textContent = chosenOne.years;
-                spotlightIcon.textContent = (currentSection === 'animal') ? '🐾' : '🕊️';
-                spotlightTag.textContent = (currentSection === 'animal') ? 'Pet Spotlight' : 'Spotlight';
-                
-                spotlightCard.classList.add('visible');
-            }
-
-            updateSpotlight(); 
-            spotlightInterval = setInterval(updateSpotlight, 5000); 
-        }
-
-        function loadAndRenderWall() {
-            buildBlankGridSlots();
-            activeWallData = []; 
-            spotlightCard.classList.remove('visible');
-            
-            const targetFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
-            
-            fetch(targetFile)
-                .then(response => {
-                    if (!response.ok) throw new Error("File not found");
-                    return response.json();
-                })
-                .then(data => {
-                    if (!Array.isArray(data)) return;
-                    activeWallData = data; 
-                    
-                    data.forEach(item => {
-                        const targetSlot = findNextEmptySlot();
-                        if (targetSlot) {
-                            populateSlot(targetSlot, item.name, item.years, currentSection);
-                        }
-                    });
-
-                    const counterEl = document.getElementById('brickCounter');
-                    if (currentSection === 'human') {
-                        counterEl.textContent = `Souls Honored: ${data.length}`;
-                        counterEl.style.color = '#ffffff';
-                    } else {
-                        counterEl.textContent = `Pets Remembered: ${data.length}`;
-                        counterEl.style.color = '#00ff88';
-                    }
-                    
-                    runSpotlightEngine();
-                })
-                .catch(err => {
-                    console.error("Ledger reading handled cleanly:", err);
-                    const counterEl = document.getElementById('brickCounter');
-                    counterEl.textContent = currentSection === 'human' ? "Souls Honored: 0" : "Pets Remembered: 0";
-                    runSpotlightEngine();
-                });
-        }
-
-        loadAndRenderWall();
-
-        wallViewport.addEventListener('scroll', () => {
-            const maxScrollLeft = wallViewport.scrollWidth - wallViewport.clientWidth;
-            if (wallViewport.scrollLeft >= maxScrollLeft - 150) {
-                expandGridColumns(20);
-            }
-        });
-
-        humanWallBtn.addEventListener('click', () => {
-            if (currentSection === 'human') return;
-            currentSection = 'human';
-            document.body.classList.remove('pet-mode-active');
-            humanWallBtn.classList.add('active');
-            petWallBtn.classList.remove('active');
-            loadAndRenderWall();
-        });
-
-        petWallBtn.addEventListener('click', () => {
-            if (currentSection === 'animal') return;
-            currentSection = 'animal';
-            document.body.classList.add('pet-mode-active');
-            petWallBtn.classList.add('active');
-            humanWallBtn.classList.remove('active');
-            loadAndRenderWall();
-        });
-
-        document.getElementById('openFormBtn').addEventListener('click', () => {
-            formTitle.textContent = currentSection === 'human' ? 'LAY A HUMAN BRICK' : 'LAY AN ANIMAL BRICK';
-            formModal.classList.add('active');
-        });
-        document.getElementById('closeFormBtn').addEventListener('click', () => formModal.classList.remove('active'));
-        closeViewBtn.addEventListener('click', () => viewModal.classList.remove('active'));
-
-        document.getElementById('openAboutBtn').addEventListener('click', () => aboutModal.classList.add('active'));
-        document.getElementById('closeAboutBtn').addEventListener('click', () => aboutModal.classList.remove('active'));
-        
-        document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
-        document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
-
-        document.getElementById('brickForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('inputName').value;
-            const years = document.getElementById('inputYears').value;
-
-            const targetSlot = findNextEmptySlot();
-            if (targetSlot) {
-                populateSlot(targetSlot, name, years, currentSection);
-                
-                activeWallData.push({ name: name, years: years });
-                if (activeWallData.length === 1) runSpotlightEngine();
-
-                const counterEl = document.getElementById('brickCounter');
-                const currentCount = wallContainer.querySelectorAll('.brick-slot.filled').length;
-                if (currentSection === 'human') {
-                    counterEl.textContent = `Souls Honored: ${currentCount}`;
-                } else {
-                    counterEl.textContent = `Pets Remembered: ${currentCount}`;
-                }
-            } else {
-                alert("This section is full!");
-            }
-
-            document.getElementById('brickForm').reset();
-            formModal.classList.remove('active');
-        });
-
-        document.getElementById('contactForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const reason = document.getElementById('contactReason').value;
-            alert(`Thank you for your ${reason}! Your message has been sent successfully.`);
-            document.getElementById('contactForm').reset();
-            contactModal.classList.remove('active');
-        });
-
-        wallContainer.addEventListener('click', (e) => {
-            const brick = e.target.closest('.brick-slot.filled');
-            if (brick) {
-                modalName.textContent = brick.getAttribute('data-full-name');
-                modalDates.textContent = brick.getAttribute('data-years');
-                const section = brick.getAttribute('data-section');
-                modalIcon.textContent = (section === 'animal') ? '🐾' : '🕊️';
-                viewModal.classList.add('active');
-            }
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === viewModal) viewModal.classList.remove('active');
-            if (e.target === formModal) formModal.classList.remove('active');
-            if (e.target === aboutModal) aboutModal.classList.remove('active');
-            if (e.target === contactModal) contactModal.classList.remove('active');
-        });
-    </script>
-</body>
-</html>
+                <div class="spotlight-name
