@@ -18,7 +18,7 @@
             overflow-x: hidden;
         }
 
-        /* --- TOP LEFT NAVIGATION NAVIGATION --- */
+        /* --- TOP LEFT NAVIGATION --- */
         .top-nav {
             position: absolute;
             top: 20px;
@@ -48,7 +48,7 @@
             text-align: center;
             padding: 20px;
             max-width: 800px;
-            margin-top: 20px; /* Gives space for top nav on mobile */
+            margin-top: 20px;
         }
 
         h1 {
@@ -158,6 +158,7 @@
             border-radius: 1px;
             box-sizing: border-box;
             transition: all 0.15s ease;
+            flex-shrink: 0; /* Prevents browser from squeezing bricks thin */
         }
 
         .brick-slot.empty {
@@ -279,7 +280,7 @@
         </div>
     </header>
 
-    <div class="wall-viewport">
+    <div class="wall-viewport" id="wallViewport">
         <div class="wall-container" id="wallContainer">
             <div class="wall-row" data-row-index="1"></div>
             <div class="wall-row" data-row-index="2"></div>
@@ -359,6 +360,7 @@
     </div>
 
     <script>
+        const wallViewport = document.getElementById('wallViewport');
         const wallContainer = document.getElementById('wallContainer');
         const viewModal = document.getElementById('viewModal');
         const formModal = document.getElementById('formModal');
@@ -374,26 +376,32 @@
         const petWallBtn = document.getElementById('petWallBtn');
         const formTitle = document.getElementById('formTitle');
 
-        const initialColumns = 60;
+        let totalColumns = 0;
         let currentSection = 'human'; 
 
-        // 1. Instantly generate empty grid slots so the UI works right out of the gate
-        function buildBlankGridSlots() {
+        // Generates structural slots on demand horizontally
+        function expandGridColumns(count) {
             const rows = wallContainer.querySelectorAll('.wall-row');
             rows.forEach(row => {
-                row.innerHTML = '';
-                for (let i = 0; i < initialColumns; i++) {
+                for (let i = 0; i < count; i++) {
                     const slot = document.createElement('div');
                     slot.className = 'brick-slot empty';
                     row.appendChild(slot);
                 }
             });
+            totalColumns += count;
         }
 
-        // Find next empty space bottom-to-top
+        function buildBlankGridSlots() {
+            totalColumns = 0;
+            const rows = wallContainer.querySelectorAll('.wall-row');
+            rows.forEach(row => row.innerHTML = '');
+            expandGridColumns(60); // Start with baseline screen filling width
+        }
+
         function findNextEmptySlot() {
             const rows = wallContainer.querySelectorAll('.wall-row');
-            for (let col = 0; col < initialColumns; col++) {
+            for (let col = 0; col < totalColumns; col++) {
                 for (let r = 9; r >= 0; r--) { 
                     const slot = rows[r].children[col];
                     if (slot && slot.classList.contains('empty')) {
@@ -401,7 +409,9 @@
                     }
                 }
             }
-            return null;
+            // Dynamic Grid Extension Rule: If the slots are all used up, instantly add more spacing safely
+            expandGridColumns(20);
+            return findNextEmptySlot();
         }
 
         function populateSlot(slot, name, years, section) {
@@ -419,13 +429,13 @@
             slot.setAttribute('data-years', years);
             slot.setAttribute('data-section', section);
             
+            slot.innerHTML = ''; // Ensure slots wipe prior text if repurposed
             const nameDiv = document.createElement('div');
             nameDiv.className = 'name';
             nameDiv.textContent = shortName;
             slot.appendChild(nameDiv);
         }
 
-        // 2. Fetch data list files safely and update the totals counter
         function loadAndRenderWall() {
             buildBlankGridSlots();
             
@@ -463,7 +473,15 @@
 
         loadAndRenderWall();
 
-        // 3. Button Click Actions
+        // --- INFINITE SCROLL DETECTION LISTENER ---
+        // Checks viewport placement and stretches structure before running dry
+        wallViewport.addEventListener('scroll', () => {
+            const maxScrollLeft = wallViewport.scrollWidth - wallViewport.clientWidth;
+            if (wallViewport.scrollLeft >= maxScrollLeft - 150) {
+                expandGridColumns(20);
+            }
+        });
+
         humanWallBtn.addEventListener('click', () => {
             if (currentSection === 'human') return;
             currentSection = 'human';
@@ -482,7 +500,6 @@
             loadAndRenderWall();
         });
 
-        // 4. Modals Overlays Management
         document.getElementById('openFormBtn').addEventListener('click', () => {
             formTitle.textContent = currentSection === 'human' ? 'LAY A HUMAN BRICK' : 'LAY AN ANIMAL BRICK';
             formModal.classList.add('active');
@@ -490,14 +507,12 @@
         document.getElementById('closeFormBtn').addEventListener('click', () => formModal.classList.remove('active'));
         closeViewBtn.addEventListener('click', () => viewModal.classList.remove('active'));
 
-        // NEW: About & Contact Open/Close Listeners
         document.getElementById('openAboutBtn').addEventListener('click', () => aboutModal.classList.add('active'));
         document.getElementById('closeAboutBtn').addEventListener('click', () => aboutModal.classList.remove('active'));
         
         document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
         document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
 
-        // Client form submit engine
         document.getElementById('brickForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('inputName').value;
@@ -522,7 +537,6 @@
             formModal.classList.remove('active');
         });
 
-        // NEW: Contact Form Submission Handler (Alerts for user clarity)
         document.getElementById('contactForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const reason = document.getElementById('contactReason').value;
@@ -531,7 +545,6 @@
             contactModal.classList.remove('active');
         });
 
-        // Click detection logic
         wallContainer.addEventListener('click', (e) => {
             const brick = e.target.closest('.brick-slot.filled');
             if (brick) {
