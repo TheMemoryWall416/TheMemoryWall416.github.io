@@ -334,9 +334,9 @@
             overflow-y: auto;
         }
 
-        form { display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 15px; }
-        label { font-size: 0.8rem; color: #aaaaaa; font-weight: bold; }
-        input, select, textarea { background-color: #222227; border: 1px solid #444; color: white; padding: 10px; border-radius: 4px; font-size: 0.9rem; font-family: Arial, sans-serif; box-sizing: border-box; width: 100%; }
+        form { display: flex; flex-direction: column; gap: 14px; text-align: left; margin-top: 15px; }
+        label { font-size: 0.8rem; color: #aaaaaa; font-weight: bold; margin-bottom: -4px; }
+        input, select, textarea { background-color: #222227; border: 1px solid #444; color: white; padding: 10px; border-radius: 4px; font-size: 0.9rem; font-family: Arial, sans-serif; box-sizing: border-box; width: 100%; display: block; }
         textarea { resize: vertical; min-height: 70px; }
         
         .form-row-split {
@@ -345,11 +345,18 @@
         }
         .form-row-split div { flex: 1; }
 
+        .form-group-block {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
         .form-footnote {
             font-size: 0.72rem;
-            color: #666666;
-            margin-top: -8px;
-            line-height: 1.3;
+            color: #77777f;
+            line-height: 1.4;
+            margin-top: 2px;
+            display: block;
         }
 
         .submit-btn { background-color: #ffffff; color: black; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; font-size: 0.9rem; }
@@ -531,22 +538,25 @@
         <div class="modal-card" style="max-width: 480px;">
             <h3 id="formTitle" style="margin: 0; letter-spacing: 1px; text-transform: uppercase;">LAY A BRICK</h3>
             <form id="brickForm">
-                <label id="lblFullName">Full Name</label>
-                <input type="text" id="inputName" placeholder="e.g. Samuel Evans" required>
+                
+                <div class="form-group-block">
+                    <label id="lblFullName">Full Name</label>
+                    <input type="text" id="inputName" placeholder="e.g. Samuel Evans" required>
+                </div>
                 
                 <div class="form-row-split">
-                    <div>
-                        <label>Date of Birth</label>
-                        <input type="date" id="inputDOB" required>
+                    <div class="form-group-block">
+                        <label id="lblDOB">Date of Birth</label>
+                        <div id="dobContainer"><input type="date" id="inputDOB" required></div>
                     </div>
-                    <div>
-                        <label>Date of Death</label>
-                        <input type="date" id="inputDOD" required>
+                    <div class="form-group-block">
+                        <label id="lblDOD">Date of Death</label>
+                        <div id="dodContainer"><input type="date" id="inputDOD" required></div>
                     </div>
                 </div>
 
                 <div class="form-row-split">
-                    <div>
+                    <div class="form-group-block">
                         <label>Country of Origin</label>
                         <select id="inputCountry" required>
                             <option value="" disabled selected>Select country...</option>
@@ -563,9 +573,9 @@
                             <option value="United States">United States</option>
                         </select>
                     </div>
-                    <div>
-                        <label id="lblRelationship">Relationship</label>
-                        <select id="inputRelationship" required>
+                    <div class="form-group-block">
+                        <label id="lblRelationship">Relationship — <em>Optional</em></label>
+                        <select id="inputRelationship">
                             <option value="" disabled selected>Select connection...</option>
                             <option value="Family Member">Family Member</option>
                             <option value="Friend">Friend</option>
@@ -575,23 +585,31 @@
                     </div>
                 </div>
 
-                <label>Upload Remembrance Photo</label>
-                <input type="file" id="inputPhoto" accept="image/*">
+                <div class="form-group-block">
+                    <label>Upload Remembrance Photo — <em>Optional</em></label>
+                    <input type="file" id="inputPhoto" accept="image/*">
+                </div>
 
-                <label id="lblBio">Biography / Life Story</label>
-                <textarea id="inputBio" placeholder="Share a few paragraphs detailing their journey, legacy, and who they were..." required></textarea>
+                <div class="form-group-block">
+                    <label id="lblBio">Biography / Life Story — <em>Optional</em></label>
+                    <textarea id="inputBio" placeholder="Share a few paragraphs detailing their journey, legacy, and who they were..."></textarea>
+                </div>
 
-                <label>Words of Encouragement</label>
-                <textarea id="inputEncouragement" placeholder="Leave a comforting note or thought for other grieving families visiting the monument..." required></textarea>
+                <div class="form-group-block">
+                    <label>Words of Encouragement — <em>Optional</em></label>
+                    <textarea id="inputEncouragement" placeholder="Leave a comforting note or thought for other grieving families visiting the monument..."></textarea>
+                </div>
 
-                <label>Your Email Address — <em>Optional</em></label>
-                <input type="email" id="inputEmail" placeholder="e.g. you@example.com">
-                <div class="form-footnote">Your email address is kept completely private. It is strictly used securely if you ever need to claim, edit, or update this brick entry down the road.</div>
+                <div class="form-group-block">
+                    <label>Your Email Address — <em>Optional</em></label>
+                    <input type="email" id="inputEmail" placeholder="e.g. you@example.com">
+                    <span class="form-footnote">Your email address is kept completely private. It is strictly used securely if you ever need to claim, edit, or update this brick entry down the road.</span>
+                </div>
 
-                <div id="verificationWrapper">
+                <div id="verificationWrapper" class="form-group-block">
                     <label>Official Identification Number / Verification Document — <em>Optional</em></label>
                     <input type="text" id="inputVerification" placeholder="Identity reference or certificate number">
-                    <div class="form-footnote">To ensure this global monument remains a respectful, authentic sanctuary, you may provide verification data. This information is confidential and used entirely to filter out fraudulent entries.</div>
+                    <span class="form-footnote">To ensure this global monument remains a respectful, authentic sanctuary, you may provide verification data. This information is confidential and used entirely to filter out fraudulent entries.</span>
                 </div>
 
                 <button type="submit" class="submit-btn">Place onto Wall</button>
@@ -615,23 +633,31 @@
         <div class="modal-card" style="max-width: 360px;">
             <h3 style="margin: 0; letter-spacing: 1px;">GET IN TOUCH</h3>
             <form id="contactForm">
-                <label>Your Name</label>
-                <input type="text" id="contactName" placeholder="e.g. Jane Doe" required>
+                <div class="form-group-block">
+                    <label>Your Name</label>
+                    <input type="text" id="contactName" placeholder="e.g. Jane Doe" required>
+                </div>
                 
-                <label>Email Address</label>
-                <input type="email" id="contactEmail" placeholder="e.g. jane@example.com" required>
+                <div class="form-group-block">
+                    <label>Email Address</label>
+                    <input type="email" id="contactEmail" placeholder="e.g. jane@example.com" required>
+                </div>
                 
-                <label>Reason for Contact</label>
-                <select id="contactReason" required>
-                    <option value="" disabled selected>Select a category...</option>
-                    <option value="Suggestion">Suggestion / Idea</option>
-                    <option value="Question">General Question</option>
-                    <option value="Complaint">Complaint</option>
-                    <option value="Support">Technical Issue</option>
-                </select>
+                <div class="form-group-block">
+                    <label>Reason for Contact</label>
+                    <select id="contactReason" required>
+                        <option value="" disabled selected>Select a category...</option>
+                        <option value="Suggestion">Suggestion / Idea</option>
+                        <option value="Question">General Question</option>
+                        <option value="Complaint">Complaint</option>
+                        <option value="Support">Technical Issue</option>
+                    </select>
+                </div>
                 
-                <label>Message</label>
-                <textarea id="contactMessage" placeholder="Write your thoughts here..." required></textarea>
+                <div class="form-group-block">
+                    <label>Message</label>
+                    <textarea id="contactMessage" placeholder="Write your thoughts here..." required></textarea>
+                </div>
                 
                 <button type="submit" class="submit-btn">Send Message</button>
             </form>
@@ -663,7 +689,7 @@
         let currentSection = 'human'; 
         let activeWallData = []; 
         let spotlightInterval = null;
-        let selectedBrickId = null; // References current active popup view record
+        let selectedBrickId = null;
 
         function expandGridColumns(count) {
             const rows = wallContainer.querySelectorAll('.wall-row');
@@ -720,13 +746,15 @@
 
         function formatDisplayDates(dobStr, dodStr) {
             if(!dobStr || !dodStr) return '...';
-            // Simple cleaner date display helper
-            const d1 = new Date(dobStr).getFullYear();
-            const d2 = new Date(dodStr).getFullYear();
-            return isNaN(d1) ? `${dobStr} - ${dodStr}` : `${d1} — ${d2}`;
+            if(dobStr.includes('-') && dobStr.length > 4) {
+                const d1 = new Date(dobStr).getFullYear();
+                const d2 = new Date(dodStr).getFullYear();
+                return isNaN(d1) ? `${dobStr} — ${dodStr}` : `${d1} — ${d2}`;
+            }
+            return `${dobStr} — ${dodStr}`;
         }
 
-        /* 6-CARD UNIQUE RANDOM SHUFFLE ENGINE (RUNS AT 3 SECONDS) */
+        /* 6-CARD UNIQUE RANDOM SHUFFLE ENGINE */
         function runSpotlightEngine() {
             if (spotlightInterval) clearInterval(spotlightInterval);
             
@@ -818,7 +846,7 @@
                     runSpotlightEngine();
                 })
                 .catch(err => {
-                    console.warn("Using local system runtime storage context.", err);
+                    console.warn("Local data pool active.", err);
                     runSpotlightEngine();
                 });
         }
@@ -832,7 +860,7 @@
             }
         });
 
-        /* WALL SWITCH TRANSITIONS & DYNAMIC FORM LABELS */
+        /* DYNAMIC ADAPTATION TRANSITIONS (HUMAN VS. PET FIELDS) */
         humanWallBtn.addEventListener('click', () => {
             if (currentSection === 'human') return;
             currentSection = 'human';
@@ -840,13 +868,18 @@
             humanWallBtn.classList.add('active');
             petWallBtn.classList.remove('active');
             
-            // Adjust input form context cleanly back to humans
             document.getElementById('lblFullName').textContent = "Full Name";
             document.getElementById('inputName').placeholder = "e.g. Samuel Evans";
-            document.getElementById('lblRelationship').textContent = "Relationship";
-            document.getElementById('lblBio').textContent = "Biography / Life Story";
+            document.getElementById('lblRelationship').textContent = "Relationship — Optional";
+            document.getElementById('lblBio').textContent = "Biography / Life Story — Optional";
             document.getElementById('inputBio').placeholder = "Share a few paragraphs detailing their journey, legacy, and who they were...";
-            document.getElementById('verificationWrapper').style.display = "block";
+            
+            document.getElementById('lblDOB').textContent = "Date of Birth";
+            document.getElementById('lblDOD').textContent = "Date of Death";
+            document.getElementById('dobContainer').innerHTML = '<input type="date" id="inputDOB" required>';
+            document.getElementById('dodContainer').innerHTML = '<input type="date" id="inputDOD" required>';
+            
+            document.getElementById('verificationWrapper').style.display = "flex";
 
             loadAndRenderWall();
         });
@@ -858,12 +891,17 @@
             petWallBtn.classList.add('active');
             humanWallBtn.classList.remove('active');
             
-            // Adapt input elements fluidly for animal entries
             document.getElementById('lblFullName').textContent = "Pet's Name";
             document.getElementById('inputName').placeholder = "e.g. Max or Bella";
-            document.getElementById('lblRelationship').textContent = "Your Role";
-            document.getElementById('lblBio').textContent = "Pet Story & Memories";
+            document.getElementById('lblRelationship').textContent = "Your Role — Optional";
+            document.getElementById('lblBio').textContent = "Pet Story & Memories — Optional";
             document.getElementById('inputBio').placeholder = "Share details about their favorite games, quirks, and the happiness they brought...";
+            
+            document.getElementById('lblDOB').textContent = "Year of Birth";
+            document.getElementById('lblDOD').textContent = "Year of Death";
+            document.getElementById('dobContainer').innerHTML = '<input type="number" id="inputDOB" min="1900" max="2100" placeholder="e.g. 2012" required>';
+            document.getElementById('dodContainer').innerHTML = '<input type="number" id="inputDOD" min="1900" max="2100" placeholder="e.g. 2026" required>';
+            
             document.getElementById('verificationWrapper').style.display = "none";
 
             loadAndRenderWall();
@@ -882,7 +920,7 @@
         document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
         document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
 
-        /* SUBMIT NEW TRIBUTE FORM HANDLER */
+        /* FORM TRIBUTE SUBMIT ACTION */
         document.getElementById('brickForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -894,10 +932,12 @@
             const bio = document.getElementById('inputBio').value;
             const encouragement = document.getElementById('inputEncouragement').value;
             const email = document.getElementById('inputEmail').value;
-            const verification = document.getElementById('inputVerification').value;
+            
+            const verificationEl = document.getElementById('inputVerification');
+            const verification = verificationEl ? verificationEl.value : "";
+            
             const photoFile = document.getElementById('inputPhoto').files[0];
 
-            // Build dynamic local virtual image URL if uploaded
             let photoUrl = "";
             if (photoFile) {
                 photoUrl = URL.createObjectURL(photoFile);
@@ -910,7 +950,7 @@
                 date_of_birth: dob,
                 date_of_death: dod,
                 country: country,
-                relationship: relationship,
+                relationship: relationship || "Admirer",
                 photo_url: photoUrl,
                 biography: bio,
                 encouragement: encouragement,
@@ -937,7 +977,7 @@
             formModal.classList.remove('active');
         });
 
-        /* INTERACTIVE INTERFACE: OPEN POPUP BRICK RECORD DETAILS */
+        /* INTERACTIVE MODAL DETAILS VIEWER */
         wallContainer.addEventListener('click', (e) => {
             const brick = e.target.closest('.brick-slot.filled');
             if (brick) {
@@ -948,7 +988,7 @@
                 selectedBrickId = brickId; 
                 modalName.textContent = record.name;
                 modalOrigin.innerHTML = `${record.country} &bull; ${record.relationship}`;
-                modalDates.textContent = `${record.date_of_birth} — ${record.date_of_death}`;
+                modalDates.textContent = formatDisplayDates(record.date_of_birth, record.date_of_death);
                 modalBio.textContent = record.biography || "No biography provided.";
                 modalEncouragement.textContent = record.encouragement || "No words left.";
                 
@@ -960,7 +1000,6 @@
                     modalIcon.textContent = (currentSection === 'animal') ? '🐾' : '🕊️';
                 }
 
-                // Render current active counters
                 document.getElementById('countRoses').textContent = record.tributes.roses || 0;
                 document.getElementById('countSunflowers').textContent = record.tributes.sunflowers || 0;
                 document.getElementById('countHyacinths').textContent = record.tributes.hyacinths || 0;
@@ -970,7 +1009,7 @@
             }
         });
 
-        /* COUNTER INCREMENT TRIGGER FUNCTION FOR FLOWER GIFTS */
+        /* TRIBUTE INCREMENT TRIGGER */
         function giftTribute(type) {
             if (!selectedBrickId) return;
             const record = activeWallData.find(item => item.id === selectedBrickId);
@@ -978,7 +1017,6 @@
                 if (!record.tributes) record.tributes = { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
                 record.tributes[type] = (record.tributes[type] || 0) + 1;
                 
-                // Instantly update layout counter labels
                 const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
                 document.getElementById(labelId).textContent = record.tributes[type];
             }
@@ -987,7 +1025,7 @@
         document.getElementById('contactForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const reason = document.getElementById('contactReason').value;
-            alert(`Thank you for your ${reason}! Your message has been sent successfully.`);
+            alert(`Thank you for your feedback! Your message has been sent successfully.`);
             document.getElementById('contactForm').reset();
             contactModal.classList.remove('active');
         });
