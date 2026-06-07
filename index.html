@@ -18,10 +18,37 @@
             overflow-x: hidden;
         }
 
+        /* --- TOP LEFT NAVIGATION NAVIGATION --- */
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .nav-link {
+            background: none;
+            border: none;
+            color: #666666;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: color 0.2s ease;
+            padding: 0;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+        }
+
         header {
             text-align: center;
             padding: 20px;
             max-width: 800px;
+            margin-top: 20px; /* Gives space for top nav on mobile */
         }
 
         h1 {
@@ -213,7 +240,9 @@
 
         form { display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 15px; }
         label { font-size: 0.8rem; color: #aaaaaa; }
-        input { background-color: #222227; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; font-size: 0.9rem; }
+        input, select, textarea { background-color: #222227; border: 1px solid #444; color: white; padding: 8px; border-radius: 4px; font-size: 0.9rem; font-family: Arial, sans-serif; }
+        textarea { resize: vertical; min-height: 80px; }
+        select { cursor: pointer; }
         .submit-btn { background-color: #ffffff; color: black; border: none; padding: 10px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; }
         body.pet-mode-active .submit-btn { background-color: #00ff88; }
         .modal-photo { width: 80px; height: 80px; background-color: #222227; border: 1px solid #444; border-radius: 50%; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; font-size: 2rem; }
@@ -222,9 +251,16 @@
         body.pet-mode-active .modal-dates { color: #00ff88; }
         .close-btn { background-color: #222227; color: #aaa; border: 1px solid #444; padding: 6px 15px; border-radius: 4px; cursor: pointer; }
         .close-btn:hover { background-color: #ff3344; color: white; }
+        
+        .about-text { text-align: left; font-size: 0.9rem; color: #cccccc; line-height: 1.5; margin-bottom: 20px; }
     </style>
 </head>
 <body>
+
+    <nav class="top-nav">
+        <button class="nav-link" id="openAboutBtn">ABOUT</button>
+        <button class="nav-link" id="openContactBtn">CONTACT</button>
+    </nav>
 
     <header>
         <h1>THE MEMORY WALL</h1>
@@ -283,10 +319,52 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="aboutModal">
+        <div class="modal-card" style="max-width: 400px;">
+            <h3 style="margin: 0 0 15px 0; letter-spacing: 1px;">ABOUT THE WALL</h3>
+            <div class="about-text">
+                <p><strong>The Memory Wall</strong> is a digital sanctuary and global monument built to outlast generations. It serves as an infinite canvas stretching across space and time, keeping memories alive forever.</p>
+                <p>Every digital brick laid here preserves the legacy of a soul honored or a pet remembered, standing permanently as part of an unbreakable collective horizon.</p>
+            </div>
+            <button class="close-btn" id="closeAboutBtn" style="width: 100%;">Close</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-card" style="max-width: 360px;">
+            <h3 style="margin: 0; letter-spacing: 1px;">GET IN TOUCH</h3>
+            <form id="contactForm">
+                <label>Your Name</label>
+                <input type="text" id="contactName" placeholder="e.g. Jane Doe" required>
+                
+                <label>Email Address</label>
+                <input type="email" id="contactEmail" placeholder="e.g. jane@example.com" required>
+                
+                <label>Reason for Contact</label>
+                <select id="contactReason" required>
+                    <option value="" disabled selected>Select a category...</option>
+                    <option value="Suggestion">Suggestion / Idea</option>
+                    <option value="Question">General Question</option>
+                    <option value="Complaint">Complaint</option>
+                    <option value="Support">Technical Issue</option>
+                </select>
+                
+                <label>Message</label>
+                <textarea id="contactMessage" placeholder="Write your thoughts here..." required></textarea>
+                
+                <button type="submit" class="submit-btn">Send Message</button>
+            </form>
+            <button class="close-btn" id="closeContactBtn" style="margin-top: 15px; width: 100%;">Cancel</button>
+        </div>
+    </div>
+
     <script>
         const wallContainer = document.getElementById('wallContainer');
         const viewModal = document.getElementById('viewModal');
         const formModal = document.getElementById('formModal');
+        const aboutModal = document.getElementById('aboutModal');
+        const contactModal = document.getElementById('contactModal');
+        
         const modalName = document.getElementById('modalName');
         const modalDates = document.getElementById('modalDates');
         const modalIcon = document.getElementById('modalIcon');
@@ -316,7 +394,7 @@
         function findNextEmptySlot() {
             const rows = wallContainer.querySelectorAll('.wall-row');
             for (let col = 0; col < initialColumns; col++) {
-                for (let r = 9; r >= 0; r--) { // 0-indexed row tracking safely
+                for (let r = 9; r >= 0; r--) { 
                     const slot = rows[r].children[col];
                     if (slot && slot.classList.contains('empty')) {
                         return slot;
@@ -367,7 +445,6 @@
                         }
                     });
 
-                    // Update the counter text and tracking color dynamically based on selection
                     const counterEl = document.getElementById('brickCounter');
                     if (currentSection === 'human') {
                         counterEl.textContent = `Souls Honored: ${data.length}`;
@@ -384,10 +461,9 @@
                 });
         }
 
-        // Initial launch kickstart
         loadAndRenderWall();
 
-        // 3. Button Click Actions work instantly now regardless of file loading status
+        // 3. Button Click Actions
         humanWallBtn.addEventListener('click', () => {
             if (currentSection === 'human') return;
             currentSection = 'human';
@@ -414,6 +490,13 @@
         document.getElementById('closeFormBtn').addEventListener('click', () => formModal.classList.remove('active'));
         closeViewBtn.addEventListener('click', () => viewModal.classList.remove('active'));
 
+        // NEW: About & Contact Open/Close Listeners
+        document.getElementById('openAboutBtn').addEventListener('click', () => aboutModal.classList.add('active'));
+        document.getElementById('closeAboutBtn').addEventListener('click', () => aboutModal.classList.remove('active'));
+        
+        document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
+        document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
+
         // Client form submit engine
         document.getElementById('brickForm').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -424,7 +507,6 @@
             if (targetSlot) {
                 populateSlot(targetSlot, name, years, currentSection);
                 
-                // Instantly sync the visual counter on a manual preview submission
                 const counterEl = document.getElementById('brickCounter');
                 const currentCount = wallContainer.querySelectorAll('.brick-slot.filled').length;
                 if (currentSection === 'human') {
@@ -438,6 +520,15 @@
 
             document.getElementById('brickForm').reset();
             formModal.classList.remove('active');
+        });
+
+        // NEW: Contact Form Submission Handler (Alerts for user clarity)
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const reason = document.getElementById('contactReason').value;
+            alert(`Thank you for your ${reason}! Your message has been sent successfully.`);
+            document.getElementById('contactForm').reset();
+            contactModal.classList.remove('active');
         });
 
         // Click detection logic
@@ -455,6 +546,8 @@
         window.addEventListener('click', (e) => {
             if (e.target === viewModal) viewModal.classList.remove('active');
             if (e.target === formModal) formModal.classList.remove('active');
+            if (e.target === aboutModal) aboutModal.classList.remove('active');
+            if (e.target === contactModal) contactModal.classList.remove('active');
         });
     </script>
 </body>
