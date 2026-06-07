@@ -814,41 +814,35 @@
             spotlightInterval = setInterval(updateSpotlights, 3000); 
         }
 
+        /* OPTION A: LOCALSTORAGE LOAD AND RENDERING AGENT */
         function loadAndRenderWall() {
             buildBlankGridSlots();
             activeWallData = []; 
             for (let i = 0; i < 6; i++) document.getElementById(`spotlight${i}`).classList.remove('visible');
             
-            const targetFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
+            const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
+            const savedData = localStorage.getItem(storageKey);
             
-            fetch(targetFile)
-                .then(response => {
-                    if (!response.ok) throw new Error("File not found");
-                    return response.json();
-                })
-                .then(data => {
-                    if (!Array.isArray(data)) return;
-                    activeWallData = data; 
-                    
-                    data.forEach(item => {
-                        const targetSlot = findNextEmptySlot();
-                        if (targetSlot) populateSlot(targetSlot, item);
-                    });
+            if (savedData) {
+                activeWallData = JSON.parse(savedData);
+            } else {
+                activeWallData = [];
+            }
+            
+            activeWallData.forEach(item => {
+                const targetSlot = findNextEmptySlot();
+                if (targetSlot) populateSlot(targetSlot, item);
+            });
 
-                    const counterEl = document.getElementById('brickCounter');
-                    if (currentSection === 'human') {
-                        counterEl.textContent = `Souls Honored: ${data.length}`;
-                        counterEl.style.color = '#ffffff';
-                    } else {
-                        counterEl.textContent = `Pets Remembered: ${data.length}`;
-                        counterEl.style.color = '#00ff88';
-                    }
-                    runSpotlightEngine();
-                })
-                .catch(err => {
-                    console.warn("Local data pool active.", err);
-                    runSpotlightEngine();
-                });
+            const counterEl = document.getElementById('brickCounter');
+            if (currentSection === 'human') {
+                counterEl.textContent = `Souls Honored: ${activeWallData.length}`;
+                counterEl.style.color = '#ffffff';
+            } else {
+                counterEl.textContent = `Pets Remembered: ${activeWallData.length}`;
+                counterEl.style.color = '#00ff88';
+            }
+            runSpotlightEngine();
         }
 
         loadAndRenderWall();
@@ -920,7 +914,7 @@
         document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
         document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
 
-        /* FORM TRIBUTE SUBMIT ACTION */
+        /* FORM TRIBUTE SUBMIT ACTION WITH LOCALSTORAGE DATA PERSISTENCE */
         document.getElementById('brickForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -963,6 +957,11 @@
             if (targetSlot) {
                 populateSlot(targetSlot, newBrickRecord);
                 activeWallData.push(newBrickRecord);
+                
+                // Write out active dataset directly back into the browser storage registry
+                const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
+                localStorage.setItem(storageKey, JSON.stringify(activeWallData));
+
                 runSpotlightEngine();
 
                 const counterEl = document.getElementById('brickCounter');
@@ -1009,7 +1008,7 @@
             }
         });
 
-        /* TRIBUTE INCREMENT TRIGGER */
+        /* TRIBUTE INCREMENT TRIGGER WITH STORAGE UPDATING */
         function giftTribute(type) {
             if (!selectedBrickId) return;
             const record = activeWallData.find(item => item.id === selectedBrickId);
@@ -1019,6 +1018,10 @@
                 
                 const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
                 document.getElementById(labelId).textContent = record.tributes[type];
+                
+                // Commit changes instantly down into browser memory
+                const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
+                localStorage.setItem(storageKey, JSON.stringify(activeWallData));
             }
         }
 
