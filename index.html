@@ -44,11 +44,87 @@
             color: #ffffff;
         }
 
+        /* --- HEADER LAYOUT SYSTEM --- */
         header {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 1100px;
             padding: 20px;
-            max-width: 800px;
+            box-sizing: border-box;
             margin-top: 20px;
+        }
+
+        .header-center {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        /* NEW: Spotlight Showcase Card placed to the left */
+        .spotlight-card {
+            width: 220px;
+            background-color: #16161a;
+            border: 1px solid #222227;
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            opacity: 0; /* Starts hidden until data loads */
+        }
+
+        .spotlight-card.visible {
+            opacity: 1;
+        }
+
+        .spotlight-photo {
+            width: 45px;
+            height: 45px;
+            background-color: #222227;
+            border: 1px solid #33333b;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .spotlight-info {
+            overflow: hidden;
+        }
+
+        .spotlight-title {
+            font-size: 0.65rem;
+            color: #666666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+            font-weight: bold;
+        }
+
+        .spotlight-name {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 1px;
+        }
+
+        .spotlight-dates {
+            font-size: 0.75rem;
+            color: #888888;
+        }
+
+        body.pet-mode-active .spotlight-dates {
+            color: #00ff88;
         }
 
         h1 {
@@ -125,7 +201,7 @@
             width: 100%;
             max-width: 100vw;
             overflow-x: auto;
-            padding: 10px 0 40px 0; /* FIXED: Reduced top padding from 40px to 10px */
+            padding: 10px 0 40px 0;
             box-sizing: border-box;
             scroll-behavior: smooth;
         }
@@ -254,6 +330,12 @@
         .close-btn:hover { background-color: #ff3344; color: white; }
         
         .about-text { text-align: left; font-size: 0.9rem; color: #cccccc; line-height: 1.5; margin-bottom: 20px; }
+
+        /* Mobile adaptation to keep layouts pristine */
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 20px; }
+            .spotlight-card { margin: 0 auto; }
+        }
     </style>
 </head>
 <body>
@@ -264,19 +346,30 @@
     </nav>
 
     <header>
-        <h1>THE MEMORY WALL</h1>
-        <p>A global monument stretching infinitely into the horizon.</p>
-        
-        <div class="controls-container">
-            <div class="wall-toggle-switch">
-                <button class="toggle-btn active" id="humanWallBtn">Human Monument</button>
-                <button class="toggle-btn" id="petWallBtn">Animal Wall</button>
+        <div class="spotlight-card" id="spotlightCard">
+            <div class="spotlight-photo" id="spotlightIcon">🕊️</div>
+            <div class="spotlight-info">
+                <div class="spotlight-title" id="spotlightTag">In Spotlight</div>
+                <div class="spotlight-name" id="spotlightName">...</div>
+                <div class="spotlight-dates" id="spotlightDates">...</div>
             </div>
-            <button class="add-brick-btn" id="openFormBtn">+ Add Brick</button>
         </div>
 
-        <div id="brickCounter" style="font-size: 0.9rem; color: #ffffff; margin-top: 10px; letter-spacing: 1px; font-weight: bold;">
-            Souls Honored: 0
+        <div class="header-center">
+            <h1>THE MEMORY WALL</h1>
+            <p>A global monument stretching infinitely into the horizon.</p>
+            
+            <div class="controls-container">
+                <div class="wall-toggle-switch">
+                    <button class="toggle-btn active" id="humanWallBtn">Human Monument</button>
+                    <button class="toggle-btn" id="petWallBtn">Animal Wall</button>
+                </div>
+                <button class="add-brick-btn" id="openFormBtn">+ Add Brick</button>
+            </div>
+
+            <div id="brickCounter" style="font-size: 0.9rem; color: #ffffff; margin-top: 10px; letter-spacing: 1px; font-weight: bold;">
+                Souls Honored: 0
+            </div>
         </div>
     </header>
 
@@ -376,8 +469,17 @@
         const petWallBtn = document.getElementById('petWallBtn');
         const formTitle = document.getElementById('formTitle');
 
+        // Spotlight Elements
+        const spotlightCard = document.getElementById('spotlightCard');
+        const spotlightIcon = document.getElementById('spotlightIcon');
+        const spotlightName = document.getElementById('spotlightName');
+        const spotlightDates = document.getElementById('spotlightDates');
+        const spotlightTag = document.getElementById('spotlightTag');
+
         let totalColumns = 0;
         let currentSection = 'human'; 
+        let activeWallData = []; // Keeps track of loaded JSON data for random cycling
+        let spotlightInterval = null;
 
         function expandGridColumns(count) {
             const rows = wallContainer.querySelectorAll('.wall-row');
@@ -434,8 +536,35 @@
             slot.appendChild(nameDiv);
         }
 
+        // NEW: Handles picking a random item from the active wall section to showcase
+        function runSpotlightEngine() {
+            if (spotlightInterval) clearInterval(spotlightInterval);
+            
+            function updateSpotlight() {
+                if (activeWallData.length === 0) {
+                    spotlightCard.classList.remove('visible');
+                    return;
+                }
+                
+                const randomIndex = Math.floor(Math.random() * activeWallData.length);
+                const chosenOne = activeWallData[randomIndex];
+                
+                spotlightName.textContent = chosenOne.name;
+                spotlightDates.textContent = chosenOne.years;
+                spotlightIcon.textContent = (currentSection === 'animal') ? '🐾' : '🕊️';
+                spotlightTag.textContent = (currentSection === 'animal') ? 'Pet Spotlight' : 'In Spotlight';
+                
+                spotlightCard.classList.add('visible');
+            }
+
+            updateSpotlight(); // Run immediately on load
+            spotlightInterval = setInterval(updateSpotlight, 5000); // Swap entries every 5 seconds
+        }
+
         function loadAndRenderWall() {
             buildBlankGridSlots();
+            activeWallData = []; // Clear array
+            spotlightCard.classList.remove('visible');
             
             const targetFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
             
@@ -446,6 +575,8 @@
                 })
                 .then(data => {
                     if (!Array.isArray(data)) return;
+                    activeWallData = data; // Cache data for spotlight
+                    
                     data.forEach(item => {
                         const targetSlot = findNextEmptySlot();
                         if (targetSlot) {
@@ -461,11 +592,14 @@
                         counterEl.textContent = `Pets Remembered: ${data.length}`;
                         counterEl.style.color = '#00ff88';
                     }
+                    
+                    runSpotlightEngine();
                 })
                 .catch(err => {
                     console.error("Ledger reading handled cleanly:", err);
                     const counterEl = document.getElementById('brickCounter');
                     counterEl.textContent = currentSection === 'human' ? "Souls Honored: 0" : "Pets Remembered: 0";
+                    runSpotlightEngine();
                 });
         }
 
@@ -518,6 +652,10 @@
             if (targetSlot) {
                 populateSlot(targetSlot, name, years, currentSection);
                 
+                // Add to active data list instantly so the new brick can enter the spotlight rotation
+                activeWallData.push({ name: name, years: years });
+                if (activeWallData.length === 1) runSpotlightEngine();
+
                 const counterEl = document.getElementById('brickCounter');
                 const currentCount = wallContainer.querySelectorAll('.brick-slot.filled').length;
                 if (currentSection === 'human') {
@@ -545,6 +683,7 @@
             const brick = e.target.closest('.brick-slot.filled');
             if (brick) {
                 modalName.textContent = brick.getAttribute('data-full-name');
+                modalDates.getAttribute('data-years');
                 modalDates.textContent = brick.getAttribute('data-years');
                 const section = brick.getAttribute('data-section');
                 modalIcon.textContent = (section === 'animal') ? '🐾' : '🕊️';
