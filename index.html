@@ -3,71 +3,41 @@
 <head>
     <title>Memory Wall</title>
     <style>
-        body { background: #1a1a1a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
-        
-        /* The Wall Grid */
-        #wall { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
-            gap: 15px; 
-            width: 90%; 
-            max-width: 800px;
-            margin-top: 20px;
-        }
-
-        /* The Brick Style */
-        .brick { 
-            background: #333; 
-            padding: 20px; 
-            border-radius: 4px; 
-            border-left: 5px solid #ffcc00; 
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
-            word-wrap: break-word;
-        }
-
-        /* The Input Area */
-        .controls { margin-top: 30px; padding: 20px; background: #222; border-radius: 8px; }
+        body { font-family: sans-serif; background: #1a1a1a; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; width: 100%; max-width: 800px; margin-top: 20px; }
+        .brick { background: #333; padding: 20px; border-radius: 8px; border-left: 5px solid #ffcc00; }
         input { padding: 10px; width: 250px; }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+    <h1>Memory Wall</h1>
+    <input id="text" placeholder="Write a memory...">
+    <button onclick="addBrick()">Add Brick</button>
+    <div class="wall" id="wall"></div>
 
-    <div class="controls">
-        <h1>Memory Wall</h1>
-        <input id="brickInput" placeholder="Enter a memory...">
-        <button onclick="saveBrick()">Add Brick</button>
-    </div>
+    <script>
+        // REPLACE THESE TWO LINES WITH YOUR KEYS FROM SUPABASE SETTINGS > API
+        const supabaseUrl = 'YOUR_URL';
+        const supabaseKey = 'YOUR_ANON_KEY';
+        
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-    <div id="wall"></div>
+        async function addBrick() {
+            const val = document.getElementById('text').value;
+            if(!val) return;
+            await supabase.from('bricks').insert([{ content: val }]);
+            document.getElementById('text').value = '';
+            loadBricks();
+        }
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-        const firebaseConfig = { /* YOUR EXISTING CONFIG HERE */ };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        window.saveBrick = async () => {
-            const text = document.getElementById('brickInput').value;
-            if (text.trim() === "") return; // Don't add empty bricks
-            await addDoc(collection(db, "bricks"), { text: text, createdAt: Date.now() });
-            document.getElementById('brickInput').value = '';
-        };
-
-        // Get bricks ordered by time
-        const q = query(collection(db, "bricks"), orderBy("createdAt", "desc"));
-
-        onSnapshot(q, (snapshot) => {
+        async function loadBricks() {
+            const { data } = await supabase.from('bricks').select('*');
             const wall = document.getElementById('wall');
-            wall.innerHTML = '';
-            snapshot.forEach(doc => {
-                const div = document.createElement('div');
-                div.className = 'brick';
-                div.textContent = doc.data().text;
-                wall.appendChild(div);
-            });
-        });
+            if(data) wall.innerHTML = data.map(b => `<div class="brick">${b.content}</div>`).join('');
+        }
+
+        loadBricks();
     </script>
 </body>
 </html>
