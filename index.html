@@ -237,6 +237,10 @@
             </div>
             <button class="add-brick-btn" id="openFormBtn">+ Add Brick</button>
         </div>
+
+        <div id="brickCounter" style="font-size: 0.9rem; color: #ffffff; margin-top: 10px; letter-spacing: 1px; font-weight: bold;">
+            Souls Honored: 0
+        </div>
     </header>
 
     <div class="wall-viewport">
@@ -343,7 +347,7 @@
             slot.appendChild(nameDiv);
         }
 
-        // 2. Fetch data list files safely without bottlenecking button listeners
+        // 2. Fetch data list files safely and update the totals counter
         function loadAndRenderWall() {
             buildBlankGridSlots();
             
@@ -362,9 +366,21 @@
                             populateSlot(targetSlot, item.name, item.years, currentSection);
                         }
                     });
+
+                    // Update the counter text and tracking color dynamically based on selection
+                    const counterEl = document.getElementById('brickCounter');
+                    if (currentSection === 'human') {
+                        counterEl.textContent = `Souls Honored: ${data.length}`;
+                        counterEl.style.color = '#ffffff';
+                    } else {
+                        counterEl.textContent = `Pets Remembered: ${data.length}`;
+                        counterEl.style.color = '#00ff88';
+                    }
                 })
                 .catch(err => {
                     console.error("Ledger reading handled cleanly:", err);
+                    const counterEl = document.getElementById('brickCounter');
+                    counterEl.textContent = currentSection === 'human' ? "Souls Honored: 0" : "Pets Remembered: 0";
                 });
         }
 
@@ -407,6 +423,15 @@
             const targetSlot = findNextEmptySlot();
             if (targetSlot) {
                 populateSlot(targetSlot, name, years, currentSection);
+                
+                // Instantly sync the visual counter on a manual preview submission
+                const counterEl = document.getElementById('brickCounter');
+                const currentCount = wallContainer.querySelectorAll('.brick-slot.filled').length;
+                if (currentSection === 'human') {
+                    counterEl.textContent = `Souls Honored: ${currentCount}`;
+                } else {
+                    counterEl.textContent = `Pets Remembered: ${currentCount}`;
+                }
             } else {
                 alert("This section is full!");
             }
