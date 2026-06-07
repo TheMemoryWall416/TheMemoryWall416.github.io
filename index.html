@@ -125,7 +125,7 @@
             width: 100%;
             max-width: 100vw;
             overflow-x: auto;
-            padding: 40px 0;
+            padding: 10px 0 40px 0; /* FIXED: Reduced top padding from 40px to 10px */
             box-sizing: border-box;
             scroll-behavior: smooth;
         }
@@ -158,7 +158,7 @@
             border-radius: 1px;
             box-sizing: border-box;
             transition: all 0.15s ease;
-            flex-shrink: 0; /* Prevents browser from squeezing bricks thin */
+            flex-shrink: 0;
         }
 
         .brick-slot.empty {
@@ -379,7 +379,6 @@
         let totalColumns = 0;
         let currentSection = 'human'; 
 
-        // Generates structural slots on demand horizontally
         function expandGridColumns(count) {
             const rows = wallContainer.querySelectorAll('.wall-row');
             rows.forEach(row => {
@@ -396,7 +395,7 @@
             totalColumns = 0;
             const rows = wallContainer.querySelectorAll('.wall-row');
             rows.forEach(row => row.innerHTML = '');
-            expandGridColumns(60); // Start with baseline screen filling width
+            expandGridColumns(60); 
         }
 
         function findNextEmptySlot() {
@@ -409,7 +408,6 @@
                     }
                 }
             }
-            // Dynamic Grid Extension Rule: If the slots are all used up, instantly add more spacing safely
             expandGridColumns(20);
             return findNextEmptySlot();
         }
@@ -429,7 +427,7 @@
             slot.setAttribute('data-years', years);
             slot.setAttribute('data-section', section);
             
-            slot.innerHTML = ''; // Ensure slots wipe prior text if repurposed
+            slot.innerHTML = ''; 
             const nameDiv = document.createElement('div');
             nameDiv.className = 'name';
             nameDiv.textContent = shortName;
@@ -473,8 +471,6 @@
 
         loadAndRenderWall();
 
-        // --- INFINITE SCROLL DETECTION LISTENER ---
-        // Checks viewport placement and stretches structure before running dry
         wallViewport.addEventListener('scroll', () => {
             const maxScrollLeft = wallViewport.scrollWidth - wallViewport.clientWidth;
             if (wallViewport.scrollLeft >= maxScrollLeft - 150) {
