@@ -44,38 +44,42 @@
             color: #ffffff;
         }
 
-        /* --- HEADER LAYOUT SYSTEM --- */
+        /* --- FIXED HEADER CONTAINER --- */
         header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 40px;
+            position: relative; /* Serves as anchor blueprint for absolute layouts */
             width: 100%;
-            max-width: 1100px;
+            max-width: 1200px;
             padding: 20px;
             box-sizing: border-box;
             margin-top: 20px;
+            display: flex;
+            justify-content: center; /* Forces the header-center to stay dead center */
         }
 
         .header-center {
             text-align: center;
             max-width: 600px;
+            z-index: 2;
         }
 
-        /* NEW: Spotlight Showcase Card placed to the left */
+        /* FIXED & ENLARGED: Spotlight Showcase Card pinned absolutely to the left side */
         .spotlight-card {
-            width: 220px;
+            position: absolute;
+            left: 20px;
+            top: 60px; /* Dropped below the top navigation line */
+            width: 160px; /* Increased scale size */
             background-color: #16161a;
-            border: 1px solid #222227;
-            border-radius: 6px;
-            padding: 12px;
+            border: 1px solid #33333b;
+            border-radius: 8px;
+            padding: 16px;
             display: flex;
+            flex-direction: column; /* Stack vertically to mimic mockup architecture */
             align-items: center;
-            gap: 12px;
-            text-align: left;
+            text-align: center;
             box-sizing: border-box;
-            transition: all 0.3s ease;
-            opacity: 0; /* Starts hidden until data loads */
+            transition: opacity 0.3s ease;
+            opacity: 0; 
+            z-index: 5;
         }
 
         .spotlight-card.visible {
@@ -83,19 +87,21 @@
         }
 
         .spotlight-photo {
-            width: 45px;
-            height: 45px;
+            width: 75px; /* Bigger frame */
+            height: 75px;
             background-color: #222227;
-            border: 1px solid #33333b;
+            border: 1px solid #444;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.3rem;
+            font-size: 2rem;
+            margin-bottom: 12px;
             flex-shrink: 0;
         }
 
         .spotlight-info {
+            width: 100%;
             overflow: hidden;
         }
 
@@ -103,23 +109,23 @@
             font-size: 0.65rem;
             color: #666666;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
             font-weight: bold;
         }
 
         .spotlight-name {
-            font-size: 0.9rem;
+            font-size: 1rem; /* Clearer prominence */
             font-weight: bold;
             color: #ffffff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: 1px;
+            margin-bottom: 3px;
         }
 
         .spotlight-dates {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: #888888;
         }
 
@@ -331,10 +337,10 @@
         
         .about-text { text-align: left; font-size: 0.9rem; color: #cccccc; line-height: 1.5; margin-bottom: 20px; }
 
-        /* Mobile adaptation to keep layouts pristine */
-        @media (max-width: 768px) {
-            header { flex-direction: column; gap: 20px; }
-            .spotlight-card { margin: 0 auto; }
+        /* Responsive safety fallback for small mobile screens */
+        @media (max-width: 820px) {
+            header { display: flex; flex-direction: column; align-items: center; }
+            .spotlight-card { position: relative; left: auto; top: auto; margin: 20px auto 10px auto; }
         }
     </style>
 </head>
@@ -349,7 +355,7 @@
         <div class="spotlight-card" id="spotlightCard">
             <div class="spotlight-photo" id="spotlightIcon">🕊️</div>
             <div class="spotlight-info">
-                <div class="spotlight-title" id="spotlightTag">In Spotlight</div>
+                <div class="spotlight-title" id="spotlightTag">Spotlight</div>
                 <div class="spotlight-name" id="spotlightName">...</div>
                 <div class="spotlight-dates" id="spotlightDates">...</div>
             </div>
@@ -469,7 +475,6 @@
         const petWallBtn = document.getElementById('petWallBtn');
         const formTitle = document.getElementById('formTitle');
 
-        // Spotlight Elements
         const spotlightCard = document.getElementById('spotlightCard');
         const spotlightIcon = document.getElementById('spotlightIcon');
         const spotlightName = document.getElementById('spotlightName');
@@ -478,7 +483,7 @@
 
         let totalColumns = 0;
         let currentSection = 'human'; 
-        let activeWallData = []; // Keeps track of loaded JSON data for random cycling
+        let activeWallData = []; 
         let spotlightInterval = null;
 
         function expandGridColumns(count) {
@@ -536,7 +541,6 @@
             slot.appendChild(nameDiv);
         }
 
-        // NEW: Handles picking a random item from the active wall section to showcase
         function runSpotlightEngine() {
             if (spotlightInterval) clearInterval(spotlightInterval);
             
@@ -552,18 +556,18 @@
                 spotlightName.textContent = chosenOne.name;
                 spotlightDates.textContent = chosenOne.years;
                 spotlightIcon.textContent = (currentSection === 'animal') ? '🐾' : '🕊️';
-                spotlightTag.textContent = (currentSection === 'animal') ? 'Pet Spotlight' : 'In Spotlight';
+                spotlightTag.textContent = (currentSection === 'animal') ? 'Pet Spotlight' : 'Spotlight';
                 
                 spotlightCard.classList.add('visible');
             }
 
-            updateSpotlight(); // Run immediately on load
-            spotlightInterval = setInterval(updateSpotlight, 5000); // Swap entries every 5 seconds
+            updateSpotlight(); 
+            spotlightInterval = setInterval(updateSpotlight, 5000); 
         }
 
         function loadAndRenderWall() {
             buildBlankGridSlots();
-            activeWallData = []; // Clear array
+            activeWallData = []; 
             spotlightCard.classList.remove('visible');
             
             const targetFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
@@ -575,7 +579,7 @@
                 })
                 .then(data => {
                     if (!Array.isArray(data)) return;
-                    activeWallData = data; // Cache data for spotlight
+                    activeWallData = data; 
                     
                     data.forEach(item => {
                         const targetSlot = findNextEmptySlot();
@@ -652,7 +656,6 @@
             if (targetSlot) {
                 populateSlot(targetSlot, name, years, currentSection);
                 
-                // Add to active data list instantly so the new brick can enter the spotlight rotation
                 activeWallData.push({ name: name, years: years });
                 if (activeWallData.length === 1) runSpotlightEngine();
 
@@ -683,7 +686,6 @@
             const brick = e.target.closest('.brick-slot.filled');
             if (brick) {
                 modalName.textContent = brick.getAttribute('data-full-name');
-                modalDates.getAttribute('data-years');
                 modalDates.textContent = brick.getAttribute('data-years');
                 const section = brick.getAttribute('data-section');
                 modalIcon.textContent = (section === 'animal') ? '🐾' : '🕊️';
