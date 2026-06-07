@@ -2,48 +2,41 @@
 <html>
 <head>
     <title>Memory Wall</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: sans-serif; background: #1a1a1a; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; width: 100%; max-width: 800px; margin-top: 20px; }
+        body { background: #1a1a1a; color: white; font-family: sans-serif; padding: 20px; }
+        .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
         .brick { background: #333; padding: 20px; border-radius: 8px; border-left: 5px solid #ffcc00; }
-        input { padding: 10px; width: 250px; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
     <h1>Memory Wall</h1>
-    <input id="text" placeholder="Write a memory...">
-    <button onclick="addBrick()">Add Brick</button>
+    <input id="mem" placeholder="Write a memory...">
+    <button onclick="add()">Add Brick</button>
     <div class="wall" id="wall"></div>
 
     <script>
-        // REPLACE THESE WITH YOUR ACTUAL KEYS
-        const supabaseUrl = 'https://pmgbezkfwqgqtefvryqk.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ2Jlemtmd3FncXRlZnZyeXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Nzc5NjYsImV4cCI6MjA5NjM1Mzk2Nn0.eUHzXHIgNcldasv0D2e_AVRHyxbR5Ig35OseXzEOkDc';
-        
-        // Initializing with the specific exported function
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        // 1. Initialize
+        const supabase = supabase.createClient('https://pmgbezkfwqgqtefvryqk.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtZ2Jlemtmd3FncXRlZnZyeXFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3Nzc5NjYsImV4cCI6MjA5NjM1Mzk2Nn0.eUHzXHIgNcldasv0D2e_AVRHyxbR5Ig35OseXzEOkDc');
 
-        async function addBrick() {
-            const val = document.getElementById('text').value;
+        // 2. Add function
+        async function add() {
+            const val = document.getElementById('mem').value;
             if(!val) return;
             const { error } = await supabase.from('bricks').insert([{ content: val }]);
-            if(error) {
-                console.error("Insert Error:", error);
-                alert("Error adding memory: " + error.message);
-            }
-            document.getElementById('text').value = '';
-            loadBricks();
+            if(error) { alert("Error: " + error.message); console.error(error); }
+            else { document.getElementById('mem').value = ''; load(); }
         }
 
-        async function loadBricks() {
+        // 3. Load function
+        async function load() {
             const { data, error } = await supabase.from('bricks').select('*');
-            if(error) console.error("Load Error:", error);
+            if(error) { console.error(error); return; }
             const wall = document.getElementById('wall');
-            if(data) wall.innerHTML = data.map(b => `<div class="brick">${b.content}</div>`).join('');
+            wall.innerHTML = data.map(b => `<div class="brick">${b.content}</div>`).join('');
         }
 
-        loadBricks();
+        load();
     </script>
 </body>
 </html>
