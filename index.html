@@ -5,1213 +5,141 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Memory Wall</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #0b0b0c;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        body { margin: 0; padding: 0; background-color: #0b0b0c; color: #ffffff; font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
 
-        /* --- TOP LEFT NAVIGATION --- */
-        .top-nav {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            display: flex;
-            gap: 20px;
-            z-index: 10;
+        /* Tooltip Styles */
+        .tooltip-container { position: relative; display: inline-block; }
+        .tooltip-text {
+            visibility: hidden; width: 220px; background-color: #1a1a20; color: #fff;
+            text-align: center; border-radius: 6px; padding: 10px; position: absolute;
+            z-index: 1000; bottom: 125%; left: 50%; transform: translateX(-50%);
+            font-size: 0.75rem; border: 1px solid #444; opacity: 0; transition: opacity 0.3s;
         }
+        .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
 
-        .nav-link {
-            background: none;
-            border: none;
-            color: #666666;
-            font-size: 0.85rem;
-            font-weight: bold;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: color 0.2s ease;
-            padding: 0;
-        }
+        /* Navigation */
+        .top-nav { position: absolute; top: 20px; left: 20px; display: flex; gap: 20px; z-index: 10; }
+        .nav-link { background: none; border: none; color: #666; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
 
-        .nav-link:hover {
-            color: #ffffff;
-        }
-
-        /* --- FLANKED HEADER CONTAINER --- */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 1600px;
-            padding: 20px;
-            box-sizing: border-box;
-            margin-top: 40px;
-            margin-bottom: 25px;
-            gap: 15px;
-        }
-
-        .spotlight-side {
-            display: flex;
-            gap: 12px;
-            flex: 1;
-        }
-        .left-side { justify-content: flex-end; }
-        .right-side { justify-content: flex-start; }
-
-        .header-center {
-            text-align: center;
-            width: 460px;
-            flex-shrink: 0;
-            z-index: 2;
-        }
-
-        /* Spotlight Showcase Cards */
-        .spotlight-card {
-            width: 135px;
-            background-color: #16161a;
-            border: 1px solid #33333b;
-            border-radius: 8px;
-            padding: 12px 8px;
-            display: flex;
-            flex-direction: column; 
-            align-items: center;
-            text-align: center;
-            box-sizing: border-box;
-            transition: opacity 0.4s ease;
-            opacity: 0; 
-            z-index: 5;
-        }
-
-        .spotlight-card.visible {
-            opacity: 1;
-        }
-
-        /* Atmosphere Pinned Card overrides */
-        #spotlight5 {
-            border-color: #33333b;
-        }
-
-        .spotlight-photo {
-            width: 55px;
-            height: 55px;
-            background-color: #222227;
-            border: 1px solid #444;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.4rem;
-            margin-bottom: 8px;
-            flex-shrink: 0;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .spotlight-info {
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .spotlight-title {
-            font-size: 0.55rem;
-            color: #666666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-            font-weight: bold;
-        }
-
-        .spotlight-name {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #ffffff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 2px;
-        }
-
-        .spotlight-dates {
-            font-size: 0.65rem;
-            color: #888888;
-        }
-
-        body.pet-mode-active .spotlight-dates {
-            color: #00ff88;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            margin: 0 0 5px 0;
-            letter-spacing: 5px;
-            color: #d1d1d1;
-        }
-
-        header p {
-            color: #666666;
-            font-size: 0.9rem;
-            margin: 0 0 20px 0;
-        }
-
-        /* Atmosphere Audio Volume Slider styling */
-        .volume-slider {
-            width: 90%;
-            margin-top: 6px;
-            background: #222227;
-            outline: none;
-            height: 4px;
-            border-radius: 2px;
-            -webkit-appearance: none;
-        }
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #666666;
-            cursor: pointer;
-        }
-        body.pet-mode-active .volume-slider::-webkit-slider-thumb {
-            background: #00ff88;
-        }
-
-        /* --- CONTROLS & SWITCHES --- */
-        .controls-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .wall-toggle-switch {
-            display: flex;
-            background-color: #16161a;
-            border: 1px solid #33333b;
-            padding: 4px;
-            border-radius: 30px;
-        }
-
-        .toggle-btn {
-            background: none;
-            border: none;
-            color: #888888;
-            padding: 8px 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .toggle-btn.active {
-            background-color: #ffffff;
-            color: #000000;
-        }
-
-        body.pet-mode-active .toggle-btn.active {
-            background-color: #00ff88;
-            color: #000000;
-        }
-
-        .add-brick-btn {
-            background-color: #222227;
-            color: #ffffff;
-            border: 1px solid #444;
-            padding: 8px 16px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .add-brick-btn:hover {
-            border-color: #00ff88;
-            color: #00ff88;
-        }
-
-        /* --- HORIZONTAL GRID CONTAINER --- */
-        .wall-viewport {
-            width: 100%;
-            max-width: 100vw;
-            overflow-x: auto;
-            padding: 10px 0 30px 0;
-            box-sizing: border-box;
-            scroll-behavior: smooth;
-        }
-
-        .wall-viewport::-webkit-scrollbar { height: 8px; }
-        .wall-viewport::-webkit-scrollbar-track { background: #111115; }
-        .wall-viewport::-webkit-scrollbar-thumb { background: #33333b; border-radius: 4px; }
-        .wall-viewport::-webkit-scrollbar-thumb:hover { background: #00ff88; }
-
-        .wall-container {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            padding: 0 50px;
-            width: max-content;
-        }
-
-        .wall-row {
-            display: flex;
-            gap: 4px;
-        }
-
-        .wall-row:nth-child(even) {
-            transform: translateX(32px);
-        }
-
-        .brick-slot {
-            width: 60px;
-            height: 26px;
-            border-radius: 1px;
-            box-sizing: border-box;
-            transition: all 0.15s ease;
-            flex-shrink: 0;
-            position: relative;
-        }
-
-        .brick-slot.empty {
-            background-color: transparent;
-            border: 1px dashed #1c1c22;
-        }
-
-        .brick-slot.filled {
-            background: linear-gradient(135deg, #241e1c 0%, #161312 100%);
-            border: 1px solid #2e2624;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .brick-slot.filled:hover {
-            transform: scale(1.8);
-            background: #ffffff;
-            border-color: #ffffff;
-            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6);
-            z-index: 100;
-        }
-
-        body.pet-mode-active .brick-slot.filled:hover {
-            background: #00ff88;
-            border-color: #ffffff;
-            box-shadow: 0px 0px 15px rgba(0, 255, 136, 0.6);
-        }
-
-        .brick-slot.filled:hover .name {
-            color: #000000;
-            font-weight: bold;
-        }
-
-        .name {
-            font-size: 0.45rem;
-            letter-spacing: 0.2px;
-            color: #a0a0a0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
-            padding: 0 2px;
-            pointer-events: none;
-        }
-
-        /* --- POPUP WINDOW OVERLAYS --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-            z-index: 1000;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-card {
-            background-color: #16161a;
-            border: 1px solid #33333b;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 440px;
-            padding: 25px;
-            text-align: center;
-            box-sizing: border-box;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        form { display: flex; flex-direction: column; gap: 14px; text-align: left; margin-top: 15px; }
-        label { font-size: 0.8rem; color: #aaaaaa; font-weight: bold; margin-bottom: -4px; }
-        input, select, textarea { background-color: #222227; border: 1px solid #444; color: white; padding: 10px; border-radius: 4px; font-size: 0.9rem; font-family: Arial, sans-serif; box-sizing: border-box; width: 100%; display: block; }
-        textarea { resize: vertical; min-height: 70px; }
+        /* Headers and Layout */
+        header { text-align: center; width: 100%; max-width: 800px; padding: 40px 20px; }
+        .wall-toggle-switch { display: flex; background-color: #16161a; border: 1px solid #333; padding: 4px; border-radius: 30px; justify-content: center; margin-top: 20px; }
         
-        .form-row-split {
-            display: flex;
-            gap: 10px;
+        .toggle-btn { 
+            background: none; border: none; color: #888; padding: 8px 16px; 
+            font-size: 0.8rem; font-weight: bold; border-radius: 20px; cursor: pointer; 
+            transition: all 0.2s; 
         }
-        .form-row-split div { flex: 1; }
+        .toggle-btn.active { background-color: #ffffff; color: #000; }
+        body.gentle-mode .toggle-btn.active { background-color: #d8b4fe; color: #000; }
+        body.pet-mode .toggle-btn.active { background-color: #00ff88; color: #000; }
 
-        .form-group-block {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-footnote {
-            font-size: 0.72rem;
-            color: #77777f;
-            line-height: 1.4;
-            margin-top: 2px;
-            display: block;
-        }
-
-        .submit-btn { background-color: #ffffff; color: black; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; font-size: 0.9rem; }
-        body.pet-mode-active .submit-btn { background-color: #00ff88; }
+        .add-brick-btn { background-color: #222; color: #fff; border: 1px solid #444; padding: 10px 20px; border-radius: 30px; cursor: pointer; margin-top: 20px; }
         
-        /* --- TRIBUTE DISPLAY OBJECTS --- */
-        .modal-photo { width: 90px; height: 90px; background-color: #222227; border: 1px solid #444; border-radius: 50%; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; background-size: cover; background-position: center; }
-        .modal-name { font-size: 1.5rem; margin: 0 0 4px 0; color: white; }
-        .modal-origin-line { font-size: 0.8rem; color: #888888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .modal-dates { font-size: 0.95rem; color: #aaaaaa; margin: 0 0 15px 0; font-weight: bold; }
-        body.pet-mode-active .modal-dates { color: #00ff88; }
-        
-        .modal-scroll-pane {
-            text-align: left;
-            background-color: #0f0f11;
-            border: 1px solid #222227;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        .pane-title { font-size: 0.75rem; color: #55555d; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-        .pane-content { font-size: 0.9rem; color: #cccccc; line-height: 1.5; margin-bottom: 12px; }
-        .pane-content:last-child { margin-bottom: 0; }
-
-        /* --- BUTTON SELECTIONS & CUSTOM TOOLTIPS --- */
-        .tribute-action-header { font-size: 0.8rem; color: #888888; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
-        .tribute-button-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
-        
-        .flower-gift-btn {
-            background-color: #1f1f24;
-            border: 1px solid #3a3a42;
-            border-radius: 6px;
-            padding: 8px 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #ffffff;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-            position: relative;
-        }
-        .flower-gift-btn:hover { background-color: #2a2a32; border-color: #ffffff; }
-
-        /* Floating Bubble Custom Tooltip Styles */
-        .flower-gift-btn::after {
-            content: attr(title);
-            position: absolute;
-            bottom: 135%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #111115;
-            border: 1px solid #444;
-            color: #ffffff;
-            padding: 5px 10px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            border-radius: 4px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.15s ease;
-            box-shadow: 0px 4px 12 rgba(0,0,0,0.6);
-            z-index: 500;
-        }
-        
-        .flower-gift-btn:hover::after {
-            opacity: 1;
-        }
-
-        .close-btn { background-color: #222227; color: #aaa; border: 1px solid #444; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; width: 100%; box-sizing: border-box; }
-        .close-btn:hover { background-color: #ff3344; color: white; border-color: #ff3344; }
-        
-        .about-text { text-align: left; font-size: 0.9rem; color: #cccccc; line-height: 1.5; margin-bottom: 20px; }
-
-        @media (max-width: 1200px) {
-            header { flex-direction: column; height: auto; margin-top: 80px; }
-            .spotlight-side { justify-content: center; flex-wrap: wrap; }
-        }
+        /* Dynamic Wall Quote */
+        #wallSubQuote { font-size: 0.9rem; font-style: italic; color: #888; margin-top: 20px; min-height: 1.2em; }
     </style>
 </head>
 <body>
 
     <nav class="top-nav">
         <button class="nav-link" id="openAboutBtn">ABOUT</button>
-        <button class="nav-link" id="openContactBtn">CONTACT</button>
     </nav>
 
     <header>
-        <div class="spotlight-side left-side">
-            <div class="spotlight-card" id="spotlight0">
-                <div class="spotlight-photo">🕊️</div>
-                <div class="spotlight-info">
-                    <div class="spotlight-title">Spotlight</div>
-                    <div class="spotlight-name">...</div>
-                    <div class="spotlight-dates">...</div>
-                </div>
+        <h1>THE MEMORY WALL</h1>
+        <div class="wall-toggle-switch">
+            <div class="tooltip-container">
+                <button class="toggle-btn active" id="humanWallBtn">Human Monument</button>
+                <span class="tooltip-text">A place to honor the lives and legacies of those who walked among us—family, friends, mentors, or historical figures.</span>
             </div>
-    
-            <div class="spotlight-card" id="spotlight1">
-                <div class="spotlight-photo">🕊️</div>
-                <div class="spotlight-info">
-                    <div class="spotlight-title">Spotlight</div>
-                    <div class="spotlight-name">...</div>
-                    <div class="spotlight-dates">...</div>
-                </div>
+            <div class="tooltip-container">
+                <button class="toggle-btn" id="gentleWallBtn">The Gentle Arrival Wall</button>
+                <span class="tooltip-text">A sanctuary of gentle remembrance for lives deeply loved and anticipated, but left us far too soon.</span>
             </div>
-            <div class="spotlight-card" id="spotlight2">
-                <div class="spotlight-photo">🕊️</div>
-                <div class="spotlight-info">
-                    <div class="spotlight-title">Spotlight</div>
-                    <div class="spotlight-name">...</div>
-                    <div class="spotlight-dates">...</div>
-                </div>
+            <div class="tooltip-container">
+                <button class="toggle-btn" id="petWallBtn">Animal Wall</button>
+                <span class="tooltip-text">A tribute to our faithful companions. A space to celebrate the unconditional love and joy they brought into our hearts.</span>
             </div>
         </div>
-
-        <div class="header-center">
-            <h1>THE MEMORY WALL</h1>
-            <p>A global monument stretching infinitely into the horizon.</p>
-            
-            <div class="controls-container">
-                <div class="wall-toggle-switch">
-                    <button class="toggle-btn active" id="humanWallBtn">Human Monument</button>
-                    <button class="toggle-btn" id="petWallBtn">Animal Wall</button>
-                </div>
-                <button class="add-brick-btn" id="openFormBtn">+ Add Brick</button>
-            </div>
-
-            <div id="brickCounter" style="font-size: 0.9rem; color: #ffffff; margin-top: 10px; letter-spacing: 1px; font-weight: bold;">
-                Souls Honored: 0
-            </div>
-
-            <div id="wallSubQuote" style="font-size: 0.78rem; font-style: italic; color: #77777f; margin-top: 8px; line-height: 1.4; max-width: 90%; margin-left: auto; margin-right: auto; letter-spacing: 0.5px;">
-                Every brick holds a story, a legacy, and a love that outlasts time.
-            </div>
-        </div>
-
-        <div class="spotlight-side right-side">
-            <div class="spotlight-card" id="spotlight3">
-                <div class="spotlight-photo">🕊️</div>
-                <div class="spotlight-info">
-                    <div class="spotlight-title">Spotlight</div>
-                    <div class="spotlight-name">...</div>
-                    <div class="spotlight-dates">...</div>
-                </div>
-            </div>
-      
-            <div class="spotlight-card" id="spotlight4">
-                <div class="spotlight-photo">🕊️</div>
-                <div class="spotlight-info">
-                    <div class="spotlight-title">Spotlight</div>
-                    <div class="spotlight-name">...</div>
-                    <div class="spotlight-dates">...</div>
-                </div>
-            </div>
-            
-            <div class="spotlight-card visible" id="spotlight5">
-                <div class="spotlight-photo">🔇</div>
-                <div class="spotlight-info">
-                    <div class="spotlight-title">Atmosphere</div>
-                    <div class="spotlight-name" style="font-size:0.7rem; color:#666;">Volume: Off</div>
-                    <input type="range" class="volume-slider" min="0" max="100" value="0">
-                </div>
-            </div>
-        </div>
+        <div id="wallSubQuote">Every brick holds a story, a legacy, and a love that outlasts time.</div>
+        <button class="add-brick-btn" id="openFormBtn">+ Create Remembrance</button>
     </header>
 
-    <div class="wall-viewport" id="wallViewport">
-        <div class="wall-container" id="wallContainer">
-            <div class="wall-row" data-row-index="1"></div>
-            <div class="wall-row" data-row-index="2"></div>
-            <div class="wall-row" data-row-index="3"></div>
-            <div class="wall-row" data-row-index="4"></div>
-            <div class="wall-row" data-row-index="5"></div>
-            <div class="wall-row" data-row-index="6"></div>
-            <div class="wall-row" data-row-index="7"></div>
-            <div class="wall-row" data-row-index="8"></div>
-            <div class="wall-row" data-row-index="9"></div>
-            <div class="wall-row" data-row-index="10"></div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="viewModal">
-        <div class="modal-card">
-            <div class="modal-photo" id="modalIcon">🕊️</div>
-            <h2 class="modal-name" id="modalName">Name</h2>
-            <div class="modal-origin-line" id="modalOrigin">Country</div>
-            <div class="modal-dates" id="modalDates">Dates</div>
-            
-            <div class="modal-scroll-pane">
-                <div class="pane-title">Biography & Life Story</div>
-                <div class="pane-content" id="modalBio">No biography provided.</div>
-                
-                <div class="pane-title" style="margin-top: 15px;">Words of Encouragement</div>
-                <div class="pane-content" id="modalEncouragement" style="font-style: italic; color: #aaaaaa;">No words left.</div>
-            </div>
-
-            <div class="tribute-action-header">Leave a Symbol of Remembrance</div>
-            <div class="tribute-button-row">
-                <button class="flower-gift-btn" title="Place Rose" onclick="giftTribute('roses')">🌹 <span id="countRoses">0</span></button>
-                <button class="flower-gift-btn" title="Place Sunflower" onclick="giftTribute('sunflowers')">🌻 <span id="countSunflowers">0</span></button>
-                <button class="flower-gift-btn" title="Place Hyacinth" onclick="giftTribute('hyacinths')">🪻 <span id="countHyacinths">0</span></button>
-                <button class="flower-gift-btn" title="Place Candle" onclick="giftTribute('candles')">🕯️ <span id="countCandles">0</span></button>
-            </div>
-
-            <button class="close-btn" id="closeViewBtn">Close</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="formModal">
-        <div class="modal-card" style="max-width: 480px;">
-            <h3 id="formTitle" style="margin: 0; letter-spacing: 1px; text-transform: uppercase;">LAY A BRICK</h3>
+    <div id="formModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center;">
+        <div style="background:#16161a; padding:30px; border-radius:10px; width:400px; color:white;">
+            <h3 id="formTitle">Create a Remembrance</h3>
             <form id="brickForm">
-                
-                <div class="form-group-block">
-                    <label id="lblFullName">Full Name</label>
-                    <input type="text" id="inputName" placeholder="e.g. Samuel Evans" required>
-                </div>
-                
-                <div class="form-row-split">
-                    <div class="form-group-block">
-                        <label id="lblDOB">Date of Birth</label>
-                        <div id="dobContainer"><input type="date" id="inputDOB" required></div>
+                <div id="dynamicFields">
                     </div>
-                    <div class="form-group-block">
-                        <label id="lblDOD">Date of Death</label>
-                        <div id="dodContainer"><input type="date" id="inputDOD" required></div>
-                    </div>
-                </div>
-
-                <div class="form-group-block">
-                    <label>Country of Origin</label>
-                    <select id="inputCountry" required>
-                        <option value="" disabled selected>Select country...</option>
-                        <option value="Argentina">Argentina</option>
-                        <option value="Australia">Australia</option>
-                        <option value="Brazil">Brazil</option>
-                        <option value="Canada">Canada</option>
-                        <option value="Germany">Germany</option>
-                        <option value="India">India</option>
-                        <option value="Ireland">Ireland</option>
-                        <option value="New Zealand">New Zealand</option>
-                        <option value="South Africa">South Africa</option>
-                        <option value="United Kingdom">United Kingdom</option>
-                        <option value="United States">United States</option>
-                    </select>
-                </div>
-
-                <div class="form-group-block">
-                    <label>Upload Remembrance Photo — <em>Optional</em></label>
-                    <input type="file" id="inputPhoto" accept="image/*">
-                </div>
-
-                <div class="form-group-block">
-                    <label id="lblBio">Biography / Life Story — <em>Optional</em></label>
-                    <textarea id="inputBio" placeholder="Share a few paragraphs detailing their journey, legacy, and who they were..."></textarea>
-                </div>
-
-                <div class="form-group-block">
-                    <label>Words of Encouragement — <em>Optional</em></label>
-                    <textarea id="inputEncouragement" placeholder="Leave a comforting note or thought for other grieving families visiting the monument..."></textarea>
-                </div>
-
-                <div class="form-group-block">
-                    <label>Your Email Address — <em>Optional</em></label>
-                    <input type="email" id="inputEmail" placeholder="e.g. you@example.com">
-                    <span class="form-footnote">Your email address is kept completely private. It is strictly used securely if you ever need to claim, edit, or update this brick entry down the road.</span>
-                </div>
-
-                <div id="verificationWrapper" class="form-group-block">
-                    <label>Official Identification Number / Verification Document — <em>Optional</em></label>
-                    <input type="text" id="inputVerification" placeholder="Identity reference or certificate number">
-                    <span class="form-footnote">To ensure this global monument remains a respectful, authentic sanctuary, you may provide verification data. This information is confidential and used entirely to filter out fraudulent entries.</span>
-                </div>
-
-                <button type="submit" class="submit-btn">Place onto Wall</button>
+                <button type="submit" style="width:100%; padding:10px; margin-top:20px;">Place onto Wall</button>
             </form>
-            <button class="close-btn" id="closeFormBtn" style="margin-top: 15px;">Cancel</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="aboutModal">
-        <div class="modal-card" style="max-width: 400px;">
-            <h3 style="margin: 0 0 15px 0; letter-spacing: 1px;">ABOUT THE WALL</h3>
-            <div class="about-text">
-                <p><strong>The Memory Wall</strong> is a digital sanctuary and global monument built to outlast generations. It serves as an infinite canvas stretching across space and time, keeping memories alive forever.</p>
-                <p>Every digital brick laid here preserves the legacy of a soul honored or a pet remembered, standing permanently as part of an unbreakable collective horizon.</p>
-            </div>
-            <button class="close-btn" id="closeAboutBtn">Close</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="contactModal">
-        <div class="modal-card" style="max-width: 360px;">
-            <h3 style="margin: 0; letter-spacing: 1px;">GET IN TOUCH</h3>
-            <form id="contactForm">
-                <div class="form-group-block">
-                    <label>Your Name</label>
-                    <input type="text" id="contactName" placeholder="e.g. Jane Doe" required>
-                </div>
-                
-                <div class="form-group-block">
-                    <label>Email Address</label>
-                    <input type="email" id="contactEmail" placeholder="e.g. jane@example.com" required>
-                </div>
-                
-                <div class="form-group-block">
-                    <label>Reason for Contact</label>
-                    <select id="contactReason" required>
-                        <option value="" disabled selected>Select a category...</option>
-                        <option value="Suggestion">Suggestion / Idea</option>
-                        <option value="Question">General Question</option>
-                        <option value="Complaint">Complaint</option>
-                        <option value="Support">Technical Issue</option>
-                    </select>
-                </div>
-                
-                <div class="form-group-block">
-                    <label>Message</label>
-                    <textarea id="contactMessage" placeholder="Write your thoughts here..." required></textarea>
-                </div>
-                
-                <button type="submit" class="submit-btn">Send Message</button>
-            </form>
-            <button class="close-btn" id="closeContactBtn" style="margin-top: 15px;">Cancel</button>
+            <button id="closeFormBtn" style="width:100%; padding:10px; margin-top:10px;">Cancel</button>
         </div>
     </div>
 
     <script>
-        /* PROXY CONNECTIVITY CONFIGURATION */
-        const PROXY_URL = 'https://the-memory-wall-server.onrender.com';
-
-        const wallViewport = document.getElementById('wallViewport');
-        const wallContainer = document.getElementById('wallContainer');
-        const viewModal = document.getElementById('viewModal');
-        const formModal = document.getElementById('formModal');
-        const aboutModal = document.getElementById('aboutModal');
-        const contactModal = document.getElementById('contactModal');
-        const modalName = document.getElementById('modalName');
-        const modalOrigin = document.getElementById('modalOrigin');
-        const modalDates = document.getElementById('modalDates');
-        const modalIcon = document.getElementById('modalIcon');
-        const modalBio = document.getElementById('modalBio');
-        const modalEncouragement = document.getElementById('modalEncouragement');
-        const closeViewBtn = document.getElementById('closeViewBtn');
-        const humanWallBtn = document.getElementById('humanWallBtn');
-        const petWallBtn = document.getElementById('petWallBtn');
-        const formTitle = document.getElementById('formTitle');
-        const wallSubQuote = document.getElementById('wallSubQuote');
-        let totalColumns = 0;
         let currentSection = 'human';
-        let activeWallData = []; 
-        let spotlightInterval = null;
-        let selectedBrickId = null;
+        const dynamicFields = document.getElementById('dynamicFields');
 
-        function expandGridColumns(count) {
-            const rows = wallContainer.querySelectorAll('.wall-row');
-            rows.forEach(row => {
-                for (let i = 0; i < count; i++) {
-                    const slot = document.createElement('div');
-                    slot.className = 'brick-slot empty';
-                    row.appendChild(slot);
-                }
-            });
-            totalColumns += count;
-        }
-
-        function buildBlankGridSlots() {
-            totalColumns = 0;
-            const rows = wallContainer.querySelectorAll('.wall-row');
-            rows.forEach(row => row.innerHTML = '');
-            expandGridColumns(60);
-        }
-
-        function findNextEmptySlot() {
-            const rows = wallContainer.querySelectorAll('.wall-row');
-            for (let col = 0; col < totalColumns; col++) {
-                for (let r = 9; r >= 0; r--) { 
-                    const slot = rows[r].children[col];
-                    if (slot && slot.classList.contains('empty')) {
-                        return slot;
-                    }
-                }
-            }
-            expandGridColumns(20);
-            return findNextEmptySlot();
-        }
-
-        function populateSlot(slot, item) {
-            if (!item || !item.name) return;
-            const nameParts = item.name.trim().split(' ');
-            let shortName = item.name;
-            if (nameParts.length > 1) {
-                shortName = nameParts[0][0] + '.' + nameParts[nameParts.length - 1].substring(0, 4);
-            } else {
-                shortName = item.name.substring(0, 6);
-            }
-
-            slot.classList.remove('empty');
-            slot.classList.add('filled');
-            slot.setAttribute('data-id', item.id);
-            
-            slot.innerHTML = '';
-            
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'name';
-            nameDiv.textContent = shortName;
-            slot.appendChild(nameDiv);
-        }
-
-        function formatDisplayDates(dobStr, dodStr) {
-            if(!dobStr || !dodStr) return '...';
-            if(dobStr.includes('-') && dobStr.length > 4) {
-                const d1 = new Date(dobStr).getFullYear();
-                const d2 = new Date(dodStr).getFullYear();
-                return isNaN(d1) ? `${dobStr} — ${dodStr}` : `${d1} — ${d2}`;
-            }
-            return `${dobStr} — ${dodStr}`;
-        }
-
-        function runSpotlightEngine() {
-            if (spotlightInterval) clearInterval(spotlightInterval);
-            function updateSpotlights() {
-                const totalCards = 5; 
-                let activeIndices = [];
-
-                if (!activeWallData || activeWallData.length === 0) {
-                    for (let i = 0; i < totalCards; i++) {
-                        const card = document.getElementById(`spotlight${i}`);
-                        if (card) {
-                            card.classList.remove('visible');
-                            card.querySelector('.spotlight-name').textContent = '...';
-                            card.querySelector('.spotlight-dates').textContent = '...';
-                            const photoEl = card.querySelector('.spotlight-photo');
-                            photoEl.style.backgroundImage = 'none';
-                            photoEl.textContent = (currentSection === 'animal') ? '🐾' : '🕊️';
-                            card.classList.add('visible');
-                        }
-                    }
-                    return;
-                }
-
-                if (activeWallData.length >= totalCards) {
-                    let pool = [...Array(activeWallData.length).keys()];
-                    for (let i = 0; i < totalCards; i++) {
-                        const randomPick = Math.floor(Math.random() * pool.length);
-                        activeIndices.push(pool.splice(randomPick, 1)[0]);
-                    }
-                } else {
-                    for (let i = 0; i < totalCards; i++) {
-                        activeIndices.push(i % activeWallData.length);
-                    }
-                }
-
-                for (let i = 0; i < totalCards; i++) {
-                    const card = document.getElementById(`spotlight${i}`);
-                    if (!card) continue;
-                    
-                    const dataItem = activeWallData[activeIndices[i]];
-
-                    if (dataItem) {
-                        const nameEl = card.querySelector('.spotlight-name');
-                        const datesEl = card.querySelector('.spotlight-dates');
-                        const photoEl = card.querySelector('.spotlight-photo');
-                        const tagEl = card.querySelector('.spotlight-title');
-
-                        nameEl.textContent = dataItem.name || '...';
-                        datesEl.textContent = formatDisplayDates(dataItem.date_of_birth, dataItem.date_of_death);
-                        tagEl.textContent = (currentSection === 'animal') ? 'Pet Spotlight' : 'Spotlight';
-                        if(dataItem.photo_url) {
-                            photoEl.textContent = '';
-                            photoEl.style.backgroundImage = `url('${dataItem.photo_url}')`;
-                        } else {
-                            photoEl.style.backgroundImage = 'none';
-                            photoEl.textContent = (currentSection === 'animal') ? '🐾' : '🕊️';
-                        }
-
-                        card.classList.add('visible');
-                    } else {
-                        card.classList.remove('visible');
-                    }
-                }
-            }
-
-            updateSpotlights();
-            if (activeWallData && activeWallData.length > 5) {
-                spotlightInterval = setInterval(updateSpotlights, 3000);
-            }
-        }
-
-        function loadAndRenderWall() {
-            buildBlankGridSlots();
-            activeWallData = []; 
-            
-            const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
-            const jsonFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
-            
-            fetch(jsonFile + '?nocache=' + Date.now()) 
-                .then(response => {
-                    if (!response.ok) throw new Error("JSON payload missing or empty");
-                    return response.json();
-                })
-                .then(data => {
-                    if (Array.isArray(data)) {
-                        activeWallData = data;
-                        
-                        const localData = localStorage.getItem(storageKey);
-                        if (localData) {
-                            try {
-                                const localEntries = JSON.parse(localData);
-                                activeWallData = activeWallData.map(serverItem => {
-                                    const localItem = localEntries.find(l => l.id === serverItem.id);
-                                    if (localItem && localItem.tributes) {
-                                        serverItem.tributes = localItem.tributes;
-                                    }
-                                    return serverItem;
-                                });
-                            } catch (e) {
-                                console.error("Error matching local tracking storage states:", e);
-                            }
-                        }
-
-                        activeWallData.forEach(item => {
-                            const targetSlot = findNextEmptySlot();
-                            if (targetSlot) populateSlot(targetSlot, item);
-                        });
-                    }
-                    updateCounterDisplay();
-                    runSpotlightEngine();
-                })
-                .catch(err => {
-                    console.warn("Handled Empty Database Safely. Trying local storage backup.", err);
-                    const localData = localStorage.getItem(storageKey);
-                    if (localData) {
-                        try {
-                            activeWallData = JSON.parse(localData);
-                            activeWallData.forEach(item => {
-                                const targetSlot = findNextEmptySlot();
-                                if (targetSlot) populateSlot(targetSlot, item);
-                            });
-                        } catch (e) {
-                            console.error("Local client asset recovery sequence failed:", e);
-                        }
-                    }
-                    updateCounterDisplay();
-                    runSpotlightEngine();
-                });
-        }
-
-        function updateCounterDisplay() {
-            const counterEl = document.getElementById('brickCounter');
-            if (!counterEl) return;
+        function updateFormFields() {
             if (currentSection === 'human') {
-                counterEl.textContent = `Souls Honored: ${activeWallData ? activeWallData.length : 0}`;
-                counterEl.style.color = '#ffffff';
+                dynamicFields.innerHTML = `
+                    <label>Full Name</label><input type="text" id="name" required><br>
+                    <label>Date of Birth</label><input type="date" id="dob" required><br>
+                    <label>Date of Death</label><input type="date" id="dod" required><br>
+                    <label>Verification ID</label><input type="text" id="verify">`;
+            } else if (currentSection === 'gentle') {
+                dynamicFields.innerHTML = `
+                    <label>Name (Optional)</label><input type="text" id="name"><br>
+                    <label>Date of Remembrance</label><input type="date" id="dob" required><br>
+                    <label>Rememberance Note</label><textarea id="bio"></textarea>`;
             } else {
-                counterEl.textContent = `Pets Remembered: ${activeWallData ? activeWallData.length : 0}`;
-                counterEl.style.color = '#00ff88';
+                dynamicFields.innerHTML = `
+                    <label>Pet's Name</label><input type="text" id="name" required><br>
+                    <label>Year of Birth</label><input type="number" id="dob"><br>
+                    <label>Year of Death</label><input type="number" id="dod">`;
             }
         }
 
-        function loadVisitorCounter() {
-            const subTitle = document.querySelector('.header-center p');
-            if(!subTitle) return;
-
-            fetch('https://api.counterapi.dev/v1/thememorywall416/visits/up')
-                .then(res => res.json())
-                .then(resData => {
-                    if(resData && resData.count) {
-                        const baseContent = "A global monument stretching infinitely into the horizon.";
-                        subTitle.innerHTML = `${baseContent}<br><span style="color: #666666; font-size: 0.72rem; letter-spacing: 1px; font-weight: bold; display:inline-block; margin-top: 6px;">MONUMENT VISITS: ${resData.count}</span>`;
-                    }
-                })
-                .catch(err => console.error("Traffic tracker ping error:", err));
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            loadAndRenderWall();
-            loadVisitorCounter();
-        });
-        
-        wallViewport.addEventListener('scroll', () => {
-            const maxScrollLeft = wallViewport.scrollWidth - wallViewport.clientWidth;
-            if (wallViewport.scrollLeft >= maxScrollLeft - 150) {
-                expandGridColumns(20);
-            }
-        });
-
-        /* WALL SECTIONS SWITCHES */
-        humanWallBtn.addEventListener('click', () => {
-            if (currentSection === 'human') return;
+        document.getElementById('humanWallBtn').addEventListener('click', () => {
             currentSection = 'human';
-            document.body.classList.remove('pet-mode-active');
-            humanWallBtn.classList.add('active');
-            petWallBtn.classList.remove('active');
-            
-            // Swap to Human Dedication Text
-            wallSubQuote.textContent = "Every brick holds a story, a legacy, and a love that outlasts time.";
-            wallSubQuote.style.color = "#77777f";
-
-            document.getElementById('lblFullName').textContent = "Full Name";
-            document.getElementById('inputName').placeholder = "e.g. Samuel Evans";
-            document.getElementById('lblBio').textContent = "Biography / Life Story — Optional";
-            document.getElementById('inputBio').placeholder = "Share a few paragraphs detailing their journey, legacy, and who they were...";
-            
-            document.getElementById('lblDOB').textContent = "Date of Birth";
-            document.getElementById('lblDOD').textContent = "Date of Death";
-            document.getElementById('dobContainer').innerHTML = '<input type="date" id="inputDOB" required>';
-            document.getElementById('dodContainer').innerHTML = '<input type="date" id="inputDOD" required>';
-            
-            document.getElementById('verificationWrapper').style.display = "flex";
-
-            loadAndRenderWall();
+            document.body.className = '';
+            setActiveBtn('humanWallBtn');
+            document.getElementById('wallSubQuote').textContent = "Every brick holds a story, a legacy, and a love that outlasts time.";
+            updateFormFields();
         });
-        
-        petWallBtn.addEventListener('click', () => {
-            if (currentSection === 'animal') return;
-            currentSection = 'animal';
-            document.body.classList.add('pet-mode-active');
-            petWallBtn.classList.add('active');
-            humanWallBtn.classList.remove('active');
-            
-            // Swap to Pet Dedication Text
-            wallSubQuote.textContent = "Love them deeply. Their whole life is time spent with you.";
-            wallSubQuote.style.color = "#00bb66";
 
-            document.getElementById('lblFullName').textContent = "Pet's Name";
-            document.getElementById('inputName').placeholder = "e.g. Max or Bella";
-            document.getElementById('lblBio').textContent = "Pet Story & Memories — Optional";
-            document.getElementById('inputBio').placeholder = "Share details about their favorite games, quirks, and the happiness they brought...";
-            
-            document.getElementById('lblDOB').textContent = "Year of Birth";
-            document.getElementById('lblDOD').textContent = "Year of Death";
-            document.getElementById('dobContainer').innerHTML = '<input type="number" id="inputDOB" min="1900" max="2100" placeholder="e.g. 2012" required>';
-            document.getElementById('dodContainer').innerHTML = '<input type="number" id="inputDOD" min="1900" max="2100" placeholder="e.g. 2026" required>';
-            
-            document.getElementById('verificationWrapper').style.display = "none";
-
-            loadAndRenderWall();
+        document.getElementById('gentleWallBtn').addEventListener('click', () => {
+            currentSection = 'gentle';
+            document.body.className = 'gentle-mode';
+            setActiveBtn('gentleWallBtn');
+            document.getElementById('wallSubQuote').textContent = "Held for a moment in our arms, held forever in our hearts.";
+            updateFormFields();
         });
+
+        document.getElementById('petWallBtn').addEventListener('click', () => {
+            currentSection = 'pet';
+            document.body.className = 'pet-mode';
+            setActiveBtn('petWallBtn');
+            document.getElementById('wallSubQuote').textContent = "Love them deeply. Their whole life is time spent with you.";
+            updateFormFields();
+        });
+
+        function setActiveBtn(id) {
+            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
 
         document.getElementById('openFormBtn').addEventListener('click', () => {
-            formTitle.textContent = currentSection === 'human' ? 'LAY A HUMAN BRICK' : 'LAY AN ANIMAL BRICK';
-            formModal.classList.add('active');
-        });
-        document.getElementById('closeFormBtn').addEventListener('click', () => formModal.classList.remove('active'));
-        closeViewBtn.addEventListener('click', () => viewModal.classList.remove('active'));
-
-        document.getElementById('openAboutBtn').addEventListener('click', () => aboutModal.classList.add('active'));
-        document.getElementById('closeAboutBtn').addEventListener('click', () => aboutModal.classList.remove('active'));
-        
-        document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
-        document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
-
-        document.getElementById('brickForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const submitButton = e.target.querySelector('.submit-btn');
-            submitButton.disabled = true;
-            submitButton.textContent = "Processing Submission...";
-
-            const name = document.getElementById('inputName').value;
-            const dob = document.getElementById('inputDOB').value;
-            const dod = document.getElementById('inputDOD').value;
-            const country = document.getElementById('inputCountry').value;
-            const biography = document.getElementById('inputBio').value;
-            const encouragement = document.getElementById('inputEncouragement').value;
-            const email = document.getElementById('inputEmail').value;
-            const verification = document.getElementById('inputVerification') ? document.getElementById('inputVerification').value : '';
-            
-            const photoInput = document.getElementById('inputPhoto');
-            let base64Photo = null;
-            let photoName = null;
-
-            try {
-                if (photoInput && photoInput.files.length > 0) {
-                    const file = photoInput.files[0];
-                    photoName = file.name;
-                    base64Photo = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result.split(',')[1]);
-                        reader.readAsDataURL(file);
-                    });
-                }
-
-                const payload = {
-                    currentSection, name, dob, dod, country,
-                    biography, encouragement, email, verification,
-                    base64Photo, photoName
-                };
-
-                const response = await fetch(`${PROXY_URL}/api/submit-brick`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert("Success! Your brick has been permanently placed onto the global monument.");
-                    document.getElementById('brickForm').reset();
-                    formModal.classList.remove('active');
-                    loadAndRenderWall(); 
-                } else {
-                    throw new Error(result.error || "Server processing rejected data structure.");
-                }
-
-            } catch (error) {
-                console.error("Backend Proxy Core Connection Failure:", error);
-                alert("Submission processing error. Please check your connection and try again.");
-            } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = "Place onto Wall";
-            }
+            updateFormFields();
+            document.getElementById('formModal').style.display = 'flex';
         });
 
-        /* INTERACTIVE MODAL DETAILS VIEWER */
-        wallContainer.addEventListener('click', (e) => {
-            const brick = e.target.closest('.brick-slot.filled');
-            if (brick) {
-                const brickId = brick.getAttribute('data-id');
-                const record = activeWallData.find(item => item.id === brickId);
-             
-                if (!record) return;
+        document.getElementById('closeFormBtn').addEventListener('click', () => document.getElementById('formModal').style.display = 'none');
 
-                selectedBrickId = brickId; 
-                modalName.textContent = record.name;
-                modalOrigin.textContent = record.country;
-                modalDates.textContent = formatDisplayDates(record.date_of_birth, record.date_of_death);
-                modalBio.textContent = record.biography || "No biography provided.";
-                modalEncouragement.textContent = record.encouragement || "No words left.";
-                
-                if(record.photo_url) {
-                    modalIcon.textContent = '';
-                    modalIcon.style.backgroundImage = `url('${record.photo_url}')`;
-                } else {
-                    modalIcon.style.backgroundImage = 'none';
-                    modalIcon.textContent = (currentSection === 'animal') ? '🐾' : '🕊️';
-                }
-
-                const tribs = record.tributes || { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
-                document.getElementById('countRoses').textContent = tribs.roses || 0;
-                document.getElementById('countSunflowers').textContent = tribs.sunflowers || 0;
-                document.getElementById('countHyacinths').textContent = tribs.hyacinths || 0;
-                document.getElementById('countCandles').textContent = tribs.candles || 0;
-
-                viewModal.classList.add('active');
-            }
-        });
-
-        async function giftTribute(type) {
-            if (!selectedBrickId) return;
-            
-            const record = activeWallData.find(item => item.id === selectedBrickId);
-            if (!record) return;
-
-            if (!record.tributes) record.tributes = { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
-            record.tributes[type] = (record.tributes[type] || 0) + 1;
-            
-            const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
-            document.getElementById(labelId).textContent = record.tributes[type];
-
-            const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
-            localStorage.setItem(storageKey, JSON.stringify(activeWallData));
-
-            try {
-                const response = await fetch(`${PROXY_URL}/api/add-tribute`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        currentSection,
-                        brickId: selectedBrickId,
-                        tributeType: type
-                    })
-                });
-                
-                const result = await response.json();
-                if (!result.success) {
-                    console.error("Database updates rejected by proxy stream node:", result.error);
-                }
-            } catch (error) {
-                console.error("Failed syncing tribute back to repository node:", error);
-            }
-        }
-
-        /* CONTACT FORM SUBMISSION WIRED TO FORMSPREE */
-        document.getElementById('contactForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const contactData = {
-                form_type: 'Contact Message',
-                name: document.getElementById('contactName').value,
-                email: document.getElementById('contactEmail').value,
-                reason: document.getElementById('contactReason').value,
-                message: document.getElementById('contactMessage').value
-            };
-
-            fetch('https://formspree.io/f/xnjydzrk', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(contactData)
-            })
-            .then(response => {
-                alert(`Thank you for your feedback! Your message has been sent successfully.`);
-                document.getElementById('contactForm').reset();
-                contactModal.classList.remove('active');
-            })
-            .catch(error => {
-                console.error("Formspree contact send issue:", error);
-                alert(`Thank you for your feedback! Your message has been sent successfully.`);
-                contactModal.classList.remove('active');
-            });
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === viewModal) viewModal.classList.remove('active');
-            if (e.target === formModal) formModal.classList.remove('active');
-            if (e.target === aboutModal) aboutModal.classList.remove('active');
-            if (e.target === contactModal) contactModal.classList.remove('active');
-        });
+        // Initial Load
+        updateFormFields();
     </script>
 </body>
 </html>
