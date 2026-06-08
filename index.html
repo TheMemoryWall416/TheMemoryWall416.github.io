@@ -251,7 +251,7 @@
             box-sizing: border-box;
             transition: all 0.15s ease;
             flex-shrink: 0;
-            position: relative; /* Context placeholder for hover panel layout */
+            position: relative;
         }
 
         .brick-slot.empty {
@@ -416,9 +416,10 @@
         .pane-content { font-size: 0.9rem; color: #cccccc; line-height: 1.5; margin-bottom: 12px; }
         .pane-content:last-child { margin-bottom: 0; }
 
-        /* Flower Selection Layout */
+        /* --- BUTTON SELECTIONS & CUSTOM TOOLTIPS --- */
         .tribute-action-header { font-size: 0.8rem; color: #888888; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
         .tribute-button-row { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+        
         .flower-gift-btn {
             background-color: #1f1f24;
             border: 1px solid #3a3a42;
@@ -431,8 +432,35 @@
             color: #ffffff;
             font-size: 0.85rem;
             transition: all 0.2s;
+            position: relative; /* Context container for floating bubble absolute placements */
         }
         .flower-gift-btn:hover { background-color: #2a2a32; border-color: #ffffff; }
+
+        /* Floating Tooltip Bubble Rules */
+        .flower-gift-btn::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 135%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #111115;
+            border: 1px solid #444;
+            color: #ffffff;
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.6);
+            z-index: 500;
+        }
+        
+        .flower-gift-btn:hover::after {
+            opacity: 1;
+        }
 
         .close-btn { background-color: #222227; color: #aaa; border: 1px solid #444; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; width: 100%; box-sizing: border-box; }
         .close-btn:hover { background-color: #ff3344; color: white; border-color: #ff3344; }
@@ -559,10 +587,10 @@
 
             <div class="tribute-action-header">Leave a Symbol of Remembrance</div>
             <div class="tribute-button-row">
-                <button class="flower-gift-btn" onclick="giftTribute('roses')">🌹 <span id="countRoses">0</span></button>
-                <button class="flower-gift-btn" onclick="giftTribute('sunflowers')">🌻 <span id="countSunflowers">0</span></button>
-                <button class="flower-gift-btn" onclick="giftTribute('hyacinths')">🪻 <span id="countHyacinths">0</span></button>
-                <button class="flower-gift-btn" onclick="giftTribute('candles')">🕯️ <span id="countCandles">0</span></button>
+                <button class="flower-gift-btn" title="Place Rose" onclick="giftTribute('roses')">🌹 <span id="countRoses">0</span></button>
+                <button class="flower-gift-btn" title="Place Sunflower" onclick="giftTribute('sunflowers')">🌻 <span id="countSunflowers">0</span></button>
+                <button class="flower-gift-btn" title="Place Hyacinth" onclick="giftTribute('hyacinths')">🪻 <span id="countHyacinths">0</span></button>
+                <button class="flower-gift-btn" title="Place Candle" onclick="giftTribute('candles')">🕯️ <span id="countCandles">0</span></button>
             </div>
 
             <button class="close-btn" id="closeViewBtn">Close</button>
@@ -775,13 +803,11 @@
             
             slot.innerHTML = '';
             
-            // Text descriptor label
             const nameDiv = document.createElement('div');
             nameDiv.className = 'name';
             nameDiv.textContent = shortName;
             slot.appendChild(nameDiv);
 
-            // Floating mini-hover tray setup
             const tribs = item.tributes || { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
             const hoverTray = document.createElement('div');
             hoverTray.className = 'brick-hover-tray';
@@ -879,7 +905,7 @@
             activeWallData = []; 
             
             const jsonFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
-            fetch(jsonFile + '?nocache=' + Date.now()) // Avoids browser pulling old cache distributions
+            fetch(jsonFile + '?nocache=' + Date.now()) 
                 .then(response => {
                     if (!response.ok) throw new Error("JSON payload missing or empty");
                     return response.json();
@@ -1102,18 +1128,15 @@
         async function giftTribute(type) {
             if (!selectedBrickId) return;
             
-            // Find item locally to make UI snappy
             const record = activeWallData.find(item => item.id === selectedBrickId);
             if (!record) return;
 
-            // Increment locally instantly so user feels the click register
             if (!record.tributes) record.tributes = { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
             record.tributes[type] = (record.tributes[type] || 0) + 1;
             
             const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
             document.getElementById(labelId).textContent = record.tributes[type];
 
-            // Send payload to our Render server to update the main database on GitHub permanently
             try {
                 const response = await fetch(`${PROXY_URL}/api/add-tribute`, {
                     method: 'POST',
