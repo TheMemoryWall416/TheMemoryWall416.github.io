@@ -809,10 +809,14 @@
         let spotlightInterval = null;
         let selectedBrickId = null;
 
-        /* YOUTUBE IFRAME PLAYER ENGINE STATES */
+        /* YOUTUBE IFRAME PLAYER ENGINE CONFIGURATION */
         let ytAudioPlayer = null;
         let choiceIsSoundOn = false;
         let ytAPIReady = false;
+
+        // Tracks both unique song strings for automatic contextual shifts
+        const humanSongId = '4fqPcnuVPR8';
+        const petSongId = '6YpGJpSs0UU';
 
         // Injects YouTube IFrame Tracking Script
         const tag = document.createElement('script');
@@ -825,12 +829,12 @@
             ytAudioPlayer = new YT.Player('ytAudioEngineContainer', {
                 height: '1',
                 width: '1',
-                videoId: '4fqPcnuVPR8',
+                videoId: humanSongId,
                 playerVars: {
                     'autoplay': 0,
                     'controls': 0,
                     'loop': 1,
-                    'playlist': '4fqPcnuVPR8',
+                    'playlist': humanSongId,
                     'mute': 1
                 },
                 events: {
@@ -840,7 +844,6 @@
         }
 
         function onPlayerReady(event) {
-            // Player loaded safely. If selection has already been finalized, push actions immediately
             if (!audioSplashModal.classList.contains('active')) {
                 executeInitialAudioState();
             }
@@ -857,15 +860,19 @@
         function executeInitialAudioState() {
             if (!ytAudioPlayer) return;
             try {
+                // Initialize the player with the correct track for the current active view
+                const currentTrackId = (currentSection === 'animal') ? petSongId : humanSongId;
+                ytAudioPlayer.loadVideoById({ videoId: currentTrackId });
+
                 if (choiceIsSoundOn) {
                     ytAudioPlayer.unMute();
-                    ytAudioPlayer.setVolume(50); // Set to gentle background balance
+                    ytAudioPlayer.setVolume(50); 
                     ytAudioPlayer.playVideo();
                     document.getElementById('audioSlotIcon').textContent = '🎵';
                     document.getElementById('audioSlotStatus').textContent = 'Music: On';
                 } else {
                     ytAudioPlayer.mute();
-                    ytAudioPlayer.playVideo(); // Loop silently in the back
+                    ytAudioPlayer.playVideo(); 
                     document.getElementById('audioSlotIcon').textContent = '🔇';
                     document.getElementById('audioSlotStatus').textContent = 'Music: Off';
                 }
@@ -969,7 +976,6 @@
         function runSpotlightEngine() {
             if (spotlightInterval) clearInterval(spotlightInterval);
             function updateSpotlights() {
-                // We only rotate spots 0 to 4 (5 cards), leaving slot 5 pinned permanently for sound control
                 const totalCards = 5; 
                 let activeIndices = [];
 
@@ -1037,7 +1043,6 @@
             }
         }
 
-        /* LOAD ENGINE WITH ROBUST LOCALSTORAGE SYNCING */
         function loadAndRenderWall() {
             buildBlankGridSlots();
             activeWallData = []; 
@@ -1054,7 +1059,6 @@
                     if (Array.isArray(data)) {
                         activeWallData = data;
                         
-                        // Merge active localStorage tribute states safely into runtime configurations
                         const localData = localStorage.getItem(storageKey);
                         if (localData) {
                             try {
@@ -1137,6 +1141,7 @@
             }
         });
 
+        /* WALL SECTIONS AND CONTEXTUAL TRACK SWITCHES */
         humanWallBtn.addEventListener('click', () => {
             if (currentSection === 'human') return;
             currentSection = 'human';
@@ -1156,6 +1161,14 @@
             document.getElementById('dodContainer').innerHTML = '<input type="date" id="inputDOD" required>';
             
             document.getElementById('verificationWrapper').style.display = "flex";
+
+            // Dynamically load human background track if API is ready
+            if (ytAudioPlayer && typeof ytAudioPlayer.loadVideoById === 'function') {
+                ytAudioPlayer.loadVideoById({
+                    videoId: humanSongId,
+                    startSeconds: 0
+                });
+            }
 
             loadAndRenderWall();
         });
@@ -1179,6 +1192,14 @@
             document.getElementById('dodContainer').innerHTML = '<input type="number" id="inputDOD" min="1900" max="2100" placeholder="e.g. 2026" required>';
             
             document.getElementById('verificationWrapper').style.display = "none";
+
+            // Dynamically load animal wall background track if API is ready
+            if (ytAudioPlayer && typeof ytAudioPlayer.loadVideoById === 'function') {
+                ytAudioPlayer.loadVideoById({
+                    videoId: petSongId,
+                    startSeconds: 0
+                });
+            }
 
             loadAndRenderWall();
         });
@@ -1294,7 +1315,6 @@
             }
         });
 
-        /* SAVES TRIBUTES SECURELY AND PERMANENTLY THROUGH BOTH SERVER PROXY AND BROWSER MEMORY STORAGE */
         async function giftTribute(type) {
             if (!selectedBrickId) return;
             
@@ -1307,7 +1327,6 @@
             const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
             document.getElementById(labelId).textContent = record.tributes[type];
 
-            // Capture state immediately locally so a quick refresh does not destroy incremental values
             const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
             localStorage.setItem(storageKey, JSON.stringify(activeWallData));
 
