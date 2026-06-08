@@ -94,6 +94,20 @@
             opacity: 1;
         }
 
+        /* Atmosphere Pinned Card overrides */
+        #spotlight5 {
+            cursor: pointer;
+            border-color: #44444f;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        #spotlight5:hover {
+            background-color: #1f1f26;
+            border-color: #00ff88;
+        }
+        body.pet-mode-active #spotlight5:hover {
+            border-color: #00ff88;
+        }
+
         .spotlight-photo {
             width: 55px;
             height: 55px;
@@ -454,7 +468,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.15s ease;
-            box-shadow: 0px 4px 12px rgba(0,0,0,0.6);
+            box-shadow: 0px 4px 12 rgba(0,0,0,0.6);
             z-index: 500;
         }
         
@@ -466,6 +480,32 @@
         .close-btn:hover { background-color: #ff3344; color: white; border-color: #ff3344; }
         
         .about-text { text-align: left; font-size: 0.9rem; color: #cccccc; line-height: 1.5; margin-bottom: 20px; }
+
+        /* --- AUDIO OVERLAY POPUP SPLASH --- */
+        .audio-splash-btn {
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 12px 24px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .audio-splash-btn:hover {
+            transform: scale(1.05);
+            background-color: #00ff88;
+        }
+        .audio-splash-btn.secondary {
+            background-color: #222227;
+            color: #aaaaaa;
+            border: 1px solid #444;
+        }
+        .audio-splash-btn.secondary:hover {
+            background-color: #333339;
+            color: white;
+        }
 
         @media (max-width: 1200px) {
             header { flex-direction: column; height: auto; margin-top: 80px; }
@@ -544,13 +584,15 @@
                     <div class="spotlight-dates">...</div>
                 </div>
             </div>
-            <div class="spotlight-card" id="spotlight5">
-                <div class="spotlight-photo">🕊️</div>
+            
+            <div class="spotlight-card visible" id="spotlight5" onclick="toggleAtmosphereAudio()">
+                <div class="spotlight-photo" id="audioSlotIcon">🔇</div>
                 <div class="spotlight-info">
-                    <div class="spotlight-title">Spotlight</div>
-                    <div class="spotlight-name">...</div>
-                    <div class="spotlight-dates">...</div>
+                    <div class="spotlight-title" style="color: #666666;">Atmosphere</div>
+                    <div class="spotlight-name" id="audioSlotStatus">Music: Off</div>
+                    <div class="spotlight-dates" style="font-size: 0.58rem; color: #666;">Click to Toggle</div>
                 </div>
+                <div id="ytAudioEngineContainer" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;"></div>
             </div>
         </div>
     </header>
@@ -567,6 +609,18 @@
             <div class="wall-row" data-row-index="8"></div>
             <div class="wall-row" data-row-index="9"></div>
             <div class="wall-row" data-row-index="10"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay active" id="audioSplashModal">
+        <div class="modal-card" style="max-width: 400px; padding: 30px 20px;">
+            <div style="font-size: 2.5rem; margin-bottom: 15px;">🎼</div>
+            <h3 style="margin: 0 0 10px 0; letter-spacing: 1px; text-transform: uppercase;">Welcome to the Sanctuary</h3>
+            <p style="font-size: 0.9rem; color: #aaaaaa; line-height: 1.5; margin-bottom: 25px;">Would you like to enable the atmospheric instrumental background music while visiting the monument?</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="audio-splash-btn" onclick="handleSplashChoice(true)">Yes, Turn Sound On</button>
+                <button class="audio-splash-btn secondary" onclick="handleSplashChoice(false)">Keep Muted</button>
+            </div>
         </div>
     </div>
 
@@ -738,6 +792,7 @@
         const formModal = document.getElementById('formModal');
         const aboutModal = document.getElementById('aboutModal');
         const contactModal = document.getElementById('contactModal');
+        const audioSplashModal = document.getElementById('audioSplashModal');
         const modalName = document.getElementById('modalName');
         const modalOrigin = document.getElementById('modalOrigin');
         const modalDates = document.getElementById('modalDates');
@@ -753,6 +808,87 @@
         let activeWallData = []; 
         let spotlightInterval = null;
         let selectedBrickId = null;
+
+        /* YOUTUBE IFRAME PLAYER ENGINE STATES */
+        let ytAudioPlayer = null;
+        let choiceIsSoundOn = false;
+        let ytAPIReady = false;
+
+        // Injects YouTube IFrame Tracking Script
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            ytAPIReady = true;
+            ytAudioPlayer = new YT.Player('ytAudioEngineContainer', {
+                height: '1',
+                width: '1',
+                videoId: '4fqPcnuVPR8',
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': '4fqPcnuVPR8',
+                    'mute': 1
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Player loaded safely. If selection has already been finalized, push actions immediately
+            if (!audioSplashModal.classList.contains('active')) {
+                executeInitialAudioState();
+            }
+        }
+
+        function handleSplashChoice(wantsSound) {
+            choiceIsSoundOn = wantsSound;
+            audioSplashModal.classList.remove('active');
+            if (ytAudioPlayer && typeof ytAudioPlayer.playVideo === 'function') {
+                executeInitialAudioState();
+            }
+        }
+
+        function executeInitialAudioState() {
+            if (!ytAudioPlayer) return;
+            try {
+                if (choiceIsSoundOn) {
+                    ytAudioPlayer.unMute();
+                    ytAudioPlayer.setVolume(50); // Set to gentle background balance
+                    ytAudioPlayer.playVideo();
+                    document.getElementById('audioSlotIcon').textContent = '🎵';
+                    document.getElementById('audioSlotStatus').textContent = 'Music: On';
+                } else {
+                    ytAudioPlayer.mute();
+                    ytAudioPlayer.playVideo(); // Loop silently in the back
+                    document.getElementById('audioSlotIcon').textContent = '🔇';
+                    document.getElementById('audioSlotStatus').textContent = 'Music: Off';
+                }
+            } catch(e) {
+                console.error("Audio state engine firing error:", e);
+            }
+        }
+
+        function toggleAtmosphereAudio() {
+            if (!ytAudioPlayer || typeof ytAudioPlayer.isMuted !== 'function') return;
+            
+            if (ytAudioPlayer.isMuted()) {
+                ytAudioPlayer.unMute();
+                ytAudioPlayer.setVolume(50);
+                ytAudioPlayer.playVideo();
+                document.getElementById('audioSlotIcon').textContent = '🎵';
+                document.getElementById('audioSlotStatus').textContent = 'Music: On';
+            } else {
+                ytAudioPlayer.mute();
+                document.getElementById('audioSlotIcon').textContent = '🔇';
+                document.getElementById('audioSlotStatus').textContent = 'Music: Off';
+            }
+        }
 
         function expandGridColumns(count) {
             const rows = wallContainer.querySelectorAll('.wall-row');
@@ -833,7 +969,8 @@
         function runSpotlightEngine() {
             if (spotlightInterval) clearInterval(spotlightInterval);
             function updateSpotlights() {
-                const totalCards = 6;
+                // We only rotate spots 0 to 4 (5 cards), leaving slot 5 pinned permanently for sound control
+                const totalCards = 5; 
                 let activeIndices = [];
 
                 if (!activeWallData || activeWallData.length === 0) {
@@ -895,7 +1032,7 @@
             }
 
             updateSpotlights();
-            if (activeWallData && activeWallData.length > 6) {
+            if (activeWallData && activeWallData.length > 5) {
                 spotlightInterval = setInterval(updateSpotlights, 3000);
             }
         }
