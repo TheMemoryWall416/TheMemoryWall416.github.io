@@ -958,31 +958,39 @@
         document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
         document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
 
-        /* FORM SUBMISSION WITH EMAIL NOTIFICATION VIA FORMSPREE */
+        /* FORM SUBMISSION WITH FILE UPLOAD SUPPORT */
         document.getElementById('brickForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const formData = {
-                form_type: 'Brick Submission',
-                wall_type: currentSection,
-                name: document.getElementById('inputName').value,
-                dob: document.getElementById('inputDOB').value,
-                dod: document.getElementById('inputDOD').value,
-                country: document.getElementById('inputCountry').value,
-                relationship: document.getElementById('inputRelationship').value,
-                biography: document.getElementById('inputBio').value,
-                encouragement: document.getElementById('inputEncouragement').value,
-                email: document.getElementById('inputEmail').value,
-                verification: document.getElementById('inputVerification') ? document.getElementById('inputVerification').value : ''
-            };
+            // Create a FormData object instead of plain text JSON
+            const formData = new FormData();
+            
+            formData.append('form_type', 'Brick Submission');
+            formData.append('wall_type', currentSection);
+            formData.append('name', document.getElementById('inputName').value);
+            formData.append('dob', document.getElementById('inputDOB').value);
+            formData.append('dod', document.getElementById('inputDOD').value);
+            formData.append('country', document.getElementById('inputCountry').value);
+            formData.append('relationship', document.getElementById('inputRelationship').value);
+            formData.append('biography', document.getElementById('inputBio').value);
+            formData.append('encouragement', document.getElementById('inputEncouragement').value);
+            formData.append('email', document.getElementById('inputEmail').value);
+            if (document.getElementById('inputVerification')) {
+                formData.append('verification', document.getElementById('inputVerification').value);
+            }
+
+            // Grab the actual file from the input link field
+            const photoInput = document.getElementById('inputPhoto');
+            if (photoInput && photoInput.files.length > 0) {
+                formData.append('photo', photoInput.files[0]);
+            }
 
             fetch('https://formspree.io/f/xnjydzrk', {
                 method: 'POST',
+                body: formData, // Send the FormData object directly
                 headers: {
-                    'Content-Type': 'application/json',
                     'Accept': 'application/json'
-                },
-                body: JSON.stringify(formData)
+                }
             })
             .then(response => {
                 alert("Payment Required: Please handle submissions using our direct dashboard settings via Stripe checkout processing.");
