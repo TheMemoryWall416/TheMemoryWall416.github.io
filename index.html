@@ -519,6 +519,10 @@
             <div id="brickCounter" style="font-size: 0.9rem; color: #ffffff; margin-top: 10px; letter-spacing: 1px; font-weight: bold;">
                 Souls Honored: 0
             </div>
+
+            <div id="wallSubQuote" style="font-size: 0.78rem; font-style: italic; color: #77777f; margin-top: 8px; line-height: 1.4; max-width: 90%; margin-left: auto; margin-right: auto; letter-spacing: 0.5px;">
+                Every brick holds a story, a legacy, and a love that outlasts time.
+            </div>
         </div>
 
         <div class="spotlight-side right-side">
@@ -732,6 +736,7 @@
         const humanWallBtn = document.getElementById('humanWallBtn');
         const petWallBtn = document.getElementById('petWallBtn');
         const formTitle = document.getElementById('formTitle');
+        const wallSubQuote = document.getElementById('wallSubQuote');
         let totalColumns = 0;
         let currentSection = 'human';
         let activeWallData = []; 
@@ -979,6 +984,10 @@
             humanWallBtn.classList.add('active');
             petWallBtn.classList.remove('active');
             
+            // Swap to Human Dedication Text
+            wallSubQuote.textContent = "Every brick holds a story, a legacy, and a love that outlasts time.";
+            wallSubQuote.style.color = "#77777f";
+
             document.getElementById('lblFullName').textContent = "Full Name";
             document.getElementById('inputName').placeholder = "e.g. Samuel Evans";
             document.getElementById('lblBio').textContent = "Biography / Life Story — Optional";
@@ -1001,6 +1010,10 @@
             petWallBtn.classList.add('active');
             humanWallBtn.classList.remove('active');
             
+            // Swap to Pet Dedication Text
+            wallSubQuote.textContent = "Love them deeply. Their whole life is time spent with you.";
+            wallSubQuote.style.color = "#00bb66";
+
             document.getElementById('lblFullName').textContent = "Pet's Name";
             document.getElementById('inputName').placeholder = "e.g. Max or Bella";
             document.getElementById('lblBio').textContent = "Pet Story & Memories — Optional";
