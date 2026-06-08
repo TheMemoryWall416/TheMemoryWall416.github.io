@@ -96,16 +96,7 @@
 
         /* Atmosphere Pinned Card overrides */
         #spotlight5 {
-            cursor: pointer;
-            border-color: #44444f;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-        }
-        #spotlight5:hover {
-            background-color: #1f1f26;
-            border-color: #00ff88;
-        }
-        body.pet-mode-active #spotlight5:hover {
-            border-color: #00ff88;
+            border-color: #33333b;
         }
 
         .spotlight-photo {
@@ -168,6 +159,28 @@
             color: #666666;
             font-size: 0.9rem;
             margin: 0 0 20px 0;
+        }
+
+        /* Atmosphere Audio Volume Slider styling */
+        .volume-slider {
+            width: 90%;
+            margin-top: 6px;
+            background: #222227;
+            outline: none;
+            height: 4px;
+            border-radius: 2px;
+            -webkit-appearance: none;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #666666;
+            cursor: pointer;
+        }
+        body.pet-mode-active .volume-slider::-webkit-slider-thumb {
+            background: #00ff88;
         }
 
         /* --- CONTROLS & SWITCHES --- */
@@ -481,32 +494,6 @@
         
         .about-text { text-align: left; font-size: 0.9rem; color: #cccccc; line-height: 1.5; margin-bottom: 20px; }
 
-        /* --- AUDIO OVERLAY POPUP SPLASH --- */
-        .audio-splash-btn {
-            background-color: #ffffff;
-            color: #000000;
-            border: none;
-            padding: 12px 24px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-        }
-        .audio-splash-btn:hover {
-            transform: scale(1.05);
-            background-color: #00ff88;
-        }
-        .audio-splash-btn.secondary {
-            background-color: #222227;
-            color: #aaaaaa;
-            border: 1px solid #444;
-        }
-        .audio-splash-btn.secondary:hover {
-            background-color: #333339;
-            color: white;
-        }
-
         @media (max-width: 1200px) {
             header { flex-direction: column; height: auto; margin-top: 80px; }
             .spotlight-side { justify-content: center; flex-wrap: wrap; }
@@ -585,14 +572,13 @@
                 </div>
             </div>
             
-            <div class="spotlight-card visible" id="spotlight5" onclick="toggleAtmosphereAudio()">
-                <div class="spotlight-photo" id="audioSlotIcon">🔇</div>
+            <div class="spotlight-card visible" id="spotlight5">
+                <div class="spotlight-photo">🔇</div>
                 <div class="spotlight-info">
-                    <div class="spotlight-title" style="color: #666666;">Atmosphere</div>
-                    <div class="spotlight-name" id="audioSlotStatus">Music: Off</div>
-                    <div class="spotlight-dates" style="font-size: 0.58rem; color: #666;">Click to Toggle</div>
+                    <div class="spotlight-title">Atmosphere</div>
+                    <div class="spotlight-name" style="font-size:0.7rem; color:#666;">Volume: Off</div>
+                    <input type="range" class="volume-slider" min="0" max="100" value="0">
                 </div>
-                <div id="ytAudioEngineContainer" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;"></div>
             </div>
         </div>
     </header>
@@ -609,18 +595,6 @@
             <div class="wall-row" data-row-index="8"></div>
             <div class="wall-row" data-row-index="9"></div>
             <div class="wall-row" data-row-index="10"></div>
-        </div>
-    </div>
-
-    <div class="modal-overlay active" id="audioSplashModal">
-        <div class="modal-card" style="max-width: 400px; padding: 30px 20px;">
-            <div style="font-size: 2.5rem; margin-bottom: 15px;">🎼</div>
-            <h3 style="margin: 0 0 10px 0; letter-spacing: 1px; text-transform: uppercase;">Welcome to the Sanctuary</h3>
-            <p style="font-size: 0.9rem; color: #aaaaaa; line-height: 1.5; margin-bottom: 25px;">Would you like to enable the atmospheric instrumental background music while visiting the monument?</p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="audio-splash-btn" onclick="handleSplashChoice(true)">Yes, Turn Sound On</button>
-                <button class="audio-splash-btn secondary" onclick="handleSplashChoice(false)">Keep Muted</button>
-            </div>
         </div>
     </div>
 
@@ -792,7 +766,6 @@
         const formModal = document.getElementById('formModal');
         const aboutModal = document.getElementById('aboutModal');
         const contactModal = document.getElementById('contactModal');
-        const audioSplashModal = document.getElementById('audioSplashModal');
         const modalName = document.getElementById('modalName');
         const modalOrigin = document.getElementById('modalOrigin');
         const modalDates = document.getElementById('modalDates');
@@ -808,94 +781,6 @@
         let activeWallData = []; 
         let spotlightInterval = null;
         let selectedBrickId = null;
-
-        /* YOUTUBE IFRAME PLAYER ENGINE CONFIGURATION */
-        let ytAudioPlayer = null;
-        let choiceIsSoundOn = false;
-        let ytAPIReady = false;
-
-        // Tracks both unique song strings for automatic contextual shifts
-        const humanSongId = '4fqPcnuVPR8';
-        const petSongId = '6YpGJpSs0UU';
-
-        // Injects YouTube IFrame Tracking Script
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        function onYouTubeIframeAPIReady() {
-            ytAPIReady = true;
-            ytAudioPlayer = new YT.Player('ytAudioEngineContainer', {
-                height: '1',
-                width: '1',
-                videoId: humanSongId,
-                playerVars: {
-                    'autoplay': 0,
-                    'controls': 0,
-                    'loop': 1,
-                    'playlist': humanSongId,
-                    'mute': 1
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            if (!audioSplashModal.classList.contains('active')) {
-                executeInitialAudioState();
-            }
-        }
-
-        function handleSplashChoice(wantsSound) {
-            choiceIsSoundOn = wantsSound;
-            audioSplashModal.classList.remove('active');
-            if (ytAudioPlayer && typeof ytAudioPlayer.playVideo === 'function') {
-                executeInitialAudioState();
-            }
-        }
-
-        function executeInitialAudioState() {
-            if (!ytAudioPlayer) return;
-            try {
-                // Initialize the player with the correct track for the current active view
-                const currentTrackId = (currentSection === 'animal') ? petSongId : humanSongId;
-                ytAudioPlayer.loadVideoById({ videoId: currentTrackId });
-
-                if (choiceIsSoundOn) {
-                    ytAudioPlayer.unMute();
-                    ytAudioPlayer.setVolume(50); 
-                    ytAudioPlayer.playVideo();
-                    document.getElementById('audioSlotIcon').textContent = '🎵';
-                    document.getElementById('audioSlotStatus').textContent = 'Music: On';
-                } else {
-                    ytAudioPlayer.mute();
-                    ytAudioPlayer.playVideo(); 
-                    document.getElementById('audioSlotIcon').textContent = '🔇';
-                    document.getElementById('audioSlotStatus').textContent = 'Music: Off';
-                }
-            } catch(e) {
-                console.error("Audio state engine firing error:", e);
-            }
-        }
-
-        function toggleAtmosphereAudio() {
-            if (!ytAudioPlayer || typeof ytAudioPlayer.isMuted !== 'function') return;
-            
-            if (ytAudioPlayer.isMuted()) {
-                ytAudioPlayer.unMute();
-                ytAudioPlayer.setVolume(50);
-                ytAudioPlayer.playVideo();
-                document.getElementById('audioSlotIcon').textContent = '🎵';
-                document.getElementById('audioSlotStatus').textContent = 'Music: On';
-            } else {
-                ytAudioPlayer.mute();
-                document.getElementById('audioSlotIcon').textContent = '🔇';
-                document.getElementById('audioSlotStatus').textContent = 'Music: Off';
-            }
-        }
 
         function expandGridColumns(count) {
             const rows = wallContainer.querySelectorAll('.wall-row');
@@ -1141,7 +1026,7 @@
             }
         });
 
-        /* WALL SECTIONS AND CONTEXTUAL TRACK SWITCHES */
+        /* WALL SECTIONS SWITCHES */
         humanWallBtn.addEventListener('click', () => {
             if (currentSection === 'human') return;
             currentSection = 'human';
@@ -1161,14 +1046,6 @@
             document.getElementById('dodContainer').innerHTML = '<input type="date" id="inputDOD" required>';
             
             document.getElementById('verificationWrapper').style.display = "flex";
-
-            // Dynamically load human background track if API is ready
-            if (ytAudioPlayer && typeof ytAudioPlayer.loadVideoById === 'function') {
-                ytAudioPlayer.loadVideoById({
-                    videoId: humanSongId,
-                    startSeconds: 0
-                });
-            }
 
             loadAndRenderWall();
         });
@@ -1192,14 +1069,6 @@
             document.getElementById('dodContainer').innerHTML = '<input type="number" id="inputDOD" min="1900" max="2100" placeholder="e.g. 2026" required>';
             
             document.getElementById('verificationWrapper').style.display = "none";
-
-            // Dynamically load animal wall background track if API is ready
-            if (ytAudioPlayer && typeof ytAudioPlayer.loadVideoById === 'function') {
-                ytAudioPlayer.loadVideoById({
-                    videoId: petSongId,
-                    startSeconds: 0
-                });
-            }
 
             loadAndRenderWall();
         });
