@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": "h1",
+    "name": "John Doe",
+    "lifespan": "1950 - 2024",
+    "location": "New York",
+    "image": "images/h1.jpg"
+  },
+  {
+    "id": "h2",
+    "name": "Jane Smith",
+    "lifespan": "1945 - 2023",
+    "location": "Texas",
+    "image": "images/placeholder.jpg"
+  }
+]
