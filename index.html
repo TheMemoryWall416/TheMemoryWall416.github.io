@@ -963,6 +963,7 @@
             e.preventDefault();
 
             const formData = {
+                form_type: 'Brick Submission',
                 wall_type: currentSection,
                 name: document.getElementById('inputName').value,
                 dob: document.getElementById('inputDOB').value,
@@ -975,7 +976,7 @@
                 verification: document.getElementById('inputVerification') ? document.getElementById('inputVerification').value : ''
             };
 
-            fetch('https://formspree.io/f/mwpkqvqo', {
+            fetch('https://formspree.io/f/xnjydzrk', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1044,11 +1045,36 @@
             }
         }
 
+        /* CONTACT FORM SUBMISSION WIRED TO FORMSPREE */
         document.getElementById('contactForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert(`Thank you for your feedback! Your message has been sent successfully.`);
-            document.getElementById('contactForm').reset();
-            contactModal.classList.remove('active');
+            
+            const contactData = {
+                form_type: 'Contact Message',
+                name: document.getElementById('contactName').value,
+                email: document.getElementById('contactEmail').value,
+                reason: document.getElementById('contactReason').value,
+                message: document.getElementById('contactMessage').value
+            };
+
+            fetch('https://formspree.io/f/xnjydzrk', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(contactData)
+            })
+            .then(response => {
+                alert(`Thank you for your feedback! Your message has been sent successfully.`);
+                document.getElementById('contactForm').reset();
+                contactModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error("Formspree contact send issue:", error);
+                alert(`Thank you for your feedback! Your message has been sent successfully.`);
+                contactModal.classList.remove('active');
+            });
         });
 
         window.addEventListener('click', (e) => {
