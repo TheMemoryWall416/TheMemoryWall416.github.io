@@ -1,2 +1,21 @@
 [
+  {
+    "id": "brick_1780952211233",
+    "name": "Samual Monro",
+    "date_of_birth": "2022-06-08",
+    "date_of_death": "2026-06-03",
+    "country": "Brazil",
+    "relationship": "Admirer",
+    "biography": "123",
+    "encouragement": "123@",
+    "email": "123@fff",
+    "verification": "1244",
+    "photo_url": "https://raw.githubusercontent.com/TheMemoryWall416/TheMemoryWall416.github.io/main/uploads/1780952207628_A_confident_asian_businesswoman_in_a_modern_glass_office,_reviewing_data_on_a_holographic_display.jpeg",
+    "tributes": {
+      "roses": 0,
+      "sunflowers": 0,
+      "hyacinths": 0,
+      "candles": 0
+    }
+  }
 ]
