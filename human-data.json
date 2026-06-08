@@ -12,5 +12,24 @@
     "lifespan": "1945 - 2023",
     "location": "Texas",
     "image": "images/placeholder.jpg"
+  },
+  {
+    "id": "brick_1780938131889",
+    "name": "Andy Barrymmore",
+    "date_of_birth": "2025-07-09",
+    "date_of_death": "2026-06-24",
+    "country": "Brazil",
+    "relationship": "Family Member",
+    "biography": "",
+    "encouragement": "",
+    "email": "",
+    "verification": "",
+    "photo_url": "",
+    "tributes": {
+      "roses": 0,
+      "sunflowers": 0,
+      "hyacinths": 0,
+      "candles": 0
+    }
   }
 ]
