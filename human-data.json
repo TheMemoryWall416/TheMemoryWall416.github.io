@@ -50,24 +50,5 @@
       "hyacinths": 1,
       "candles": 4
     }
-  },
-  {
-    "id": "brick_1780946139838",
-    "name": "Jack Jhonson",
-    "date_of_birth": "2016-06-07",
-    "date_of_death": "2026-06-04",
-    "country": "United States",
-    "relationship": "Admirer",
-    "biography": "",
-    "encouragement": "",
-    "email": "",
-    "verification": "",
-    "photo_url": "",
-    "tributes": {
-      "roses": 0,
-      "sunflowers": 0,
-      "hyacinths": 0,
-      "candles": 0
-    }
   }
 ]
