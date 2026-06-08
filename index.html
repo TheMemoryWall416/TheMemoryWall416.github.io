@@ -327,38 +327,6 @@
             pointer-events: none;
         }
 
-        /* --- FLOATING HOVER TRIBUTE PANEL --- */
-        .brick-hover-tray {
-            position: absolute;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #111115;
-            border: 1px solid #444;
-            padding: 4px 6px;
-            border-radius: 4px;
-            display: flex;
-            gap: 6px;
-            font-size: 0.5rem;
-            color: white;
-            pointer-events: none;
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.15s ease;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
-            z-index: 200;
-        }
-
-        .brick-slot.filled:hover .brick-hover-tray {
-            opacity: 1;
-        }
-
-        .hover-tribute-item {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-
         /* --- POPUP WINDOW OVERLAYS --- */
         .modal-overlay {
             position: fixed;
@@ -835,17 +803,6 @@
             nameDiv.className = 'name';
             nameDiv.textContent = shortName;
             slot.appendChild(nameDiv);
-
-            const tribs = item.tributes || { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
-            const hoverTray = document.createElement('div');
-            hoverTray.className = 'brick-hover-tray';
-            hoverTray.innerHTML = `
-                <div class="hover-tribute-item">🌹<span>${tribs.roses || 0}</span></div>
-                <div class="hover-tribute-item">🌻<span>${tribs.sunflowers || 0}</span></div>
-                <div class="hover-tribute-item">🪻<span>${tribs.hyacinths || 0}</span></div>
-                <div class="hover-tribute-item">🕯️<span>${tribs.candles || 0}</span></div>
-            `;
-            slot.appendChild(hoverTray);
         }
 
         function formatDisplayDates(dobStr, dodStr) {
