@@ -958,12 +958,41 @@
         document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
         document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
 
-        /* FORM SUBMISSION OVERRIDE FOR THE NEW STRIPE/MANUAL DATA ENTRY MODEL */
-        document.getElementById('brickForm').addEventListener('submit', (e) => {
+        /* FORM SUBMISSION WITH EMAIL NOTIFICATION VIA FORMSPREE */
+        document.getElementById('brickForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert("Payment Required: Please handle submissions using our direct dashboard settings via Stripe checkout processing.");
-            document.getElementById('brickForm').reset();
-            formModal.classList.remove('active');
+
+            const formData = {
+                wall_type: currentSection,
+                name: document.getElementById('inputName').value,
+                dob: document.getElementById('inputDOB').value,
+                dod: document.getElementById('inputDOD').value,
+                country: document.getElementById('inputCountry').value,
+                relationship: document.getElementById('inputRelationship').value,
+                biography: document.getElementById('inputBio').value,
+                encouragement: document.getElementById('inputEncouragement').value,
+                email: document.getElementById('inputEmail').value,
+                verification: document.getElementById('inputVerification') ? document.getElementById('inputVerification').value : ''
+            };
+
+            fetch('https://formspree.io/f/mwpkqvqo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                alert("Payment Required: Please handle submissions using our direct dashboard settings via Stripe checkout processing.");
+                document.getElementById('brickForm').reset();
+                formModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error("Formspree sync connection issue:", error);
+                alert("Payment Required: Please handle submissions using our direct dashboard settings via Stripe checkout processing.");
+                formModal.classList.remove('active');
+            });
         });
 
         /* INTERACTIVE MODAL DETAILS VIEWER */
