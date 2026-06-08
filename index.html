@@ -432,11 +432,11 @@
             color: #ffffff;
             font-size: 0.85rem;
             transition: all 0.2s;
-            position: relative; /* Context container for floating bubble absolute placements */
+            position: relative;
         }
         .flower-gift-btn:hover { background-color: #2a2a32; border-color: #ffffff; }
 
-        /* Floating Tooltip Bubble Rules */
+        /* Floating Bubble Custom Tooltip Styles */
         .flower-gift-btn::after {
             content: attr(title);
             position: absolute;
@@ -900,11 +900,14 @@
             }
         }
 
+        /* LOAD ENGINE WITH ROBUST LOCALSTORAGE SYNCING */
         function loadAndRenderWall() {
             buildBlankGridSlots();
             activeWallData = []; 
             
+            const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
             const jsonFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
+            
             fetch(jsonFile + '?nocache=' + Date.now()) 
                 .then(response => {
                     if (!response.ok) throw new Error("JSON payload missing or empty");
@@ -913,6 +916,24 @@
                 .then(data => {
                     if (Array.isArray(data)) {
                         activeWallData = data;
+                        
+                        // Merge active localStorage tribute states safely into runtime configurations
+                        const localData = localStorage.getItem(storageKey);
+                        if (localData) {
+                            try {
+                                const localEntries = JSON.parse(localData);
+                                activeWallData = activeWallData.map(serverItem => {
+                                    const localItem = localEntries.find(l => l.id === serverItem.id);
+                                    if (localItem && localItem.tributes) {
+                                        serverItem.tributes = localItem.tributes;
+                                    }
+                                    return serverItem;
+                                });
+                            } catch (e) {
+                                console.error("Error matching local tracking storage states:", e);
+                            }
+                        }
+
                         activeWallData.forEach(item => {
                             const targetSlot = findNextEmptySlot();
                             if (targetSlot) populateSlot(targetSlot, item);
@@ -922,7 +943,19 @@
                     runSpotlightEngine();
                 })
                 .catch(err => {
-                    console.warn("Handled Empty Database Safely.", err);
+                    console.warn("Handled Empty Database Safely. Trying local storage backup.", err);
+                    const localData = localStorage.getItem(storageKey);
+                    if (localData) {
+                        try {
+                            activeWallData = JSON.parse(localData);
+                            activeWallData.forEach(item => {
+                                const targetSlot = findNextEmptySlot();
+                                if (targetSlot) populateSlot(targetSlot, item);
+                            });
+                        } catch (e) {
+                            console.error("Local client asset recovery sequence failed:", e);
+                        }
+                    }
                     updateCounterDisplay();
                     runSpotlightEngine();
                 });
@@ -1124,7 +1157,7 @@
             }
         });
 
-        /* SAVES TRIBUTES SECURELY AND PERMANENTLY THROUGH PROXY */
+        /* SAVES TRIBUTES SECURELY AND PERMANENTLY THROUGH BOTH SERVER PROXY AND BROWSER MEMORY STORAGE */
         async function giftTribute(type) {
             if (!selectedBrickId) return;
             
@@ -1136,6 +1169,10 @@
             
             const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
             document.getElementById(labelId).textContent = record.tributes[type];
+
+            // Capture state immediately locally so a quick refresh does not destroy incremental values
+            const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
+            localStorage.setItem(storageKey, JSON.stringify(activeWallData));
 
             try {
                 const response = await fetch(`${PROXY_URL}/api/add-tribute`, {
@@ -1150,7 +1187,7 @@
                 
                 const result = await response.json();
                 if (!result.success) {
-                    console.error("Database update rejected:", result.error);
+                    console.error("Database updates rejected by proxy stream node:", result.error);
                 }
             } catch (error) {
                 console.error("Failed syncing tribute back to repository node:", error);
