@@ -355,7 +355,7 @@
             font-size: 0.72rem;
             color: #77777f;
             line-height: 1.4;
-            margin-top: 5px;
+            margin-top: 2px;
             display: block;
         }
 
@@ -665,8 +665,6 @@
         </div>
     </div>
 
-    <script src="initial-data.js"></script>
-
     <script>
         const wallViewport = document.getElementById('wallViewport');
         const wallContainer = document.getElementById('wallContainer');
@@ -816,7 +814,7 @@
             spotlightInterval = setInterval(updateSpotlights, 3000); 
         }
 
-        /* LOAD ENGINE WITH EXTERNAL SOURCE BACKUP BOOTLOADER */
+        /* OPTION A: LOCALSTORAGE LOAD AND RENDERING AGENT */
         function loadAndRenderWall() {
             buildBlankGridSlots();
             activeWallData = []; 
@@ -828,14 +826,7 @@
             if (savedData) {
                 activeWallData = JSON.parse(savedData);
             } else {
-                // If LocalStorage registry is vacant, inject items directly from linked initial-data.js file
-                if (currentSection === 'human' && typeof initialHumans !== 'undefined') {
-                    activeWallData = initialHumans;
-                    localStorage.setItem('memory_wall_humans', JSON.stringify(initialHumans));
-                } else if (currentSection === 'animal' && typeof initialPets !== 'undefined') {
-                    activeWallData = initialPets;
-                    localStorage.setItem('memory_wall_animals', JSON.stringify(initialPets));
-                }
+                activeWallData = [];
             }
             
             activeWallData.forEach(item => {
@@ -923,7 +914,7 @@
         document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
         document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
 
-        /* FORM SUBMIT HANDLING WITH DATABASE UPDATE LOCKS */
+        /* FORM TRIBUTE SUBMIT ACTION WITH LOCALSTORAGE DATA PERSISTENCE */
         document.getElementById('brickForm').addEventListener('submit', (e) => {
             e.preventDefault();
             
@@ -967,6 +958,7 @@
                 populateSlot(targetSlot, newBrickRecord);
                 activeWallData.push(newBrickRecord);
                 
+                // Write out active dataset directly back into the browser storage registry
                 const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
                 localStorage.setItem(storageKey, JSON.stringify(activeWallData));
 
@@ -984,7 +976,7 @@
             formModal.classList.remove('active');
         });
 
-        /* DETAILS MODAL CONTAINER OBJECT VIEWER */
+        /* INTERACTIVE MODAL DETAILS VIEWER */
         wallContainer.addEventListener('click', (e) => {
             const brick = e.target.closest('.brick-slot.filled');
             if (brick) {
@@ -1016,7 +1008,7 @@
             }
         });
 
-        /* TRIBUTE INCREMENT LOGIC WITH LOCALSTORAGE BACKEND PERSISTENCE */
+        /* TRIBUTE INCREMENT TRIGGER WITH STORAGE UPDATING */
         function giftTribute(type) {
             if (!selectedBrickId) return;
             const record = activeWallData.find(item => item.id === selectedBrickId);
@@ -1027,6 +1019,7 @@
                 const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
                 document.getElementById(labelId).textContent = record.tributes[type];
                 
+                // Commit changes instantly down into browser memory
                 const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
                 localStorage.setItem(storageKey, JSON.stringify(activeWallData));
             }
@@ -1034,6 +1027,7 @@
 
         document.getElementById('contactForm').addEventListener('submit', (e) => {
             e.preventDefault();
+            const reason = document.getElementById('contactReason').value;
             alert(`Thank you for your feedback! Your message has been sent successfully.`);
             document.getElementById('contactForm').reset();
             contactModal.classList.remove('active');
