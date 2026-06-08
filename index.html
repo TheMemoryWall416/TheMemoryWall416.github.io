@@ -251,6 +251,7 @@
             box-sizing: border-box;
             transition: all 0.15s ease;
             flex-shrink: 0;
+            position: relative; /* Context placeholder for hover panel layout */
         }
 
         .brick-slot.empty {
@@ -297,6 +298,38 @@
             width: 100%;
             padding: 0 2px;
             pointer-events: none;
+        }
+
+        /* --- FLOATING HOVER TRIBUTE PANEL --- */
+        .brick-hover-tray {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #111115;
+            border: 1px solid #444;
+            padding: 4px 6px;
+            border-radius: 4px;
+            display: flex;
+            gap: 6px;
+            font-size: 0.5rem;
+            color: white;
+            pointer-events: none;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+            z-index: 200;
+        }
+
+        .brick-slot.filled:hover .brick-hover-tray {
+            opacity: 1;
+        }
+
+        .hover-tribute-item {
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
 
         /* --- POPUP WINDOW OVERLAYS --- */
@@ -741,10 +774,24 @@
             slot.setAttribute('data-id', item.id);
             
             slot.innerHTML = '';
+            
+            // Text descriptor label
             const nameDiv = document.createElement('div');
             nameDiv.className = 'name';
             nameDiv.textContent = shortName;
             slot.appendChild(nameDiv);
+
+            // Floating mini-hover tray setup
+            const tribs = item.tributes || { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
+            const hoverTray = document.createElement('div');
+            hoverTray.className = 'brick-hover-tray';
+            hoverTray.innerHTML = `
+                <div class="hover-tribute-item">🌹<span>${tribs.roses || 0}</span></div>
+                <div class="hover-tribute-item">🌻<span>${tribs.sunflowers || 0}</span></div>
+                <div class="hover-tribute-item">🪻<span>${tribs.hyacinths || 0}</span></div>
+                <div class="hover-tribute-item">🕯️<span>${tribs.candles || 0}</span></div>
+            `;
+            slot.appendChild(hoverTray);
         }
 
         function formatDisplayDates(dobStr, dodStr) {
@@ -757,7 +804,6 @@
             return `${dobStr} — ${dodStr}`;
         }
 
-        /* 6-CARD UNIQUE RANDOM SHUFFLE ENGINE */
         function runSpotlightEngine() {
             if (spotlightInterval) clearInterval(spotlightInterval);
             function updateSpotlights() {
@@ -828,13 +874,12 @@
             }
         }
 
-        /* --- BULLETPROOF MANUAL JSON LOADER --- */
         function loadAndRenderWall() {
             buildBlankGridSlots();
             activeWallData = []; 
             
             const jsonFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
-            fetch(jsonFile)
+            fetch(jsonFile + '?nocache=' + Date.now()) // Avoids browser pulling old cache distributions
                 .then(response => {
                     if (!response.ok) throw new Error("JSON payload missing or empty");
                     return response.json();
@@ -851,7 +896,7 @@
                     runSpotlightEngine();
                 })
                 .catch(err => {
-                    console.warn("Handled Empty File Status Safely. Grid is built, waiting for data injection.", err);
+                    console.warn("Handled Empty Database Safely.", err);
                     updateCounterDisplay();
                     runSpotlightEngine();
                 });
@@ -869,7 +914,6 @@
             }
         }
 
-        /* --- LIVE TRAFFIC HIT TRACKER --- */
         function loadVisitorCounter() {
             const subTitle = document.querySelector('.header-center p');
             if(!subTitle) return;
@@ -885,18 +929,18 @@
                 .catch(err => console.error("Traffic tracker ping error:", err));
         }
 
-        // Initialize complete frontend asset array clean on launch load
         document.addEventListener("DOMContentLoaded", () => {
             loadAndRenderWall();
             loadVisitorCounter();
         });
+        
         wallViewport.addEventListener('scroll', () => {
             const maxScrollLeft = wallViewport.scrollWidth - wallViewport.clientWidth;
             if (wallViewport.scrollLeft >= maxScrollLeft - 150) {
                 expandGridColumns(20);
             }
         });
-        /* DYNAMIC ADAPTATION TRANSITIONS (HUMAN VS. PET FIELDS) */
+
         humanWallBtn.addEventListener('click', () => {
             if (currentSection === 'human') return;
             currentSection = 'human';
@@ -919,6 +963,7 @@
 
             loadAndRenderWall();
         });
+        
         petWallBtn.addEventListener('click', () => {
             if (currentSection === 'animal') return;
             currentSection = 'animal';
@@ -955,7 +1000,6 @@
         document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
         document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
 
-        /* CONNECTED TO SECURE RENDER PROXY BACKEND */
         document.getElementById('brickForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -978,7 +1022,6 @@
             let photoName = null;
 
             try {
-                // If a picture is chosen, prepare it for transfer
                 if (photoInput && photoInput.files.length > 0) {
                     const file = photoInput.files[0];
                     photoName = file.name;
@@ -989,7 +1032,6 @@
                     });
                 }
 
-                // Compile data package to pass through the proxy gate
                 const payload = {
                     currentSection, name, dob, dod, country, relationship,
                     biography, encouragement, email, verification,
@@ -1008,7 +1050,7 @@
                     alert("Success! Your brick has been permanently placed onto the global monument.");
                     document.getElementById('brickForm').reset();
                     formModal.classList.remove('active');
-                    loadAndRenderWall(); // Reload grid live
+                    loadAndRenderWall(); 
                 } else {
                     throw new Error(result.error || "Server processing rejected data structure.");
                 }
@@ -1056,18 +1098,39 @@
             }
         });
 
-        /* LOCAL TRIBUTE INTERACTION REGISTER */
-        function giftTribute(type) {
+        /* SAVES TRIBUTES SECURELY AND PERMANENTLY THROUGH PROXY */
+        async function giftTribute(type) {
             if (!selectedBrickId) return;
+            
+            // Find item locally to make UI snappy
             const record = activeWallData.find(item => item.id === selectedBrickId);
-            if (record) {
-                if (!record.tributes) record.tributes = { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
-                record.tributes[type] = (record.tributes[type] || 0) + 1;
+            if (!record) return;
+
+            // Increment locally instantly so user feels the click register
+            if (!record.tributes) record.tributes = { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
+            record.tributes[type] = (record.tributes[type] || 0) + 1;
+            
+            const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
+            document.getElementById(labelId).textContent = record.tributes[type];
+
+            // Send payload to our Render server to update the main database on GitHub permanently
+            try {
+                const response = await fetch(`${PROXY_URL}/api/add-tribute`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        currentSection,
+                        brickId: selectedBrickId,
+                        tributeType: type
+                    })
+                });
                 
-                const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
-                document.getElementById(labelId).textContent = record.tributes[type];
-                const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
-                localStorage.setItem(storageKey, JSON.stringify(activeWallData));
+                const result = await response.json();
+                if (!result.success) {
+                    console.error("Database update rejected:", result.error);
+                }
+            } catch (error) {
+                console.error("Failed syncing tribute back to repository node:", error);
             }
         }
 
