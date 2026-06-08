@@ -668,10 +668,8 @@
     </div>
 
     <script>
-        /* INFRASTRUCTURE: FREE INFINITE GITHUB REAL-TIME BACKEND */
-        const GITHUB_TOKEN = ''; 
-        const GITHUB_REPO = 'TheMemoryWall416.github.io'; 
-        const GITHUB_USER = 'TheMemoryWall416';
+        /* PROXY CONNECTIVITY CONFIGURATION */
+        const PROXY_URL = 'https://the-memory-wall-server.onrender.com';
 
         const wallViewport = document.getElementById('wallViewport');
         const wallContainer = document.getElementById('wallContainer');
@@ -686,12 +684,11 @@
         const modalBio = document.getElementById('modalBio');
         const modalEncouragement = document.getElementById('modalEncouragement');
         const closeViewBtn = document.getElementById('closeViewBtn');
-        
         const humanWallBtn = document.getElementById('humanWallBtn');
         const petWallBtn = document.getElementById('petWallBtn');
         const formTitle = document.getElementById('formTitle');
         let totalColumns = 0;
-        let currentSection = 'human'; 
+        let currentSection = 'human';
         let activeWallData = []; 
         let spotlightInterval = null;
         let selectedBrickId = null;
@@ -763,7 +760,6 @@
         /* 6-CARD UNIQUE RANDOM SHUFFLE ENGINE */
         function runSpotlightEngine() {
             if (spotlightInterval) clearInterval(spotlightInterval);
-            
             function updateSpotlights() {
                 const totalCards = 6;
                 let activeIndices = [];
@@ -828,7 +824,7 @@
 
             updateSpotlights();
             if (activeWallData && activeWallData.length > 6) {
-                spotlightInterval = setInterval(updateSpotlights, 3000); 
+                spotlightInterval = setInterval(updateSpotlights, 3000);
             }
         }
 
@@ -838,7 +834,6 @@
             activeWallData = []; 
             
             const jsonFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
-            
             fetch(jsonFile)
                 .then(response => {
                     if (!response.ok) throw new Error("JSON payload missing or empty");
@@ -895,14 +890,12 @@
             loadAndRenderWall();
             loadVisitorCounter();
         });
-
         wallViewport.addEventListener('scroll', () => {
             const maxScrollLeft = wallViewport.scrollWidth - wallViewport.clientWidth;
             if (wallViewport.scrollLeft >= maxScrollLeft - 150) {
                 expandGridColumns(20);
             }
         });
-
         /* DYNAMIC ADAPTATION TRANSITIONS (HUMAN VS. PET FIELDS) */
         humanWallBtn.addEventListener('click', () => {
             if (currentSection === 'human') return;
@@ -926,7 +919,6 @@
 
             loadAndRenderWall();
         });
-
         petWallBtn.addEventListener('click', () => {
             if (currentSection === 'animal') return;
             currentSection = 'animal';
@@ -963,9 +955,13 @@
         document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
         document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
 
-        /* DIRECT GITHUB ENDPOINT SUBMISSION - FREE INFINITE REAL-TIME STORAGE */
+        /* CONNECTED TO SECURE RENDER PROXY BACKEND */
         document.getElementById('brickForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            const submitButton = e.target.querySelector('.submit-btn');
+            submitButton.disabled = true;
+            submitButton.textContent = "Processing Submission...";
 
             const name = document.getElementById('inputName').value;
             const dob = document.getElementById('inputDOB').value;
@@ -978,96 +974,51 @@
             const verification = document.getElementById('inputVerification') ? document.getElementById('inputVerification').value : '';
             
             const photoInput = document.getElementById('inputPhoto');
-            let photoUrl = "";
+            let base64Photo = null;
+            let photoName = null;
 
             try {
-                // 1. IF AN IMAGE IS ATTACHED, UPLOAD IT DIRECTLY TO GITHUB FOLDER
+                // If a picture is chosen, prepare it for transfer
                 if (photoInput && photoInput.files.length > 0) {
                     const file = photoInput.files[0];
-                    const base64Data = await new Promise((resolve) => {
+                    photoName = file.name;
+                    base64Photo = await new Promise((resolve) => {
                         const reader = new FileReader();
                         reader.onloadend = () => resolve(reader.result.split(',')[1]);
                         reader.readAsDataURL(file);
                     });
-
-                    const uniqueFileName = `uploads/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-                    
-                    const imgResponse = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${uniqueFileName}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `token ${GITHUB_TOKEN}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            message: `Upload remembrance asset: ${name}`,
-                            content: base64Data
-                        })
-                    });
-
-                    if (imgResponse.ok) {
-                        photoUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${uniqueFileName}`;
-                    }
                 }
 
-                // 2. FETCH, UPDATE, AND COMMIT THE CHOSEN DATA JSON TARGET
-                const targetJson = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
-                let currentSha = "";
-                let existingEntries = [];
-
-                const jsonGet = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${targetJson}`, {
-                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-                });
-
-                if (jsonGet.ok) {
-                    const jsonResult = await jsonGet.json();
-                    currentSha = jsonResult.sha;
-                    existingEntries = JSON.parse(atob(jsonResult.content));
-                }
-
-                const newBrick = {
-                    id: "brick_" + Date.now(),
-                    name: name,
-                    date_of_birth: dob,
-                    date_of_death: dod,
-                    country: country,
-                    relationship: relationship || "Admirer",
-                    biography: biography,
-                    encouragement: encouragement,
-                    email: email,
-                    verification: verification,
-                    photo_url: photoUrl,
-                    tributes: { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 }
+                // Compile data package to pass through the proxy gate
+                const payload = {
+                    currentSection, name, dob, dod, country, relationship,
+                    biography, encouragement, email, verification,
+                    base64Photo, photoName
                 };
 
-                existingEntries.push(newBrick);
-
-                const updatedContentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(existingEntries, null, 2))));
-
-                const commitResponse = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${targetJson}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `System entry auto-commit: Added ${name} to ${targetJson}`,
-                        content: updatedContentBase64,
-                        sha: currentSha
-                    })
+                const response = await fetch(`${PROXY_URL}/api/submit-brick`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
 
-                if (commitResponse.ok) {
+                const result = await response.json();
+
+                if (result.success) {
                     alert("Success! Your brick has been permanently placed onto the global monument.");
                     document.getElementById('brickForm').reset();
                     formModal.classList.remove('active');
                     loadAndRenderWall(); // Reload grid live
                 } else {
-                    throw new Error("Failed to write entry matrix payload to GitHub file tree.");
+                    throw new Error(result.error || "Server processing rejected data structure.");
                 }
 
             } catch (error) {
-                console.error("Backend Core Sync Error:", error);
-                alert("Submission processing error. Please check your network connection and try again.");
+                console.error("Backend Proxy Core Connection Failure:", error);
+                alert("Submission processing error. Please check your connection and try again.");
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = "Place onto Wall";
             }
         });
 
@@ -1077,6 +1028,7 @@
             if (brick) {
                 const brickId = brick.getAttribute('data-id');
                 const record = activeWallData.find(item => item.id === brickId);
+             
                 if (!record) return;
 
                 selectedBrickId = brickId; 
@@ -1114,7 +1066,6 @@
                 
                 const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
                 document.getElementById(labelId).textContent = record.tributes[type];
-                
                 const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
                 localStorage.setItem(storageKey, JSON.stringify(activeWallData));
             }
