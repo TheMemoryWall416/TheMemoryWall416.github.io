@@ -359,3 +359,765 @@
         .modal-overlay.active .modal-window {
             transform: translateY(0);
         }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #66666a;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-modal:hover {
+            color: #ffffff;
+        }
+
+        /* --- VIEW PRESENTATION SPLIT --- */
+        .profile-container {
+            display: flex;
+            gap: 25px;
+        }
+
+        .profile-left {
+            flex: 0 0 140px;
+        }
+
+        .profile-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-frame {
+            width: 140px;
+            height: 180px;
+            background-color: #1c1c1f;
+            border: 1px solid #2a2a2c;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .profile-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .view-title {
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            margin: 0 0 4px 0;
+            font-weight: normal;
+        }
+
+        .view-meta {
+            font-size: 0.8rem;
+            color: #88888b;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+
+        .view-scroll-box {
+            max-height: 140px;
+            overflow-y: auto;
+            padding-right: 5px;
+            margin-bottom: 15px;
+        }
+
+        .view-scroll-box::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .view-scroll-box::-webkit-scrollbar-thumb {
+            background: #2a2a2c;
+            border-radius: 1.5px;
+        }
+
+        .view-bio {
+            font-size: 0.85rem;
+            color: #cccccc;
+            line-height: 1.5;
+            margin: 0 0 12px 0;
+        }
+
+        .view-note {
+            font-size: 0.8rem;
+            color: #88888b;
+            font-style: italic;
+            line-height: 1.4;
+            margin: 0;
+            border-left: 2px solid #2a2a2c;
+            padding-left: 10px;
+        }
+
+        /* --- TRIBUTE ENGINE --- */
+        .tribute-section {
+            border-top: 1px solid #2a2a2c;
+            margin-top: 15px;
+            padding-top: 20px;
+        }
+
+        .tribute-title {
+            font-size: 0.8rem;
+            color: #66666a;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .tribute-cluster {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .tribute-trigger {
+            background-color: #161618;
+            border: 1px solid #2a2a2c;
+            border-radius: 4px;
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .tribute-trigger:hover {
+            border-color: #444446;
+            background-color: #1c1c1f;
+        }
+
+        .tribute-icon {
+            font-size: 1.2rem;
+        }
+
+        .tribute-count {
+            font-size: 0.75rem;
+            color: #88888b;
+        }
+
+        /* --- MANAGEMENT CAPTURE FORM --- */
+        .form-title {
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            margin: 0 0 20px 0;
+            font-weight: normal;
+        }
+
+        .field-group {
+            margin-bottom: 15px;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .field-group label, .field-row label {
+            display: block;
+            font-size: 0.75rem;
+            color: #88888b;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-control {
+            width: 100%;
+            background-color: #161618;
+            border: 1px solid #2a2a2c;
+            border-radius: 4px;
+            padding: 10px;
+            box-sizing: border-box;
+            color: #ffffff;
+            font-size: 0.85rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-control:focus {
+            outline: none;
+            border-color: #555558;
+        }
+
+        textarea.input-control {
+            resize: none;
+            height: 60px;
+        }
+
+        .submit-panel {
+            margin-top: 25px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .action-submit {
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 12px 25px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: background-color 0.2s ease;
+        }
+
+        .action-submit:hover {
+            background-color: #e0e0e2;
+        }
+
+        /* --- SYSTEM SPECIFIC MODAL OVERRIDES --- */
+        .info-text {
+            font-size: 0.9rem;
+            color: #cccccc;
+            line-height: 1.6;
+        }
+        
+        .info-text p {
+            margin: 0 0 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <button class="nav-link" id="btnAbout">ABOUT</button>
+        <button class="nav-link" id="btnContact">CONTACT</button>
+    </nav>
+
+    <div class="top-controls">
+        <button class="toggle-btn active" id="secHuman">HUMANS</button>
+        <button class="toggle-btn" id="secAnimal">ANIMALS</button>
+        <button class="add-btn" id="btnOpenForm">+ ADD BRICK</button>
+    </div>
+
+    <header>
+        <h1 id="mainTitle">THE MEMORY WALL</h1>
+        <p>A global monument stretching infinitely into the horizon.</p>
+        <div class="live-counter" id="brickCounter">Souls Honored: 0</div>
+    </header>
+
+    <div class="spotlight-wrapper">
+        <div class="spotlight-grid">
+            <div class="spotlight-card" id="spotlight0"><div class="spotlight-info"><div class="spotlight-name"></div><div class="spotlight-years"></div></div></div>
+            <div class="spotlight-card" id="spotlight1"><div class="spotlight-info"><div class="spotlight-name"></div><div class="spotlight-years"></div></div></div>
+            <div class="spotlight-card" id="spotlight2"><div class="spotlight-info"><div class="spotlight-name"></div><div class="spotlight-years"></div></div></div>
+            <div class="spotlight-card" id="spotlight3"><div class="spotlight-info"><div class="spotlight-name"></div><div class="spotlight-years"></div></div></div>
+            <div class="spotlight-card" id="spotlight4"><div class="spotlight-info"><div class="spotlight-name"></div><div class="spotlight-years"></div></div></div>
+            <div class="spotlight-card" id="spotlight5"><div class="spotlight-info"><div class="spotlight-name"></div><div class="spotlight-years"></div></div></div>
+        </div>
+    </div>
+
+    <div class="wall-wrapper" id="dragWrapper">
+        <div class="inner-scroll-container" id="gridContainer"></div>
+    </div>
+
+    <div class="modal-overlay" id="viewOverlay">
+        <div class="modal-window">
+            <button class="close-modal" id="closeView">&times;</button>
+            <div class="profile-container">
+                <div class="profile-left">
+                    <div class="profile-frame">
+                        <img id="viewPhoto" src="" alt="">
+                    </div>
+                </div>
+                <div class="profile-right">
+                    <h2 class="view-title" id="viewName"></h2>
+                    <div class="view-meta" id="viewMeta"></div>
+                    <div class="view-scroll-box">
+                        <p class="view-bio" id="viewBiography"></p>
+                        <p class="view-note" id="viewEncouragement"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="tribute-section">
+                <div class="tribute-title">Offer a Token of Remembrance</div>
+                <div class="tribute-cluster">
+                    <button class="tribute-trigger" data-type="roses">
+                        <span class="tribute-icon">🌹</span>
+                        <span class="tribute-count" id="countRoses">0</span>
+                    </button>
+                    <button class="tribute-trigger" data-type="sunflowers">
+                        <span class="tribute-icon">🌻</span>
+                        <span class="tribute-count" id="countSunflowers">0</span>
+                    </button>
+                    <button class="tribute-trigger" data-type="hyacinths">
+                        <span class="tribute-icon">🪻</span>
+                        <span class="tribute-count" id="countHyacinths">0</span>
+                    </button>
+                    <button class="tribute-trigger" data-type="candles">
+                        <span class="tribute-icon">🕯️</span>
+                        <span class="tribute-count" id="countCandles">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="formOverlay">
+        <div class="modal-window">
+            <button class="close-modal" id="closeForm">&times;</button>
+            <h2 class="form-title" id="formTitle">Honoring a Soul</h2>
+            <form id="brickForm">
+                <div class="field-group">
+                    <label id="lblName" for="entryName">Full Name</label>
+                    <input type="text" id="entryName" class="input-control" required autocomplete="off">
+                </div>
+                <div class="field-row">
+                    <div>
+                        <label for="birthYear">Year of Birth</label>
+                        <input type="number" id="birthYear" class="input-control" required min="1000" max="2026">
+                    </div>
+                    <div>
+                        <label for="deathYear">Year of Passing</label>
+                        <input type="number" id="deathYear" class="input-control" required min="1000" max="2026">
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div>
+                        <label for="originLocation">Country / Region</label>
+                        <input type="text" id="originLocation" class="input-control" required autocomplete="off">
+                    </div>
+                    <div>
+                        <label id="lblRel" for="relationType">Relationship</label>
+                        <input type="text" id="relationType" class="input-control" required autocomplete="off">
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label for="photoUrl">Image URL Reference</label>
+                    <input type="text" id="photoUrl" class="input-control" placeholder="images/filename.jpg" autocomplete="off">
+                </div>
+                <div class="field-group">
+                    <label for="biographyText">Short Biography</label>
+                    <textarea id="biographyText" class="input-control" required maxlength="300"></textarea>
+                </div>
+                <div class="field-group">
+                    <label id="lblWords" for="wordsText">Words of Comfort</label>
+                    <textarea id="wordsText" class="input-control" required maxlength="150"></textarea>
+                </div>
+                <div class="submit-panel">
+                    <button type="submit" class="action-submit">Place Eternal Brick</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="aboutOverlay">
+        <div class="modal-window">
+            <button class="close-modal" id="closeAbout">&times;</button>
+            <h2 class="form-title">About The Memory Wall</h2>
+            <div class="info-text">
+                <p>The Memory Wall is a global digital architecture built to preserve human narratives and pet milestones forever. Each brick integrated into the system functions as a permanent record of life, love, and connection.</p>
+                <p>Designed with horizontal structural depth, the monument scales dynamically to accommodate every story, providing an interactive environment for friends, families, and communities to visit, read biographies, and offer tokens of remembrance.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="contactOverlay">
+        <div class="modal-window">
+            <button class="close-modal" id="closeContact">&times;</button>
+            <h2 class="form-title">Contact Administration</h2>
+            <form id="contactForm">
+                <div class="field-group">
+                    <label for="contactEmail">Your Email Address</label>
+                    <input type="email" id="contactEmail" class="input-control" required>
+                </div>
+                <div class="field-group">
+                    <label for="contactReason">Inquiry or Modification Details</label>
+                    <textarea id="contactReason" class="input-control" required style="height:100px;"></textarea>
+                </div>
+                <div class="submit-panel">
+                    <button type="submit" class="action-submit">Send Message</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* --- APPLICATION PLATFORM ARCHITECTURE --- */
+        let currentSection = 'human';
+        let activeWallData = [];
+        let targetedRecordId = null;
+        let shuffleIntervalId = null;
+
+        // Visual Layout Rules
+        const totalRows = 4;
+        const initialColumns = 15;
+        const autoExpansionBuffer = 3;
+
+        // Dynamic Modals Cache
+        const viewModal = document.getElementById('viewOverlay');
+        const formModal = document.getElementById('formOverlay');
+        const aboutModal = document.getElementById('aboutOverlay');
+        const contactModal = document.getElementById('contactOverlay');
+
+        // Drag Matrix Tracker
+        const slider = document.getElementById('dragWrapper');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.classList.add('active');
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+            slider.classList.add('active');
+        });
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+            slider.classList.add('active');
+        });
+        slider.addEventListener('mousemove', (e) => {
+            if(!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2;
+            slider.scrollLeft = scrollLeft - walk;
+        });
+
+        // Basic Control Hooks
+        document.getElementById('secHuman').addEventListener('click', () => switchContext('human'));
+        document.getElementById('secAnimal').addEventListener('click', () => switchContext('animal'));
+        document.getElementById('btnOpenForm').addEventListener('click', () => formModal.classList.add('active'));
+        document.getElementById('btnAbout').addEventListener('click', () => aboutModal.classList.add('active'));
+        document.getElementById('btnContact').addEventListener('click', () => contactModal.classList.add('active'));
+
+        document.getElementById('closeView').addEventListener('click', () => viewModal.classList.remove('active'));
+        document.getElementById('closeForm').addEventListener('click', () => formModal.classList.remove('active'));
+        document.getElementById('closeAbout').addEventListener('click', () => aboutModal.classList.remove('active'));
+        document.getElementById('closeContact').addEventListener('click', () => contactModal.classList.remove('active'));
+
+        function switchContext(section) {
+            if (currentSection === section) return;
+            currentSection = section;
+            
+            if (currentSection === 'human') {
+                document.getElementById('secHuman').classList.add('active');
+                document.getElementById('secAnimal').classList.remove('active');
+                document.getElementById('mainTitle').textContent = 'THE MEMORY WALL';
+                document.getElementById('formTitle').textContent = 'Honoring a Soul';
+                document.getElementById('lblName').textContent = 'Full Name';
+                document.getElementById('lblRel').textContent = 'Relationship';
+                document.getElementById('lblWords').textContent = 'Words of Comfort';
+            } else {
+                document.getElementById('secHuman').classList.remove('active');
+                document.getElementById('secAnimal').classList.add('active');
+                document.getElementById('mainTitle').textContent = 'THE PET MEMORY WALL';
+                document.getElementById('formTitle').textContent = 'Remembering a Companion';
+                document.getElementById('lblName').textContent = 'Pet Name';
+                document.getElementById('lblRel').textContent = 'Breed / Species';
+                document.getElementById('lblWords').textContent = 'Message of Love';
+            }
+            
+            loadAndRenderWall();
+        }
+
+        function buildBlankGridSlots() {
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = '';
+            
+            for (let c = 0; c < initialColumns; c++) {
+                const col = document.createElement('div');
+                col.className = 'grid-column';
+                for (let r = 0; r < totalRows; r++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'brick-slot';
+                    col.appendChild(slot);
+                }
+                container.appendChild(col);
+            }
+        }
+
+        function findNextEmptySlot() {
+            const slots = document.getElementsByClassName('brick-slot');
+            for (let i = 0; i < slots.length; i++) {
+                if (!slots[i].classList.contains('populated')) {
+                    return slots[i];
+                }
+            }
+            appendExtraColumn();
+            return findNextEmptySlot();
+        }
+
+        function appendExtraColumn() {
+            const container = document.getElementById('gridContainer');
+            const col = document.createElement('div');
+            col.className = 'grid-column';
+            for (let r = 0; r < totalRows; r++) {
+                const slot = document.createElement('div');
+                slot.className = 'brick-slot';
+                col.appendChild(slot);
+            }
+            container.appendChild(col);
+        }
+
+        function populateSlot(slotElement, dataItem) {
+            slotElement.classList.add('populated');
+            slotElement.innerHTML = '';
+            
+            if (dataItem.photo_url) {
+                const img = document.createElement('img');
+                img.src = dataItem.photo_url;
+                img.alt = dataItem.name;
+                slotElement.appendChild(img);
+            }
+            
+            const content = document.createElement('div');
+            content.className = 'brick-content';
+            
+            const nameEl = document.createElement('div');
+            nameEl.className = 'brick-name';
+            nameEl.textContent = dataItem.name;
+            
+            const dateEl = document.createElement('div');
+            dateEl.className = 'brick-dates';
+            dateEl.textContent = `${dataItem.date_of_birth} - ${dataItem.date_of_death}`;
+            
+            content.appendChild(nameEl);
+            content.appendChild(dateEl);
+            slotElement.appendChild(content);
+            
+            slotElement.addEventListener('click', () => openProfileViewer(dataItem));
+        }
+
+        function ensureExpansionRunway() {
+            const slots = document.getElementsByClassName('brick-slot');
+            let emptyCount = 0;
+            for (let i = slots.length - 1; i >= 0; i--) {
+                if (!slots[i].classList.contains('populated')) {
+                    emptyCount++;
+                } else {
+                    break;
+                }
+            }
+            
+            const requiredEmpty = autoExpansionBuffer * totalRows;
+            if (emptyCount < requiredEmpty) {
+                const columnsNeeded = Math.ceil((requiredEmpty - emptyCount) / totalRows);
+                for (let i = 0; i < columnsNeeded; i++) {
+                    appendExtraColumn();
+                }
+            }
+        }
+
+        /* --- REPLACED: MANUAL JSON FETCHING AGENT --- */
+        function loadAndRenderWall() {
+            buildBlankGridSlots();
+            activeWallData = [];
+            for (let i = 0; i < 6; i++) document.getElementById(`spotlight${i}`).classList.remove('visible');
+            
+            // Determine which JSON file to pull based on what button the visitor clicked
+            const jsonFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
+            
+            fetch(jsonFile)
+                .then(response => {
+                    if (!response.ok) throw new Error("File not found");
+                    return response.json();
+                })
+                .then(data => {
+                    activeWallData = data;
+                    
+                    // Automatically place every brick onto your layout grid
+                    activeWallData.forEach(item => {
+                        const targetSlot = findNextEmptySlot();
+                        if (targetSlot) populateSlot(targetSlot, item);
+                    });
+                    
+                    // Update your dynamic counts on the header screen
+                    const counterEl = document.getElementById('brickCounter');
+                    if (currentSection === 'human') {
+                        counterEl.textContent = `Souls Honored: ${activeWallData.length}`;
+                        counterEl.style.color = '#ffffff';
+                    } else {
+                        counterEl.textContent = `Pets Remembered: ${activeWallData.length}`;
+                        counterEl.style.color = '#00ff88';
+                    }
+                    
+                    ensureExpansionRunway();
+                    runSpotlightEngine();
+                })
+                .catch(err => {
+                    console.warn("No entries found yet in " + jsonFile, err);
+                    const counterEl = document.getElementById('brickCounter');
+                    counterEl.textContent = currentSection === 'human' ? "Souls Honored: 0" : "Pets Remembered: 0";
+                    ensureExpansionRunway();
+                    runSpotlightEngine();
+                });
+        }
+
+        /* --- VISITOR TRAFFIC HIT COUNTER --- */
+        function loadVisitorCounter() {
+            // Adds a text hit tracker into your center header description dynamically
+            const subTitle = document.querySelector('header p');
+            if(!subTitle) return;
+
+            fetch('https://api.counterapi.dev/v1/thememorywall416/visits/up')
+                .then(res => res.json())
+                .then(resData => {
+                    if(resData.count) {
+                        // Appends the traffic status right under your top main headline text
+                        const originalText = "A global monument stretching infinitely into the horizon.";
+                        subTitle.innerHTML = `${originalText}<br><span style="color: #88888b; font-size: 0.75rem; letter-spacing: 1px; display:inline-block; margin-top:8px;">MONUMENT VISITS: ${resData.count}</span>`;
+                    }
+                })
+                .catch(err => console.error("Counter missed", err));
+        }
+
+        // Initialize the app cleanly on load
+        document.addEventListener("DOMContentLoaded", () => {
+            loadAndRenderWall();
+            loadVisitorCounter();
+        });
+
+        /* --- AUTOMATED SPOTLIGHT ROLLING ENGINE --- */
+        function runSpotlightEngine() {
+            if (shuffleIntervalId) clearInterval(shuffleIntervalId);
+            
+            const poolSize = activeWallData.length;
+            if (poolSize === 0) {
+                for (let i = 0; i < 6; i++) {
+                    const card = document.getElementById(`spotlight${i}`);
+                    card.classList.remove('visible');
+                    card.onclick = null;
+                }
+                return;
+            }
+
+            function refreshSpotlightCards() {
+                let selectionIndices = [];
+                if (poolSize <= 6) {
+                    for (let i = 0; i < poolSize; i++) selectionIndices.push(i);
+                } else {
+                    while (selectionIndices.length < 6) {
+                        let rand = Math.floor(Math.random() * poolSize);
+                        if (!selectionIndices.includes(rand)) selectionIndices.push(rand);
+                    }
+                }
+
+                for (let i = 0; i < 6; i++) {
+                    const card = document.getElementById(`spotlight${i}`);
+                    const dataIndex = selectionIndices[i];
+
+                    if (dataIndex !== undefined) {
+                        const item = activeWallData[dataIndex];
+                        
+                        card.classList.remove('visible');
+                        
+                        setTimeout(() => {
+                            let imgEl = card.querySelector('img');
+                            if (item.photo_url) {
+                                if (!imgEl) {
+                                    imgEl = document.createElement('img');
+                                    card.insertBefore(imgEl, card.firstChild);
+                                }
+                                imgEl.src = item.photo_url;
+                                imgEl.style.display = 'block';
+                            } else if (imgEl) {
+                                imgEl.style.display = 'none';
+                            }
+
+                            card.querySelector('.spotlight-name').textContent = item.name;
+                            card.querySelector('.spotlight-years').textContent = `${item.date_of_birth} - ${item.date_of_death}`;
+                            
+                            card.onclick = () => openProfileViewer(item);
+                            card.classList.add('visible');
+                        }, 300);
+
+                    } else {
+                        card.classList.remove('visible');
+                        card.onclick = null;
+                    }
+                }
+            }
+
+            refreshSpotlightCards();
+            if (poolSize > 6) {
+                shuffleIntervalId = setInterval(refreshSpotlightCards, 5000);
+            }
+        }
+
+        /* --- DISPLAY MANAGER INTERFACES --- */
+        function openProfileViewer(item) {
+            targetedRecordId = item.id;
+            document.getElementById('viewName').textContent = item.name;
+            document.getElementById('viewMeta').textContent = `${item.date_of_birth} - ${item.date_of_death} | ${item.country} (${item.relationship})`;
+            document.getElementById('viewBiography').textContent = item.biography;
+            document.getElementById('viewEncouragement').textContent = item.encouragement;
+            
+            const pBox = document.getElementById('viewPhoto');
+            if (item.photo_url) {
+                pBox.src = item.photo_url;
+                pBox.style.display = 'block';
+            } else {
+                pBox.style.display = 'none';
+            }
+
+            const tribs = item.tributes || { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
+            document.getElementById('countRoses').textContent = tribs.roses || 0;
+            document.getElementById('countSunflowers').textContent = tribs.sunflowers || 0;
+            document.getElementById('countHyacinths').textContent = tribs.hyacinths || 0;
+            document.getElementById('countCandles').textContent = tribs.candles || 0;
+
+            viewModal.classList.add('active');
+        }
+
+        // Processing Local Tributes Action Elements
+        const tribButtons = document.querySelectorAll('.tribute-trigger');
+        tribButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                incrementTributeCounter(type);
+            });
+        });
+
+        function incrementTributeCounter(type) {
+            if (!targetedRecordId) return;
+            const record = activeWallData.find(x => x.id === targetedRecordId);
+            if (record) {
+                if (!record.tributes) record.tributes = { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
+                record.tributes[type] = (record.tributes[type] || 0) + 1;
+                
+                const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
+                document.getElementById(labelId).textContent = record.tributes[type];
+                
+                const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
+                localStorage.setItem(storageKey, JSON.stringify(activeWallData));
+            }
+        }
+
+        document.getElementById('brickForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert("Payment Required: Please follow the checkout settings to submit entries via our manual process.");
+            document.getElementById('brickForm').reset();
+            formModal.classList.remove('active');
+        });
+
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const reason = document.getElementById('contactReason').value;
+            alert(`Thank you for your feedback! Your message has been sent successfully.`);
+            document.getElementById('contactForm').reset();
+            contactModal.classList.remove('active');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === viewModal) viewModal.classList.remove('active');
+            if (e.target === formModal) formModal.classList.remove('active');
+            if (e.target === aboutModal) aboutModal.classList.remove('active');
+            if (e.target === contactModal) contactModal.classList.remove('active');
+        });
+    </script>
+</body>
+</html>
