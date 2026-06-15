@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Memory Wall</title>
     <style>
+        /* --- CORE FOUNDATION LOCK --- */
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -15,7 +22,6 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
         /* --- TOP LEFT NAVIGATION --- */
@@ -242,8 +248,8 @@
 
         /* --- HORIZONTAL GRID CONTAINER --- */
         .wall-viewport {
-            width: 100%;
-            max-width: 100vw;
+            width: 100vw;
+            max-width: 100%;
             overflow-x: auto;
             padding: 10px 0 30px 0;
             box-sizing: border-box;
@@ -432,7 +438,6 @@
         }
         .flower-gift-btn:hover { background-color: #2a2a32; border-color: #ffffff; }
 
-        /* Floating Bubble Custom Tooltip Styles */
         .flower-gift-btn::after {
             content: attr(title);
             position: absolute;
@@ -450,7 +455,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.15s ease;
-            box-shadow: 0px 4px 12 rgba(0,0,0,0.6);
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.6);
             z-index: 500;
         }
         
@@ -463,37 +468,66 @@
         
         .about-text { text-align: left; font-size: 0.9rem; color: #cccccc; line-height: 1.5; margin-bottom: 20px; }
 
+        /* --- RESPONSIVE TABLET & MOBILE FIXES --- */
         @media (max-width: 1200px) {
-            header { flex-direction: column; height: auto; margin-top: 80px; }
-            .spotlight-side { justify-content: center; flex-wrap: wrap; }
+            header { 
+                flex-direction: column; 
+                height: auto; 
+                margin-top: 80px; 
+            }
+            
+            /* PULL TITLE TO THE TOP */
+            .header-center { 
+                order: -1; 
+                margin-bottom: 20px; 
+            }
+            
+            .spotlight-side { 
+                justify-content: center; 
+                flex-wrap: wrap; 
+                width: 100%; 
+            }
         }
 
-        /* --- AGGRESSIVE MOBILE FIX --- */
         @media (max-width: 768px) {
             header {
-                padding: 15px 5px;
+                padding: 15px 10px;
                 margin-top: 60px;
             }
             
             h1 {
-                font-size: 1.1rem;
-                letter-spacing: 2px;
+                font-size: 1.4rem;
+                letter-spacing: 3px;
                 white-space: normal;
             }
 
             .header-center {
                 max-width: 100%;
-                overflow: hidden; 
+                width: 100%;
             }
 
             .controls-container {
                 flex-direction: column;
-                gap: 10px;
+                gap: 12px;
+                width: 100%;
+                padding: 0 10px;
+                box-sizing: border-box;
             }
 
+            .wall-toggle-switch {
+                width: 100%;
+                justify-content: center;
+                box-sizing: border-box;
+            }
+            
             .toggle-btn {
-                padding: 6px 12px;
-                font-size: 0.75rem;
+                flex: 1;
+                text-align: center;
+                padding: 8px 5px;
+            }
+
+            .add-brick-btn {
+                width: 100%;
             }
 
             .spotlight-side {
@@ -501,15 +535,9 @@
             }
 
             .spotlight-card {
-                width: calc(50% - 8px); 
-                margin-bottom: 5px;
-                padding: 8px 4px;
-            }
-            
-            .spotlight-photo {
-                width: 40px;
-                height: 40px;
-                font-size: 1.1rem;
+                width: 45%; 
+                max-width: 150px; 
+                margin-bottom: 8px;
             }
         }
     </style>
