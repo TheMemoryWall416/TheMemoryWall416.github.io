@@ -101,10 +101,6 @@
             opacity: 1;
         }
 
-        #spotlight5 {
-            border-color: #33333b;
-        }
-
         .spotlight-photo {
             width: 55px;
             height: 55px;
@@ -169,31 +165,6 @@
             color: #666666;
             font-size: 0.9rem;
             margin: 0 0 20px 0;
-        }
-
-        /* Atmosphere Audio Volume Slider styling */
-        .volume-slider {
-            width: 90%;
-            margin-top: 6px;
-            background: #222227;
-            outline: none;
-            height: 4px;
-            border-radius: 2px;
-            -webkit-appearance: none;
-        }
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #666666;
-            cursor: pointer;
-        }
-        body.rainbow-mode-active .volume-slider::-webkit-slider-thumb {
-            background: #00ff88;
-        }
-        body.gentle-mode-active .volume-slider::-webkit-slider-thumb {
-            background: #ffbbdd;
         }
 
         /* --- CONTROLS & SWITCHES --- */
@@ -636,13 +607,8 @@
                 </div>
             </div>
             
-            <div class="spotlight-card visible" id="spotlight5">
-                <div class="spotlight-photo">🔇</div>
-                <div class="spotlight-info">
-                    <div class="spotlight-title">Atmosphere</div>
-                    <div class="spotlight-name" style="font-size:0.7rem; color:#666;">Volume: Off</div>
-                    <input type="range" class="volume-slider" min="0" max="100" value="0">
-                </div>
+            <div class="spotlight-card visible" id="spotlight5" style="padding: 0; background: transparent; border: none; height: 80px; width: 200px;">
+                <iframe id="themePlayer" style="border-radius:8px" src="https://open.spotify.com/embed/track/4x11w4lHq5Uu6LWeE5k0yR?theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
             </div>
         </div>
     </header>
@@ -879,6 +845,8 @@
         const gentleWallBtn = document.getElementById('gentleWallBtn');
         const formTitle = document.getElementById('formTitle');
         const wallSubQuote = document.getElementById('wallSubQuote');
+        const themePlayer = document.getElementById('themePlayer');
+        
         let totalColumns = 0;
         let currentSection = 'human';
         let activeWallData = []; 
@@ -1173,6 +1141,9 @@
             document.getElementById('inputDOB').required = true;
             document.getElementById('inputDOD').required = true;
 
+            // Load Lives Remembered Theme Song (Rascal Flatts)
+            themePlayer.src = "https://open.spotify.com/embed/track/4x11w4lHq5Uu6LWeE5k0yR?theme=0";
+
             loadAndRenderWall();
         });
         
@@ -1201,6 +1172,9 @@
 
             document.getElementById('dobContainer').innerHTML = '<input type="number" id="inputDOB" min="1900" max="2100" placeholder="e.g. 2012" required>';
             document.getElementById('dodContainer').innerHTML = '<input type="number" id="inputDOD" min="1900" max="2100" placeholder="e.g. 2026" required>';
+
+            // Load Rainbow Bridge Theme Song (Chris Wright)
+            themePlayer.src = "https://open.spotify.com/embed/track/5c8Lvz1oK63hS7aP22P28y?theme=0";
 
             loadAndRenderWall();
         });
@@ -1231,6 +1205,9 @@
 
             document.getElementById('inputDOB').required = false;
             document.getElementById('inputDOD').required = false;
+
+            // Load Gentle Arrivals Theme Song (The Piano Guys)
+            themePlayer.src = "https://open.spotify.com/embed/track/0E0xI4AgNwuHdVwfKgAqcN?theme=0";
 
             loadAndRenderWall();
         });
