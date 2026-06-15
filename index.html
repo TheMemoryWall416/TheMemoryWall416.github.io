@@ -541,7 +541,7 @@
                 gap: 5px;
             }
             .toggle-btn {
-                font-size: 0.70rem;
+                font-size: 0.75rem;
                 padding: 8px 5px;
             }
             .add-brick-btn {
@@ -562,6 +562,7 @@
 
     <nav class="top-nav">
         <button class="nav-link" id="openAboutBtn">ABOUT</button>
+        <button class="nav-link" id="openFounderBtn">VISION</button>
         <button class="nav-link" id="openContactBtn">CONTACT</button>
     </nav>
 
@@ -803,6 +804,21 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="founderModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <h3 style="margin: 0 0 15px 0; letter-spacing: 1px;">A MESSAGE FROM THE FOUNDER</h3>
+            <div class="about-text">
+                <p>Thank you for being here. Whether you are laying a brick or simply visiting, your presence is what makes The Memory Wall a living sanctuary.</p>
+                <p>I built this monument because I believe that the stories of our loved ones deserve a permanent home—a place that outlasts time. To keep this space secure, accessible, and independent of intrusive advertising, I have implemented a modest $3 contribution for new entries. This isn't just a fee; it is a vital investment in the stability of this project, helping to fund the growth, security, and professional infrastructure needed to keep these memories safe for generations to come.</p>
+                <p>I know that financial circumstances vary, and my commitment is to ensure that grief is never met with a paywall. I am currently developing a sustainable way to keep this monument inclusive and accessible to everyone, regardless of their ability to contribute.</p>
+                <p><strong>Managing Your Memories</strong><br>I believe your memories should grow as you do. When you lay a brick, you are securing a permanent place on this monument. If you ever need to update your message, change a photo, or add new details in the future, you will have complete control. Simply use the secure link sent to your provided email address to access and update your tribute at any time, free of charge. Your contribution today covers the maintenance and hosting of your brick for its lifetime.</p>
+                <p><strong>The Vision</strong><br>We are only at the beginning. My goal is to evolve this platform into a truly global monument. I am currently working on Expanded Tributes (new ways to include audio and shared galleries) and Global Connection (making it easier to celebrate lives remembered across all borders).</p>
+                <p>I am working every day to bridge the gap between where we are now and the permanent, global monument I know this can be. Thank you for your support, your belief in this mission, and for entrusting me with your memories.</p>
+            </div>
+            <button class="close-btn" id="closeFounderBtn" style="margin-top: 20px;">Close</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="contactModal">
         <div class="modal-card" style="max-width: 360px;">
             <h3 style="margin: 0; letter-spacing: 1px;">GET IN TOUCH</h3>
@@ -848,6 +864,7 @@
         const viewModal = document.getElementById('viewModal');
         const formModal = document.getElementById('formModal');
         const aboutModal = document.getElementById('aboutModal');
+        const founderModal = document.getElementById('founderModal');
         const contactModal = document.getElementById('contactModal');
         const modalName = document.getElementById('modalName');
         const modalOrigin = document.getElementById('modalOrigin');
@@ -1023,11 +1040,11 @@
             activeWallData = []; 
             
             let storageKey = 'memory_wall_humans';
-            let jsonFile = 'human-data.json';
+            let jsonFile = 'livesremembered-data.json';
             
             if (currentSection === 'rainbow') {
                 storageKey = 'memory_wall_rainbow';
-                jsonFile = 'animal-data.json';
+                jsonFile = 'rainbowbridge-data.json';
             } else if (currentSection === 'gentle') {
                 storageKey = 'memory_wall_gentle';
                 jsonFile = 'gentlearrivals-data.json';
@@ -1231,6 +1248,9 @@
         document.getElementById('openAboutBtn').addEventListener('click', () => aboutModal.classList.add('active'));
         document.getElementById('closeAboutBtn').addEventListener('click', () => aboutModal.classList.remove('active'));
         
+        document.getElementById('openFounderBtn').addEventListener('click', () => founderModal.classList.add('active'));
+        document.getElementById('closeFounderBtn').addEventListener('click', () => founderModal.classList.remove('active'));
+
         document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
         document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
 
@@ -1408,6 +1428,7 @@
             if (e.target === viewModal) viewModal.classList.remove('active');
             if (e.target === formModal) formModal.classList.remove('active');
             if (e.target === aboutModal) aboutModal.classList.remove('active');
+            if (e.target === founderModal) founderModal.classList.remove('active');
             if (e.target === contactModal) contactModal.classList.remove('active');
         });
     </script>
