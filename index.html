@@ -203,7 +203,7 @@
     <script>
         const SUPABASE_URL = 'https://cajspoanzahtrqugbkvp.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhanNwb2FuemFodHJxdWdia3ZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDU2MjAsImV4cCI6MjA5NzEyMTYyMH0.zAvg8fef33RqYyUtQc9GpeZGP8NrkpkesKcx2cji1sg';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const wallContainer = document.getElementById('wallContainer');
         let totalColumns = 0;
@@ -282,7 +282,7 @@
             activeWallData = [];
             
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('memorial_bricks')
                     .select('*')
                     .eq('section', currentSection)
@@ -331,7 +331,7 @@
             };
 
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('memorial_bricks')
                     .insert([newBrickPayload]);
 
