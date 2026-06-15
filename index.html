@@ -68,7 +68,8 @@
 
         .header-center {
             text-align: center;
-            width: 460px;
+            width: 100%;
+            max-width: 460px;
             flex-shrink: 0;
             z-index: 2;
         }
@@ -465,6 +466,21 @@
         @media (max-width: 1200px) {
             header { flex-direction: column; height: auto; margin-top: 80px; }
             .spotlight-side { justify-content: center; flex-wrap: wrap; }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.4rem;
+                letter-spacing: 3px;
+            }
+            .controls-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .spotlight-card {
+                width: 45%; 
+                margin-bottom: 5px;
+            }
         }
     </style>
 </head>
