@@ -150,7 +150,7 @@
             color: #888888;
         }
 
-        body.pet-mode-active .spotlight-dates {
+        body.rainbow-mode-active .spotlight-dates {
             color: #00ff88;
         }
 
@@ -189,7 +189,7 @@
             background: #666666;
             cursor: pointer;
         }
-        body.pet-mode-active .volume-slider::-webkit-slider-thumb {
+        body.rainbow-mode-active .volume-slider::-webkit-slider-thumb {
             background: #00ff88;
         }
         body.gentle-mode-active .volume-slider::-webkit-slider-thumb {
@@ -221,7 +221,7 @@
             border: none;
             color: #888888;
             padding: 8px 15px;
-            font-size: 0.80rem;
+            font-size: 0.75rem;
             font-weight: bold;
             border-radius: 20px;
             cursor: pointer;
@@ -234,7 +234,7 @@
             color: #000000;
         }
 
-        body.pet-mode-active #petWallBtn.active {
+        body.rainbow-mode-active #rainbowWallBtn.active {
             background-color: #00ff88;
             color: #000000;
         }
@@ -260,7 +260,7 @@
             border-color: #ffffff;
             color: #ffffff;
         }
-        body.pet-mode-active .add-brick-btn:hover {
+        body.rainbow-mode-active .add-brick-btn:hover {
             border-color: #00ff88;
             color: #00ff88;
         }
@@ -334,7 +334,7 @@
             z-index: 100;
         }
 
-        body.pet-mode-active .brick-slot.filled:hover {
+        body.rainbow-mode-active .brick-slot.filled:hover {
             background: #00ff88;
             border-color: #ffffff;
             box-shadow: 0px 0px 15px rgba(0, 255, 136, 0.6);
@@ -424,7 +424,7 @@
         }
 
         .submit-btn { background-color: #ffffff; color: black; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; font-size: 0.9rem; transition: background-color 0.2s; }
-        body.pet-mode-active .submit-btn { background-color: #00ff88; }
+        body.rainbow-mode-active .submit-btn { background-color: #00ff88; }
         body.gentle-mode-active .submit-btn { background-color: #ffbbdd; }
         
         /* --- TRIBUTE DISPLAY OBJECTS --- */
@@ -432,7 +432,7 @@
         .modal-name { font-size: 1.5rem; margin: 0 0 4px 0; color: white; }
         .modal-origin-line { font-size: 0.8rem; color: #888888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .modal-dates { font-size: 0.95rem; color: #aaaaaa; margin: 0 0 15px 0; font-weight: bold; }
-        body.pet-mode-active .modal-dates { color: #00ff88; }
+        body.rainbow-mode-active .modal-dates { color: #00ff88; }
         body.gentle-mode-active .modal-dates { color: #ffbbdd; }
         
         .modal-scroll-pane {
@@ -541,7 +541,7 @@
                 gap: 5px;
             }
             .toggle-btn {
-                font-size: 0.75rem;
+                font-size: 0.70rem;
                 padding: 8px 5px;
             }
             .add-brick-btn {
@@ -600,9 +600,9 @@
             
             <div class="controls-container">
                 <div class="wall-toggle-switch">
-                    <button class="toggle-btn active" id="humanWallBtn">Human Monument</button>
+                    <button class="toggle-btn active" id="humanWallBtn">Lives Remembered</button>
                     <button class="toggle-btn" id="gentleWallBtn">Gentle Arrivals</button>
-                    <button class="toggle-btn" id="petWallBtn">Animal Wall</button>
+                    <button class="toggle-btn" id="rainbowWallBtn">Rainbow Bridge</button>
                 </div>
                 <button class="add-brick-btn" id="openFormBtn">+ Add Brick</button>
             </div>
@@ -786,7 +786,7 @@
                 
                 <div style="margin-top: 15px; background: #1f1f24; padding: 15px; border-radius: 6px; border: 1px solid #3a3a42;">
                     <div style="margin-bottom: 15px;">
-                        <span style="color: #ffffff; font-weight: bold; font-size: 0.95rem;">🕊️ Human Monument</span><br>
+                        <span style="color: #ffffff; font-weight: bold; font-size: 0.95rem;">🕊️ Lives Remembered</span><br>
                         <span style="font-size: 0.85rem; color: #aaaaaa; display: inline-block; margin-top: 4px;">A space to honor the lives, legacies, and enduring impact of the people we hold dear.</span>
                     </div>
                     <div style="margin-bottom: 15px;">
@@ -794,7 +794,7 @@
                         <span style="font-size: 0.85rem; color: #aaaaaa; display: inline-block; margin-top: 4px;">A quiet, sensitive sanctuary for little angels and early losses—lives briefly known, but infinitely loved.</span>
                     </div>
                     <div>
-                        <span style="color: #00ff88; font-weight: bold; font-size: 0.95rem;">🐾 Animal Wall</span><br>
+                        <span style="color: #00ff88; font-weight: bold; font-size: 0.95rem;">🐾 Rainbow Bridge</span><br>
                         <span style="font-size: 0.85rem; color: #aaaaaa; display: inline-block; margin-top: 4px;">A dedicated resting place for our beloved pets and loyal companions who brought us unconditional joy.</span>
                     </div>
                 </div>
@@ -858,7 +858,7 @@
         const modalEncouragement = document.getElementById('modalEncouragement');
         const closeViewBtn = document.getElementById('closeViewBtn');
         const humanWallBtn = document.getElementById('humanWallBtn');
-        const petWallBtn = document.getElementById('petWallBtn');
+        const rainbowWallBtn = document.getElementById('rainbowWallBtn');
         const gentleWallBtn = document.getElementById('gentleWallBtn');
         const formTitle = document.getElementById('formTitle');
         const wallSubQuote = document.getElementById('wallSubQuote');
@@ -939,7 +939,7 @@
         }
 
         function getDefaultIcon() {
-            if (currentSection === 'animal') return '🐾';
+            if (currentSection === 'rainbow') return '🐾';
             return '🕊️';
         }
 
@@ -993,7 +993,7 @@
                         datesEl.textContent = formatDisplayDates(dataItem);
                         
                         let tagText = 'Spotlight';
-                        if (currentSection === 'animal') tagText = 'Pet Spotlight';
+                        if (currentSection === 'rainbow') tagText = 'Rainbow Bridge';
                         if (currentSection === 'gentle') tagText = 'Little Angel';
                         tagEl.textContent = tagText;
 
@@ -1025,8 +1025,8 @@
             let storageKey = 'memory_wall_humans';
             let jsonFile = 'human-data.json';
             
-            if (currentSection === 'animal') {
-                storageKey = 'memory_wall_animals';
+            if (currentSection === 'rainbow') {
+                storageKey = 'memory_wall_rainbow';
                 jsonFile = 'animal-data.json';
             } else if (currentSection === 'gentle') {
                 storageKey = 'memory_wall_gentle';
@@ -1092,10 +1092,10 @@
             const count = activeWallData ? activeWallData.length : 0;
             
             if (currentSection === 'human') {
-                counterEl.textContent = `Souls Honored: ${count}`;
+                counterEl.textContent = `Lives Remembered: ${count}`;
                 counterEl.style.color = '#ffffff';
-            } else if (currentSection === 'animal') {
-                counterEl.textContent = `Pets Remembered: ${count}`;
+            } else if (currentSection === 'rainbow') {
+                counterEl.textContent = `Pets at the Bridge: ${count}`;
                 counterEl.style.color = '#00ff88';
             } else if (currentSection === 'gentle') {
                 counterEl.textContent = `Little Angels Remembered: ${count}`;
@@ -1134,9 +1134,9 @@
         humanWallBtn.addEventListener('click', () => {
             if (currentSection === 'human') return;
             currentSection = 'human';
-            document.body.classList.remove('pet-mode-active', 'gentle-mode-active');
+            document.body.classList.remove('rainbow-mode-active', 'gentle-mode-active');
             humanWallBtn.classList.add('active');
-            petWallBtn.classList.remove('active');
+            rainbowWallBtn.classList.remove('active');
             gentleWallBtn.classList.remove('active');
             
             wallSubQuote.textContent = "Every brick holds a story, a legacy, and a love that outlasts time.";
@@ -1159,12 +1159,12 @@
             loadAndRenderWall();
         });
         
-        petWallBtn.addEventListener('click', () => {
-            if (currentSection === 'animal') return;
-            currentSection = 'animal';
+        rainbowWallBtn.addEventListener('click', () => {
+            if (currentSection === 'rainbow') return;
+            currentSection = 'rainbow';
             document.body.classList.remove('gentle-mode-active');
-            document.body.classList.add('pet-mode-active');
-            petWallBtn.classList.add('active');
+            document.body.classList.add('rainbow-mode-active');
+            rainbowWallBtn.classList.add('active');
             humanWallBtn.classList.remove('active');
             gentleWallBtn.classList.remove('active');
             
@@ -1191,11 +1191,11 @@
         gentleWallBtn.addEventListener('click', () => {
             if (currentSection === 'gentle') return;
             currentSection = 'gentle';
-            document.body.classList.remove('pet-mode-active');
+            document.body.classList.remove('rainbow-mode-active');
             document.body.classList.add('gentle-mode-active');
             gentleWallBtn.classList.add('active');
             humanWallBtn.classList.remove('active');
-            petWallBtn.classList.remove('active');
+            rainbowWallBtn.classList.remove('active');
             
             wallSubQuote.textContent = "Briefly known, infinitely loved. A tiny footprint left forever on our hearts.";
             wallSubQuote.style.color = "#ffbbdd";
@@ -1219,8 +1219,8 @@
         });
 
         document.getElementById('openFormBtn').addEventListener('click', () => {
-            if (currentSection === 'human') formTitle.textContent = 'LAY A HUMAN BRICK';
-            else if (currentSection === 'animal') formTitle.textContent = 'LAY AN ANIMAL BRICK';
+            if (currentSection === 'human') formTitle.textContent = 'LAY A BRICK';
+            else if (currentSection === 'rainbow') formTitle.textContent = 'LAY A PET BRICK';
             else formTitle.textContent = 'PLACE A REMEMBRANCE';
             
             formModal.classList.add('active');
@@ -1348,7 +1348,7 @@
             document.getElementById(labelId).textContent = record.tributes[type];
 
             let storageKey = 'memory_wall_humans';
-            if (currentSection === 'animal') storageKey = 'memory_wall_animals';
+            if (currentSection === 'rainbow') storageKey = 'memory_wall_rainbow';
             if (currentSection === 'gentle') storageKey = 'memory_wall_gentle';
             localStorage.setItem(storageKey, JSON.stringify(activeWallData));
 
