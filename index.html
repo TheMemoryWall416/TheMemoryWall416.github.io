@@ -75,7 +75,7 @@
         .header-center {
             text-align: center;
             width: 100%;
-            max-width: 460px;
+            max-width: 480px;
             flex-shrink: 0;
             z-index: 2;
         }
@@ -101,7 +101,6 @@
             opacity: 1;
         }
 
-        /* Atmosphere Pinned Card overrides */
         #spotlight5 {
             border-color: #33333b;
         }
@@ -155,6 +154,10 @@
             color: #00ff88;
         }
 
+        body.gentle-mode-active .spotlight-dates {
+            color: #ffbbdd;
+        }
+
         h1 {
             font-size: 1.8rem;
             margin: 0 0 5px 0;
@@ -189,10 +192,14 @@
         body.pet-mode-active .volume-slider::-webkit-slider-thumb {
             background: #00ff88;
         }
+        body.gentle-mode-active .volume-slider::-webkit-slider-thumb {
+            background: #ffbbdd;
+        }
 
         /* --- CONTROLS & SWITCHES --- */
         .controls-container {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 15px;
@@ -205,18 +212,21 @@
             border: 1px solid #33333b;
             padding: 4px;
             border-radius: 30px;
+            width: 100%;
+            justify-content: space-between;
         }
 
         .toggle-btn {
             background: none;
             border: none;
             color: #888888;
-            padding: 8px 20px;
-            font-size: 0.85rem;
+            padding: 8px 15px;
+            font-size: 0.80rem;
             font-weight: bold;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.2s ease;
+            flex: 1;
         }
 
         .toggle-btn.active {
@@ -224,8 +234,13 @@
             color: #000000;
         }
 
-        body.pet-mode-active .toggle-btn.active {
+        body.pet-mode-active #petWallBtn.active {
             background-color: #00ff88;
+            color: #000000;
+        }
+
+        body.gentle-mode-active #gentleWallBtn.active {
+            background-color: #ffbbdd;
             color: #000000;
         }
 
@@ -233,7 +248,7 @@
             background-color: #222227;
             color: #ffffff;
             border: 1px solid #444;
-            padding: 8px 16px;
+            padding: 8px 24px;
             font-size: 0.85rem;
             font-weight: bold;
             border-radius: 30px;
@@ -242,8 +257,16 @@
         }
 
         .add-brick-btn:hover {
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+        body.pet-mode-active .add-brick-btn:hover {
             border-color: #00ff88;
             color: #00ff88;
+        }
+        body.gentle-mode-active .add-brick-btn:hover {
+            border-color: #ffbbdd;
+            color: #ffbbdd;
         }
 
         /* --- HORIZONTAL GRID CONTAINER --- */
@@ -315,6 +338,12 @@
             background: #00ff88;
             border-color: #ffffff;
             box-shadow: 0px 0px 15px rgba(0, 255, 136, 0.6);
+        }
+
+        body.gentle-mode-active .brick-slot.filled:hover {
+            background: #ffbbdd;
+            border-color: #ffffff;
+            box-shadow: 0px 0px 15px rgba(255, 187, 221, 0.6);
         }
 
         .brick-slot.filled:hover .name {
@@ -394,8 +423,9 @@
             display: block;
         }
 
-        .submit-btn { background-color: #ffffff; color: black; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; font-size: 0.9rem; }
+        .submit-btn { background-color: #ffffff; color: black; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; font-size: 0.9rem; transition: background-color 0.2s; }
         body.pet-mode-active .submit-btn { background-color: #00ff88; }
+        body.gentle-mode-active .submit-btn { background-color: #ffbbdd; }
         
         /* --- TRIBUTE DISPLAY OBJECTS --- */
         .modal-photo { width: 90px; height: 90px; background-color: #222227; border: 1px solid #444; border-radius: 50%; margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; background-size: cover; background-position: center; }
@@ -403,6 +433,7 @@
         .modal-origin-line { font-size: 0.8rem; color: #888888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .modal-dates { font-size: 0.95rem; color: #aaaaaa; margin: 0 0 15px 0; font-weight: bold; }
         body.pet-mode-active .modal-dates { color: #00ff88; }
+        body.gentle-mode-active .modal-dates { color: #ffbbdd; }
         
         .modal-scroll-pane {
             text-align: left;
@@ -475,13 +506,10 @@
                 height: auto; 
                 margin-top: 80px; 
             }
-            
-            /* PULL TITLE TO THE TOP */
             .header-center { 
                 order: -1; 
                 margin-bottom: 20px; 
             }
-            
             .spotlight-side { 
                 justify-content: center; 
                 flex-wrap: wrap; 
@@ -494,46 +522,34 @@
                 padding: 15px 10px;
                 margin-top: 60px;
             }
-            
             h1 {
                 font-size: 1.4rem;
                 letter-spacing: 3px;
                 white-space: normal;
             }
-
             .header-center {
                 max-width: 100%;
                 width: 100%;
             }
-
             .controls-container {
-                flex-direction: column;
-                gap: 12px;
                 width: 100%;
                 padding: 0 10px;
                 box-sizing: border-box;
             }
-
             .wall-toggle-switch {
-                width: 100%;
-                justify-content: center;
-                box-sizing: border-box;
+                flex-wrap: wrap;
+                gap: 5px;
             }
-            
             .toggle-btn {
-                flex: 1;
-                text-align: center;
+                font-size: 0.75rem;
                 padding: 8px 5px;
             }
-
             .add-brick-btn {
                 width: 100%;
             }
-
             .spotlight-side {
                 gap: 8px;
             }
-
             .spotlight-card {
                 width: 45%; 
                 max-width: 150px; 
@@ -585,6 +601,7 @@
             <div class="controls-container">
                 <div class="wall-toggle-switch">
                     <button class="toggle-btn active" id="humanWallBtn">Human Monument</button>
+                    <button class="toggle-btn" id="gentleWallBtn">Gentle Arrivals</button>
                     <button class="toggle-btn" id="petWallBtn">Animal Wall</button>
                 </div>
                 <button class="add-brick-btn" id="openFormBtn">+ Add Brick</button>
@@ -652,7 +669,7 @@
             <div class="modal-dates" id="modalDates">Dates</div>
             
             <div class="modal-scroll-pane">
-                <div class="pane-title">Biography & Life Story</div>
+                <div class="pane-title" id="modalBioTitle">Biography & Life Story</div>
                 <div class="pane-content" id="modalBio">No biography provided.</div>
                 
                 <div class="pane-title" style="margin-top: 15px;">Words of Encouragement</div>
@@ -678,18 +695,23 @@
                 
                 <div class="form-group-block">
                     <label id="lblFullName">Full Name</label>
-                    <input type="text" id="inputName" placeholder="e.g. Samuel Evans" required>
+                    <input type="text" id="inputName" placeholder="e.g. Samuel Evans">
                 </div>
                 
-                <div class="form-row-split">
+                <div class="form-row-split" id="dualDateWrapper">
                     <div class="form-group-block">
                         <label id="lblDOB">Date of Birth</label>
-                        <div id="dobContainer"><input type="date" id="inputDOB" required></div>
+                        <div id="dobContainer"><input type="date" id="inputDOB"></div>
                     </div>
                     <div class="form-group-block">
                         <label id="lblDOD">Date of Death</label>
-                        <div id="dodContainer"><input type="date" id="inputDOD" required></div>
+                        <div id="dodContainer"><input type="date" id="inputDOD"></div>
                     </div>
+                </div>
+
+                <div class="form-group-block" id="singleDateWrapper" style="display: none;">
+                    <label>Date of Remembrance — <em>Optional</em></label>
+                    <input type="date" id="inputRemembranceDate">
                 </div>
 
                 <div class="form-group-block">
@@ -711,8 +733,20 @@
                 </div>
 
                 <div class="form-group-block">
-                    <label>Upload Remembrance Photo — <em>Optional</em></label>
+                    <label>Upload Remembrance Photo or Sonogram — <em>Optional</em></label>
                     <input type="file" id="inputPhoto" accept="image/*">
+                </div>
+
+                <div class="form-group-block" id="symbolSelectorWrapper" style="display: none;">
+                    <label>Choose a Symbol — <em>If no photo is uploaded</em></label>
+                    <select id="inputSymbol">
+                        <option value="🤍">🤍 White Heart</option>
+                        <option value="🦋">🦋 Butterfly</option>
+                        <option value="✨">✨ Little Star</option>
+                        <option value="🕊️">🕊️ White Dove</option>
+                        <option value="🧸">🧸 Teddy Bear</option>
+                        <option value="🌸">🌸 Cherry Blossom</option>
+                    </select>
                 </div>
 
                 <div class="form-group-block">
@@ -805,10 +839,12 @@
         const modalDates = document.getElementById('modalDates');
         const modalIcon = document.getElementById('modalIcon');
         const modalBio = document.getElementById('modalBio');
+        const modalBioTitle = document.getElementById('modalBioTitle');
         const modalEncouragement = document.getElementById('modalEncouragement');
         const closeViewBtn = document.getElementById('closeViewBtn');
         const humanWallBtn = document.getElementById('humanWallBtn');
         const petWallBtn = document.getElementById('petWallBtn');
+        const gentleWallBtn = document.getElementById('gentleWallBtn');
         const formTitle = document.getElementById('formTitle');
         const wallSubQuote = document.getElementById('wallSubQuote');
         let totalColumns = 0;
@@ -872,7 +908,12 @@
             slot.appendChild(nameDiv);
         }
 
-        function formatDisplayDates(dobStr, dodStr) {
+        function formatDisplayDates(record) {
+            if (currentSection === 'gentle') {
+                return record.remembrance_date ? `Remembered: ${record.remembrance_date}` : 'Forever in our hearts';
+            }
+            const dobStr = record.date_of_birth;
+            const dodStr = record.date_of_death;
             if(!dobStr || !dodStr) return '...';
             if(dobStr.includes('-') && dobStr.length > 4) {
                 const d1 = new Date(dobStr).getFullYear();
@@ -880,6 +921,11 @@
                 return isNaN(d1) ? `${dobStr} — ${dodStr}` : `${d1} — ${d2}`;
             }
             return `${dobStr} — ${dodStr}`;
+        }
+
+        function getDefaultIcon() {
+            if (currentSection === 'animal') return '🐾';
+            return '🕊️';
         }
 
         function runSpotlightEngine() {
@@ -897,7 +943,7 @@
                             card.querySelector('.spotlight-dates').textContent = '...';
                             const photoEl = card.querySelector('.spotlight-photo');
                             photoEl.style.backgroundImage = 'none';
-                            photoEl.textContent = (currentSection === 'animal') ? '🐾' : '🕊️';
+                            photoEl.textContent = getDefaultIcon();
                             card.classList.add('visible');
                         }
                     }
@@ -929,14 +975,19 @@
                         const tagEl = card.querySelector('.spotlight-title');
 
                         nameEl.textContent = dataItem.name || '...';
-                        datesEl.textContent = formatDisplayDates(dataItem.date_of_birth, dataItem.date_of_death);
-                        tagEl.textContent = (currentSection === 'animal') ? 'Pet Spotlight' : 'Spotlight';
+                        datesEl.textContent = formatDisplayDates(dataItem);
+                        
+                        let tagText = 'Spotlight';
+                        if (currentSection === 'animal') tagText = 'Pet Spotlight';
+                        if (currentSection === 'gentle') tagText = 'Little Angel';
+                        tagEl.textContent = tagText;
+
                         if(dataItem.photo_url) {
                             photoEl.textContent = '';
                             photoEl.style.backgroundImage = `url('${dataItem.photo_url}')`;
                         } else {
                             photoEl.style.backgroundImage = 'none';
-                            photoEl.textContent = (currentSection === 'animal') ? '🐾' : '🕊️';
+                            photoEl.textContent = (currentSection === 'gentle' && dataItem.symbol) ? dataItem.symbol : getDefaultIcon();
                         }
 
                         card.classList.add('visible');
@@ -956,8 +1007,16 @@
             buildBlankGridSlots();
             activeWallData = []; 
             
-            const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
-            const jsonFile = currentSection === 'human' ? 'human-data.json' : 'animal-data.json';
+            let storageKey = 'memory_wall_humans';
+            let jsonFile = 'human-data.json';
+            
+            if (currentSection === 'animal') {
+                storageKey = 'memory_wall_animals';
+                jsonFile = 'animal-data.json';
+            } else if (currentSection === 'gentle') {
+                storageKey = 'memory_wall_gentle';
+                jsonFile = 'gentlearrivals-data.json';
+            }
             
             fetch(jsonFile + '?nocache=' + Date.now()) 
                 .then(response => {
@@ -1014,12 +1073,18 @@
         function updateCounterDisplay() {
             const counterEl = document.getElementById('brickCounter');
             if (!counterEl) return;
+            
+            const count = activeWallData ? activeWallData.length : 0;
+            
             if (currentSection === 'human') {
-                counterEl.textContent = `Souls Honored: ${activeWallData ? activeWallData.length : 0}`;
+                counterEl.textContent = `Souls Honored: ${count}`;
                 counterEl.style.color = '#ffffff';
-            } else {
-                counterEl.textContent = `Pets Remembered: ${activeWallData ? activeWallData.length : 0}`;
+            } else if (currentSection === 'animal') {
+                counterEl.textContent = `Pets Remembered: ${count}`;
                 counterEl.style.color = '#00ff88';
+            } else if (currentSection === 'gentle') {
+                counterEl.textContent = `Little Angels Remembered: ${count}`;
+                counterEl.style.color = '#ffbbdd';
             }
         }
 
@@ -1054,25 +1119,27 @@
         humanWallBtn.addEventListener('click', () => {
             if (currentSection === 'human') return;
             currentSection = 'human';
-            document.body.classList.remove('pet-mode-active');
+            document.body.classList.remove('pet-mode-active', 'gentle-mode-active');
             humanWallBtn.classList.add('active');
             petWallBtn.classList.remove('active');
+            gentleWallBtn.classList.remove('active');
             
-            // Swap to Human Dedication Text
             wallSubQuote.textContent = "Every brick holds a story, a legacy, and a love that outlasts time.";
             wallSubQuote.style.color = "#77777f";
 
             document.getElementById('lblFullName').textContent = "Full Name";
             document.getElementById('inputName').placeholder = "e.g. Samuel Evans";
+            document.getElementById('inputName').required = true;
             document.getElementById('lblBio').textContent = "Biography / Life Story — Optional";
             document.getElementById('inputBio').placeholder = "Share a few paragraphs detailing their journey, legacy, and who they were...";
             
-            document.getElementById('lblDOB').textContent = "Date of Birth";
-            document.getElementById('lblDOD').textContent = "Date of Death";
-            document.getElementById('dobContainer').innerHTML = '<input type="date" id="inputDOB" required>';
-            document.getElementById('dodContainer').innerHTML = '<input type="date" id="inputDOD" required>';
-            
+            document.getElementById('dualDateWrapper').style.display = "flex";
+            document.getElementById('singleDateWrapper').style.display = "none";
+            document.getElementById('symbolSelectorWrapper').style.display = "none";
             document.getElementById('verificationWrapper').style.display = "flex";
+
+            document.getElementById('inputDOB').required = true;
+            document.getElementById('inputDOD').required = true;
 
             loadAndRenderWall();
         });
@@ -1080,31 +1147,67 @@
         petWallBtn.addEventListener('click', () => {
             if (currentSection === 'animal') return;
             currentSection = 'animal';
+            document.body.classList.remove('gentle-mode-active');
             document.body.classList.add('pet-mode-active');
             petWallBtn.classList.add('active');
             humanWallBtn.classList.remove('active');
+            gentleWallBtn.classList.remove('active');
             
-            // Swap to Pet Dedication Text
             wallSubQuote.textContent = "Love them deeply. Their whole life is time spent with you.";
             wallSubQuote.style.color = "#00bb66";
 
             document.getElementById('lblFullName').textContent = "Pet's Name";
             document.getElementById('inputName').placeholder = "e.g. Max or Bella";
+            document.getElementById('inputName').required = true;
             document.getElementById('lblBio').textContent = "Pet Story & Memories — Optional";
             document.getElementById('inputBio').placeholder = "Share details about their favorite games, quirks, and the happiness they brought...";
             
-            document.getElementById('lblDOB').textContent = "Year of Birth";
-            document.getElementById('lblDOD').textContent = "Year of Death";
+            document.getElementById('dualDateWrapper').style.display = "flex";
+            document.getElementById('singleDateWrapper').style.display = "none";
+            document.getElementById('symbolSelectorWrapper').style.display = "none";
+            document.getElementById('verificationWrapper').style.display = "none";
+
             document.getElementById('dobContainer').innerHTML = '<input type="number" id="inputDOB" min="1900" max="2100" placeholder="e.g. 2012" required>';
             document.getElementById('dodContainer').innerHTML = '<input type="number" id="inputDOD" min="1900" max="2100" placeholder="e.g. 2026" required>';
+
+            loadAndRenderWall();
+        });
+
+        gentleWallBtn.addEventListener('click', () => {
+            if (currentSection === 'gentle') return;
+            currentSection = 'gentle';
+            document.body.classList.remove('pet-mode-active');
+            document.body.classList.add('gentle-mode-active');
+            gentleWallBtn.classList.add('active');
+            humanWallBtn.classList.remove('active');
+            petWallBtn.classList.remove('active');
             
+            wallSubQuote.textContent = "Briefly known, infinitely loved. A tiny footprint left forever on our hearts.";
+            wallSubQuote.style.color = "#ffbbdd";
+
+            document.getElementById('lblFullName').textContent = "Name or Nickname — Optional";
+            document.getElementById('inputName').placeholder = "e.g. Baby Smith or chosen name";
+            document.getElementById('inputName').required = false;
+            
+            document.getElementById('lblBio').textContent = "A Message of Love — Optional";
+            document.getElementById('inputBio').placeholder = "Share your hopes, dreams, and words of love for your little one...";
+            
+            document.getElementById('dualDateWrapper').style.display = "none";
+            document.getElementById('singleDateWrapper').style.display = "flex";
+            document.getElementById('symbolSelectorWrapper').style.display = "flex";
             document.getElementById('verificationWrapper').style.display = "none";
+
+            document.getElementById('inputDOB').required = false;
+            document.getElementById('inputDOD').required = false;
 
             loadAndRenderWall();
         });
 
         document.getElementById('openFormBtn').addEventListener('click', () => {
-            formTitle.textContent = currentSection === 'human' ? 'LAY A HUMAN BRICK' : 'LAY AN ANIMAL BRICK';
+            if (currentSection === 'human') formTitle.textContent = 'LAY A HUMAN BRICK';
+            else if (currentSection === 'animal') formTitle.textContent = 'LAY AN ANIMAL BRICK';
+            else formTitle.textContent = 'PLACE A REMEMBRANCE';
+            
             formModal.classList.add('active');
         });
         document.getElementById('closeFormBtn').addEventListener('click', () => formModal.classList.remove('active'));
@@ -1124,8 +1227,10 @@
             submitButton.textContent = "Processing Submission...";
 
             const name = document.getElementById('inputName').value;
-            const dob = document.getElementById('inputDOB').value;
-            const dod = document.getElementById('inputDOD').value;
+            const dob = document.getElementById('inputDOB') ? document.getElementById('inputDOB').value : '';
+            const dod = document.getElementById('inputDOD') ? document.getElementById('inputDOD').value : '';
+            const remembranceDate = document.getElementById('inputRemembranceDate') ? document.getElementById('inputRemembranceDate').value : '';
+            const symbol = document.getElementById('inputSymbol') ? document.getElementById('inputSymbol').value : '';
             const country = document.getElementById('inputCountry').value;
             const biography = document.getElementById('inputBio').value;
             const encouragement = document.getElementById('inputEncouragement').value;
@@ -1148,7 +1253,7 @@
                 }
 
                 const payload = {
-                    currentSection, name, dob, dod, country,
+                    currentSection, name, dob, dod, remembranceDate, symbol, country,
                     biography, encouragement, email, verification,
                     base64Photo, photoName
                 };
@@ -1162,7 +1267,7 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    alert("Success! Your brick has been permanently placed onto the global monument.");
+                    alert("Success! Your entry has been permanently placed onto the global monument.");
                     document.getElementById('brickForm').reset();
                     formModal.classList.remove('active');
                     loadAndRenderWall(); 
@@ -1189,10 +1294,12 @@
                 if (!record) return;
 
                 selectedBrickId = brickId; 
-                modalName.textContent = record.name;
+                modalName.textContent = record.name || "Little Angel";
                 modalOrigin.textContent = record.country;
-                modalDates.textContent = formatDisplayDates(record.date_of_birth, record.date_of_death);
-                modalBio.textContent = record.biography || "No biography provided.";
+                modalDates.textContent = formatDisplayDates(record);
+                
+                modalBioTitle.textContent = (currentSection === 'gentle') ? "A Message of Love" : "Biography & Life Story";
+                modalBio.textContent = record.biography || "No message provided.";
                 modalEncouragement.textContent = record.encouragement || "No words left.";
                 
                 if(record.photo_url) {
@@ -1200,7 +1307,7 @@
                     modalIcon.style.backgroundImage = `url('${record.photo_url}')`;
                 } else {
                     modalIcon.style.backgroundImage = 'none';
-                    modalIcon.textContent = (currentSection === 'animal') ? '🐾' : '🕊️';
+                    modalIcon.textContent = (currentSection === 'gentle' && record.symbol) ? record.symbol : getDefaultIcon();
                 }
 
                 const tribs = record.tributes || { roses: 0, sunflowers: 0, hyacinths: 0, candles: 0 };
@@ -1225,7 +1332,9 @@
             const labelId = 'count' + type.charAt(0).toUpperCase() + type.slice(1);
             document.getElementById(labelId).textContent = record.tributes[type];
 
-            const storageKey = currentSection === 'human' ? 'memory_wall_humans' : 'memory_wall_animals';
+            let storageKey = 'memory_wall_humans';
+            if (currentSection === 'animal') storageKey = 'memory_wall_animals';
+            if (currentSection === 'gentle') storageKey = 'memory_wall_gentle';
             localStorage.setItem(storageKey, JSON.stringify(activeWallData));
 
             try {
