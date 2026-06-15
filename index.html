@@ -468,18 +468,48 @@
             .spotlight-side { justify-content: center; flex-wrap: wrap; }
         }
 
+        /* --- AGGRESSIVE MOBILE FIX --- */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.4rem;
-                letter-spacing: 3px;
+            header {
+                padding: 15px 5px;
+                margin-top: 60px;
             }
+            
+            h1 {
+                font-size: 1.1rem;
+                letter-spacing: 2px;
+                white-space: normal;
+            }
+
+            .header-center {
+                max-width: 100%;
+                overflow: hidden; 
+            }
+
             .controls-container {
                 flex-direction: column;
-                gap: 12px;
+                gap: 10px;
             }
+
+            .toggle-btn {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+
+            .spotlight-side {
+                gap: 8px;
+            }
+
             .spotlight-card {
-                width: 45%; 
+                width: calc(50% - 8px); 
                 margin-bottom: 5px;
+                padding: 8px 4px;
+            }
+            
+            .spotlight-photo {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
             }
         }
     </style>
