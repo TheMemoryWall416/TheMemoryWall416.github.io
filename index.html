@@ -69,7 +69,7 @@
         /* --- MODALS --- */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:flex; justify-content:center; align-items:center; opacity:0; pointer-events:none; z-index:1000; }
         .modal-overlay.active { opacity:1; pointer-events:auto; }
-        .modal-card { background:#16161a; border:1px solid #33333b; border-radius:8px; width:90%; max-width:440px; padding:25px; max-height: 90vh; overflow-y: auto; text-align: center; }
+        .modal-card { background:#16161a; border:1px solid #33333b; border-radius:8px; width:90%; max-width:480px; padding:25px; max-height: 90vh; overflow-y: auto; text-align: center; }
         
         /* Form Inputs */
         form { display:flex; flex-direction:column; gap:14px; text-align:left; margin-top:15px; }
@@ -138,17 +138,63 @@
         <div class="modal-card">
             <h3 id="formTitle" style="margin: 0; letter-spacing: 1px; text-transform: uppercase;">LAY A BRICK</h3>
             <form id="brickForm">
-                <div class="form-group-block"><label>Full Name</label><input type="text" id="inputName" placeholder="e.g. Samuel Evans"></div>
-                <button type="submit" class="submit-btn" disabled>Form disabled during setup</button>
+                
+                <div class="form-group-block">
+                    <label>Full Name</label>
+                    <input type="text" id="inputName" placeholder="e.g. Samuel Evans" required>
+                </div>
+                
+                <div class="form-row-split">
+                    <div class="form-group-block">
+                        <label>Date of Birth</label>
+                        <input type="text" id="inputDOB" placeholder="YYYY or MM/DD/YYYY">
+                    </div>
+                    <div class="form-group-block">
+                        <label>Date of Death</label>
+                        <input type="text" id="inputDOD" placeholder="YYYY or MM/DD/YYYY">
+                    </div>
+                </div>
+
+                <div class="form-group-block">
+                    <label>Country of Origin</label>
+                    <select id="inputCountry">
+                        <option value="" disabled selected>Select country...</option>
+                        <option value="South Africa">South Africa</option>
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Australia">Australia</option>
+                    </select>
+                </div>
+
+                <div class="form-group-block">
+                    <label>Biography / Life Story</label>
+                    <textarea id="inputBio" placeholder="Share a few paragraphs detailing their journey, legacy, and who they were..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Place onto Wall</button>
             </form>
             <button class="close-btn" id="closeFormBtn">Cancel</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal-card">
+            <h2 id="modalName" style="color: white; margin-bottom: 5px;">Name</h2>
+            <div id="modalDates" style="color: #aaaaaa; font-size: 0.9rem; margin-bottom: 15px;">Dates</div>
+            <div id="modalCountry" style="color: #888888; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 20px;">Country</div>
+            
+            <div style="text-align: left; background: #0f0f11; padding: 15px; border-radius: 6px; border: 1px solid #222;">
+                <div style="font-size: 0.75rem; color: #55555d; font-weight: bold; text-transform: uppercase; margin-bottom: 6px;">Biography</div>
+                <div id="modalBio" style="color: #cccccc; font-size: 0.9rem; line-height: 1.5;"></div>
+            </div>
+            
+            <button class="close-btn" id="closeViewBtn">Close</button>
         </div>
     </div>
 
     <script>
         /* ==========================================
            1. SUPABASE CONNECTION
-           PASTE YOUR URL AND ANON KEY HERE!
            ========================================== */
         const SUPABASE_URL = 'https://cajspoanzahtrqugbkvp.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhanNwb2FuemFodHJxdWdia3ZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDU2MjAsImV4cCI6MjA5NzEyMTYyMH0.zAvg8fef33RqYyUtQc9GpeZGP8NrkpkesKcx2cji1sg';
@@ -201,7 +247,6 @@
         function populateSlot(slot, item) {
             if (!item || !item.name) return;
             
-            // Create short name for the brick text
             const nameParts = item.name.trim().split(' ');
             let shortName = item.name;
             if (nameParts.length > 1) {
@@ -219,43 +264,42 @@
             nameDiv.className = 'name';
             nameDiv.textContent = shortName;
             slot.appendChild(nameDiv);
+
+            // Add click listener to open the view modal
+            slot.addEventListener('click', () => {
+                document.getElementById('modalName').textContent = item.name;
+                document.getElementById('modalDates').textContent = `${item.dob || '...'} — ${item.dod || '...'}`;
+                document.getElementById('modalCountry').textContent = item.country || 'Location Unknown';
+                document.getElementById('modalBio').textContent = item.biography || 'No biography provided.';
+                document.getElementById('viewModal').classList.add('active');
+            });
         }
 
-        /* --- NEW: FETCH FROM SUPABASE --- */
+        /* --- FETCH FROM SUPABASE --- */
         async function loadAndRenderWall() {
-            // 1. Wipe the wall clean
             buildBlankGridSlots();
             activeWallData = [];
             
-            console.log("Asking Supabase for bricks in section:", currentSection);
-            
             try {
-                // 2. The Supabase Query! 
                 const { data, error } = await supabase
                     .from('memorial_bricks')
                     .select('*')
                     .eq('section', currentSection)
-                    .order('created_at', { ascending: true }); // Oldest bricks at the bottom left
+                    .order('created_at', { ascending: true });
 
-                if (error) {
-                    throw error;
-                }
+                if (error) throw error;
 
                 if (data) {
                     activeWallData = data;
-                    console.log("Successfully fetched bricks:", activeWallData.length);
-                    
-                    // 3. Paint them onto the screen
                     activeWallData.forEach(item => {
                         const targetSlot = findNextEmptySlot();
                         if (targetSlot) populateSlot(targetSlot, item);
                     });
                 }
             } catch (error) {
-                console.error("Supabase Error:", error.message);
+                console.error("Supabase Fetch Error:", error.message);
             }
 
-            // 4. Update the Counter Text
             const counterEl = document.getElementById('brickCounter');
             if (currentSection === 'human') {
                 counterEl.textContent = `Lives Remembered: ${activeWallData.length}`;
@@ -268,6 +312,50 @@
                 counterEl.style.color = '#ffbbdd';
             }
         }
+
+        /* --- NEW: INSERT INTO SUPABASE (FORM SUBMISSION) --- */
+        document.getElementById('brickForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Stop the page from reloading
+
+            const submitBtn = e.target.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Placing Brick...";
+
+            // Package up the data from the form
+            const newBrickPayload = {
+                section: currentSection,
+                name: document.getElementById('inputName').value,
+                dob: document.getElementById('inputDOB').value || null,
+                dod: document.getElementById('inputDOD').value || null,
+                country: document.getElementById('inputCountry').value || null,
+                biography: document.getElementById('inputBio').value || null
+            };
+
+            try {
+                // Send it to the database
+                const { error } = await supabase
+                    .from('memorial_bricks')
+                    .insert([newBrickPayload]);
+
+                if (error) throw error;
+
+                // Success! Clean up and close the form
+                alert("Success! Your entry has been permanently placed onto the global monument.");
+                document.getElementById('brickForm').reset();
+                document.getElementById('formModal').classList.remove('active');
+                
+                // Reload the wall instantly so the user sees their brick appear
+                loadAndRenderWall(); 
+
+            } catch (error) {
+                console.error("Submission Error:", error.message);
+                alert("There was an error placing your brick. Check your connection and try again.");
+            } finally {
+                // Reset the button
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Place onto Wall";
+            }
+        });
 
         /* --- WALL SWITCHING LOGIC --- */
         const humanWallBtn = document.getElementById('humanWallBtn');
@@ -300,6 +388,7 @@
             loadAndRenderWall();
             document.getElementById('openFormBtn').addEventListener('click', () => document.getElementById('formModal').classList.add('active'));
             document.getElementById('closeFormBtn').addEventListener('click', () => document.getElementById('formModal').classList.remove('active'));
+            document.getElementById('closeViewBtn').addEventListener('click', () => document.getElementById('viewModal').classList.remove('active'));
         });
 
     </script>
