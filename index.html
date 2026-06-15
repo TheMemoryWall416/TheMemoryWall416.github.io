@@ -39,27 +39,54 @@
         .wall-toggle-switch { display: flex; background-color: #16161a; border: 1px solid #33333b; padding: 4px; border-radius: 30px; width: 100%; justify-content: space-between; }
         .toggle-btn { background: none; border: none; color: #888888; padding: 8px 15px; font-size: 0.75rem; font-weight: bold; border-radius: 20px; cursor: pointer; flex: 1; }
         .toggle-btn.active { background-color: #ffffff; color: #000000; }
-        .add-brick-btn { background-color: #222227; color: #ffffff; border: 1px solid #444; padding: 8px 24px; font-size: 0.85rem; font-weight: bold; border-radius: 30px; cursor: pointer; }
+        
+        /* Theming for Active Buttons */
+        body.rainbow-mode-active #rainbowWallBtn.active { background-color: #00ff88; color: #000000; }
+        body.gentle-mode-active #gentleWallBtn.active { background-color: #ffbbdd; color: #000000; }
+        
+        .add-brick-btn { background-color: #222227; color: #ffffff; border: 1px solid #444; padding: 8px 24px; font-size: 0.85rem; font-weight: bold; border-radius: 30px; cursor: pointer; transition: all 0.2s; }
+        .add-brick-btn:hover { border-color: #ffffff; color: #ffffff; }
+        body.rainbow-mode-active .add-brick-btn:hover { border-color: #00ff88; color: #00ff88; }
+        body.gentle-mode-active .add-brick-btn:hover { border-color: #ffbbdd; color: #ffbbdd; }
         
         /* --- WALL GRID --- */
         .wall-viewport { width: 100vw; max-width: 100%; overflow-x: auto; padding: 10px 0 30px 0; }
         .wall-container { display: flex; flex-direction: column; gap: 4px; padding: 0 50px; width: max-content; }
         .wall-row { display: flex; gap: 4px; }
         .wall-row:nth-child(even) { transform: translateX(32px); }
-        .brick-slot { width: 60px; height: 26px; border-radius: 1px; flex-shrink: 0; }
-        .brick-slot.empty { border: 1px dashed #1c1c22; }
-        .brick-slot.filled { background: linear-gradient(135deg, #241e1c 0%, #161312 100%); border: 1px solid #2e2624; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .name { font-size: 0.45rem; color: #a0a0a0; white-space: nowrap; overflow: hidden; }
+        .brick-slot { width: 60px; height: 26px; border-radius: 1px; flex-shrink: 0; position: relative; }
+        .brick-slot.empty { border: 1px dashed #1c1c22; background-color: transparent; }
+        .brick-slot.filled { background: linear-gradient(135deg, #241e1c 0%, #161312 100%); border: 1px solid #2e2624; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.15s ease; }
+        
+        /* Hover Effects for Bricks */
+        .brick-slot.filled:hover { transform: scale(1.8); background: #ffffff; border-color: #ffffff; box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6); z-index: 100; }
+        body.rainbow-mode-active .brick-slot.filled:hover { background: #00ff88; border-color: #ffffff; box-shadow: 0px 0px 15px rgba(0, 255, 136, 0.6); }
+        body.gentle-mode-active .brick-slot.filled:hover { background: #ffbbdd; border-color: #ffffff; box-shadow: 0px 0px 15px rgba(255, 187, 221, 0.6); }
+        .brick-slot.filled:hover .name { color: #000000; font-weight: bold; }
+
+        .name { font-size: 0.45rem; color: #a0a0a0; white-space: nowrap; overflow: hidden; padding: 0 2px; pointer-events: none; }
 
         /* --- MODALS --- */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:flex; justify-content:center; align-items:center; opacity:0; pointer-events:none; z-index:1000; }
         .modal-overlay.active { opacity:1; pointer-events:auto; }
-        .modal-card { background:#16161a; border:1px solid #33333b; border-radius:8px; width:90%; max-width:440px; padding:25px; }
+        .modal-card { background:#16161a; border:1px solid #33333b; border-radius:8px; width:90%; max-width:440px; padding:25px; max-height: 90vh; overflow-y: auto; text-align: center; }
+        
+        /* Form Inputs */
         form { display:flex; flex-direction:column; gap:14px; text-align:left; margin-top:15px; }
-        input, select, textarea { background:#222227; border:1px solid #444; color:white; padding:10px; border-radius:4px; width:100%; }
-        .submit-btn { background:#ffffff; color:black; border:none; padding:12px; border-radius:4px; cursor:pointer; }
+        .form-group-block { display: flex; flex-direction: column; gap: 6px; }
+        .form-row-split { display: flex; gap: 10px; }
+        .form-row-split div { flex: 1; }
+        label { font-size: 0.8rem; color: #aaaaaa; font-weight: bold; margin-bottom: -4px; }
+        input, select, textarea { background:#222227; border:1px solid #444; color:white; padding:10px; border-radius:4px; width:100%; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 70px; }
+        
+        .submit-btn { background:#ffffff; color:black; border:none; padding:12px; border-radius:4px; font-weight: bold; cursor:pointer; margin-top: 10px; }
+        body.rainbow-mode-active .submit-btn { background-color: #00ff88; }
+        body.gentle-mode-active .submit-btn { background-color: #ffbbdd; }
+        
         .close-btn { background:#222227; color:#aaa; border:1px solid #444; padding:10px; border-radius:4px; cursor:pointer; width:100%; margin-top:15px; }
-        .about-text { text-align:left; font-size:0.9rem; color:#cccccc; line-height:1.5; }
+        .close-btn:hover { background-color: #ff3344; color: white; border-color: #ff3344; }
+
     </style>
 </head>
 <body>
@@ -88,7 +115,7 @@
                 </div>
                 <button class="add-brick-btn" id="openFormBtn">+ Add Brick</button>
             </div>
-            <div id="brickCounter" style="font-size: 0.9rem; font-weight: bold; margin-top: 10px;">Souls Honored: 0</div>
+            <div id="brickCounter" style="font-size: 0.9rem; font-weight: bold; margin-top: 10px; color: #ffffff;">Souls Honored: 0</div>
         </div>
 
         <div class="spotlight-side right-side">
@@ -107,25 +134,12 @@
 
     <div class="wall-viewport" id="wallViewport"><div class="wall-container" id="wallContainer"></div></div>
 
-    <div class="modal-overlay" id="viewModal">
-        <div class="modal-card">
-            <h2 id="modalName">Name</h2>
-            <p id="modalDates"></p>
-            <div id="modalBio" class="about-text"></div>
-            <button class="close-btn" id="closeViewBtn">Close</button>
-        </div>
-    </div>
-
     <div class="modal-overlay" id="formModal">
         <div class="modal-card">
-            <h3 id="formTitle">LAY A BRICK</h3>
+            <h3 id="formTitle" style="margin: 0; letter-spacing: 1px; text-transform: uppercase;">LAY A BRICK</h3>
             <form id="brickForm">
-                <input type="text" id="inputName" placeholder="Full Name" required>
-                <input type="date" id="inputDOB">
-                <input type="date" id="inputDOD">
-                <select id="inputCountry"><option value="South Africa">South Africa</option></select>
-                <textarea id="inputBio" placeholder="Biography..."></textarea>
-                <button type="submit" class="submit-btn">Place onto Wall</button>
+                <div class="form-group-block"><label>Full Name</label><input type="text" id="inputName" placeholder="e.g. Samuel Evans"></div>
+                <button type="submit" class="submit-btn" disabled>Form disabled during setup</button>
             </form>
             <button class="close-btn" id="closeFormBtn">Cancel</button>
         </div>
@@ -133,53 +147,159 @@
 
     <script>
         /* ==========================================
-           2. SUPABASE INITIALIZATION
-           Replace the placeholder text inside the quotes 
-           with your actual URL and Anon Key.
+           1. SUPABASE CONNECTION
+           PASTE YOUR URL AND ANON KEY HERE!
            ========================================== */
-        const SUPABASE_URL = 'https://cajspoanzahtrqugbkvp.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhanNwb2FuemFodHJxdWdia3ZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDU2MjAsImV4cCI6MjA5NzEyMTYyMH0.zAvg8fef33RqYyUtQc9GpeZGP8NrkpkesKcx2cji1sg';
+        const SUPABASE_URL = 'PASTE_YOUR_PROJECT_URL_HERE';
+        const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         /* --- CORE VARIABLES --- */
         const wallContainer = document.getElementById('wallContainer');
+        let totalColumns = 0;
         let currentSection = 'human'; 
         let activeWallData = [];
 
-        /* --- GRID BUILDING --- */
-        function initGrid() {
-            wallContainer.innerHTML = ''; // Clear previous
-            for (let i = 0; i < 10; i++) {
-                const row = document.createElement('div');
-                row.className = 'wall-row';
-                for (let j = 0; j < 60; j++) {
+        /* --- GRID LOGIC --- */
+        function expandGridColumns(count) {
+            const rows = wallContainer.querySelectorAll('.wall-row');
+            rows.forEach(row => {
+                for (let i = 0; i < count; i++) {
                     const slot = document.createElement('div');
                     slot.className = 'brick-slot empty';
                     row.appendChild(slot);
                 }
+            });
+            totalColumns += count;
+        }
+
+        function buildBlankGridSlots() {
+            totalColumns = 0;
+            wallContainer.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const row = document.createElement('div');
+                row.className = 'wall-row';
                 wallContainer.appendChild(row);
+            }
+            expandGridColumns(60);
+        }
+
+        function findNextEmptySlot() {
+            const rows = wallContainer.querySelectorAll('.wall-row');
+            for (let col = 0; col < totalColumns; col++) {
+                for (let r = 9; r >= 0; r--) { 
+                    const slot = rows[r].children[col];
+                    if (slot && slot.classList.contains('empty')) {
+                        return slot;
+                    }
+                }
+            }
+            expandGridColumns(20);
+            return findNextEmptySlot();
+        }
+
+        function populateSlot(slot, item) {
+            if (!item || !item.name) return;
+            
+            // Create short name for the brick text
+            const nameParts = item.name.trim().split(' ');
+            let shortName = item.name;
+            if (nameParts.length > 1) {
+                shortName = nameParts[0][0] + '.' + nameParts[nameParts.length - 1].substring(0, 4);
+            } else {
+                shortName = item.name.substring(0, 6);
+            }
+
+            slot.classList.remove('empty');
+            slot.classList.add('filled');
+            slot.setAttribute('data-id', item.id);
+            
+            slot.innerHTML = '';
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'name';
+            nameDiv.textContent = shortName;
+            slot.appendChild(nameDiv);
+        }
+
+        /* --- NEW: FETCH FROM SUPABASE --- */
+        async function loadAndRenderWall() {
+            // 1. Wipe the wall clean
+            buildBlankGridSlots();
+            activeWallData = [];
+            
+            console.log("Asking Supabase for bricks in section:", currentSection);
+            
+            try {
+                // 2. The Supabase Query! 
+                const { data, error } = await supabase
+                    .from('memorial_bricks')
+                    .select('*')
+                    .eq('section', currentSection)
+                    .order('created_at', { ascending: true }); // Oldest bricks at the bottom left
+
+                if (error) {
+                    throw error;
+                }
+
+                if (data) {
+                    activeWallData = data;
+                    console.log("Successfully fetched bricks:", activeWallData.length);
+                    
+                    // 3. Paint them onto the screen
+                    activeWallData.forEach(item => {
+                        const targetSlot = findNextEmptySlot();
+                        if (targetSlot) populateSlot(targetSlot, item);
+                    });
+                }
+            } catch (error) {
+                console.error("Supabase Error:", error.message);
+            }
+
+            // 4. Update the Counter Text
+            const counterEl = document.getElementById('brickCounter');
+            if (currentSection === 'human') {
+                counterEl.textContent = `Lives Remembered: ${activeWallData.length}`;
+                counterEl.style.color = '#ffffff';
+            } else if (currentSection === 'rainbow') {
+                counterEl.textContent = `Pets at the Bridge: ${activeWallData.length}`;
+                counterEl.style.color = '#00ff88';
+            } else if (currentSection === 'gentle') {
+                counterEl.textContent = `Little Angels Remembered: ${activeWallData.length}`;
+                counterEl.style.color = '#ffbbdd';
             }
         }
 
-        /* --- NEW: FETCH DATA FROM SUPABASE (We will build the inside of this next) --- */
-        async function loadAndRenderWall() {
-            initGrid();
-            activeWallData = [];
-            
-            console.log("Preparing to fetch from Supabase. Section:", currentSection);
-            
-            // This is where our new database pull will go!
-            
-            document.getElementById('brickCounter').textContent = `Souls Honored: ${activeWallData.length}`;
-        }
+        /* --- WALL SWITCHING LOGIC --- */
+        const humanWallBtn = document.getElementById('humanWallBtn');
+        const gentleWallBtn = document.getElementById('gentleWallBtn');
+        const rainbowWallBtn = document.getElementById('rainbowWallBtn');
+
+        humanWallBtn.addEventListener('click', () => {
+            currentSection = 'human';
+            document.body.classList.remove('rainbow-mode-active', 'gentle-mode-active');
+            humanWallBtn.classList.add('active'); rainbowWallBtn.classList.remove('active'); gentleWallBtn.classList.remove('active');
+            loadAndRenderWall();
+        });
+
+        rainbowWallBtn.addEventListener('click', () => {
+            currentSection = 'rainbow';
+            document.body.classList.remove('gentle-mode-active'); document.body.classList.add('rainbow-mode-active');
+            rainbowWallBtn.classList.add('active'); humanWallBtn.classList.remove('active'); gentleWallBtn.classList.remove('active');
+            loadAndRenderWall();
+        });
+
+        gentleWallBtn.addEventListener('click', () => {
+            currentSection = 'gentle';
+            document.body.classList.remove('rainbow-mode-active'); document.body.classList.add('gentle-mode-active');
+            gentleWallBtn.classList.add('active'); humanWallBtn.classList.remove('active'); rainbowWallBtn.classList.remove('active');
+            loadAndRenderWall();
+        });
 
         /* --- EVENT LISTENERS --- */
         document.addEventListener('DOMContentLoaded', () => {
             loadAndRenderWall();
-            
             document.getElementById('openFormBtn').addEventListener('click', () => document.getElementById('formModal').classList.add('active'));
             document.getElementById('closeFormBtn').addEventListener('click', () => document.getElementById('formModal').classList.remove('active'));
-            document.getElementById('closeViewBtn').addEventListener('click', () => document.getElementById('viewModal').classList.remove('active'));
         });
 
     </script>
