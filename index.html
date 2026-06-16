@@ -1286,7 +1286,7 @@
 
             } catch (error) {
                 console.error("Supabase Database Connection Failure:", error.message);
-                alert("Submission processing error. Please check your connection and try again.");
+                alert("SUPABASE ERROR: " + error.message);
             } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = "Place onto Wall";
