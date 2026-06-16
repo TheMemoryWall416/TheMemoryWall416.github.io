@@ -797,14 +797,42 @@
     </div>
 
     <div class="modal-overlay" id="searchModal">
-        <div class="modal-card" style="max-width: 360px;">
+        <div class="modal-card" style="max-width: 440px;">
             <h3 style="margin: 0; letter-spacing: 1px;">FIND A BRICK</h3>
-            <p style="font-size: 0.85rem; color: #aaaaaa; margin-top: 10px; margin-bottom: 20px; line-height: 1.4;">Search the active wall by Name or unique Reference ID (e.g. #LR42)</p>
+            <p style="font-size: 0.85rem; color: #aaaaaa; margin-top: 10px; margin-bottom: 20px; line-height: 1.4;">Locate a loved one's brick on the active wall.</p>
             <form id="searchForm">
+                
                 <div class="form-group-block">
-                    <input type="text" id="searchInput" placeholder="Enter name or ID..." required>
+                    <label>Unique Reference ID</label>
+                    <input type="text" id="searchRefId" placeholder="e.g. #LR42">
                 </div>
-                <button type="submit" class="submit-btn" style="margin-top: 15px;">Search Monument</button>
+
+                <div style="text-align: center; margin: 15px 0; color: #444; font-size: 0.75rem; font-weight: bold; letter-spacing: 2px;">— OR SEARCH BY DETAILS —</div>
+
+                <div class="form-group-block">
+                    <label>Name</label>
+                    <input type="text" id="searchName" placeholder="e.g. Samuel Evans">
+                </div>
+                
+                <div class="form-row-split">
+                    <div class="form-group-block">
+                        <label>Date of Birth</label>
+                        <input type="date" id="searchDOB">
+                    </div>
+                    <div class="form-group-block">
+                        <label>Date of Death</label>
+                        <input type="date" id="searchDOD">
+                    </div>
+                </div>
+
+                <div class="form-group-block">
+                    <label>Country of Origin</label>
+                    <select id="searchCountry">
+                        <option value="" selected>Any Country...</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn" style="margin-top: 20px;">Search Monument</button>
             </form>
             <button class="close-btn" id="closeSearchBtn" style="margin-top: 15px;">Cancel</button>
         </div>
@@ -893,21 +921,29 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhanNwb2FuemFodHJxdWdia3ZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDU2MjAsImV4cCI6MjA5NzEyMTYyMH0.zAvg8fef33RqYyUtQc9GpeZGP8NrkpkesKcx2cji1sg';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        /* DYNAMIC COUNTRY LOADER */
+        /* DYNAMIC COUNTRY LOADER (Populates BOTH the Add Form and the Search Form) */
         const countryList = [
             "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Ivory Coast", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
         ];
 
         document.addEventListener("DOMContentLoaded", () => {
             const countrySelect = document.getElementById('inputCountry');
-            if (countrySelect) {
-                countryList.forEach(country => {
-                    const option = document.createElement('option');
-                    option.value = country;
-                    option.textContent = country;
-                    countrySelect.appendChild(option);
-                });
-            }
+            const searchCountrySelect = document.getElementById('searchCountry');
+            
+            countryList.forEach(country => {
+                if (countrySelect) {
+                    const opt = document.createElement('option');
+                    opt.value = country;
+                    opt.textContent = country;
+                    countrySelect.appendChild(opt);
+                }
+                if (searchCountrySelect) {
+                    const opt2 = document.createElement('option');
+                    opt2.value = country;
+                    opt2.textContent = country;
+                    searchCountrySelect.appendChild(opt2);
+                }
+            });
         });
 
         const wallViewport = document.getElementById('wallViewport');
@@ -915,7 +951,7 @@
         const viewModal = document.getElementById('viewModal');
         const formModal = document.getElementById('formModal');
         
-        // NEW SEARCH MODAL VARIABLES
+        // SEARCH MODAL VARIABLES
         const searchModal = document.getElementById('searchModal');
         const openSearchBtn = document.getElementById('openSearchBtn');
         const closeSearchBtn = document.getElementById('closeSearchBtn');
@@ -1154,7 +1190,6 @@
             const subTitle = document.querySelector('.header-center p');
             if(!subTitle) return;
 
-            // Note: Left on counterapi temporarily so your site doesn't break.
             fetch('https://api.counterapi.dev/v1/thememorywall416/visits/up')
                 .then(res => res.json())
                 .then(resData => {
@@ -1266,19 +1301,37 @@
             loadAndRenderWall();
         });
 
-        // SEARCH ENGINE FUNCTIONALITY
+        // --- NEW: DUAL-MODE SEARCH ENGINE LOGIC ---
         openSearchBtn.addEventListener('click', () => searchModal.classList.add('active'));
         closeSearchBtn.addEventListener('click', () => searchModal.classList.remove('active'));
 
         searchForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const query = document.getElementById('searchInput').value.trim().toLowerCase();
             
-            // Find the record in the currently active wall data
+            const searchRef = document.getElementById('searchRefId').value.trim().toLowerCase();
+            const searchName = document.getElementById('searchName').value.trim().toLowerCase();
+            const searchDOB = document.getElementById('searchDOB').value;
+            const searchDOD = document.getElementById('searchDOD').value;
+            const searchCountry = document.getElementById('searchCountry').value;
+
+            // Look through the wall to find the matching brick
             const match = activeWallData.find(item => {
-                const nameMatch = item.name && item.name.toLowerCase().includes(query);
-                const refMatch = item.reference_id && item.reference_id.toLowerCase() === query;
-                return nameMatch || refMatch;
+                // If they provided the exact Reference ID, just use that.
+                if (searchRef) {
+                    return item.reference_id && item.reference_id.toLowerCase() === searchRef;
+                }
+
+                // If they didn't provide a Ref ID, filter using whatever details they typed in.
+                let isMatch = true;
+                if (searchName && (!item.name || !item.name.toLowerCase().includes(searchName))) isMatch = false;
+                if (searchDOB && item.date_of_birth !== searchDOB && item.dob !== searchDOB) isMatch = false;
+                if (searchDOD && item.date_of_death !== searchDOD && item.dod !== searchDOD) isMatch = false;
+                if (searchCountry && item.country !== searchCountry) isMatch = false;
+
+                // Stop the search if they literally submitted a completely blank form
+                if (!searchName && !searchDOB && !searchDOD && !searchCountry) return false;
+
+                return isMatch;
             });
 
             if (match) {
@@ -1299,7 +1352,7 @@
                     }, 800); 
                 }
             } else {
-                alert("We couldn't find a brick matching that search in this section. Please check the spelling or try switching to another wall.");
+                alert("We couldn't find a brick matching those details on this wall.\n\nPlease check your spelling, try entering fewer details, or make sure you are searching on the correct wall section (Lives Remembered, Pets, etc.).");
             }
         });
 
@@ -1329,7 +1382,6 @@
             submitButton.disabled = true;
             submitButton.textContent = "Processing Submission...";
 
-            // Collecting UI data
             const name = document.getElementById('inputName').value;
             const dob = document.getElementById('inputDOB') ? document.getElementById('inputDOB').value : '';
             const dod = document.getElementById('inputDOD') ? document.getElementById('inputDOD').value : '';
@@ -1371,7 +1423,6 @@
                     photo_base64: base64Photo 
                 };
 
-                // Added .select() to retrieve the data (including the new reference ID)
                 const { data, error } = await supabaseClient
                     .from('memorial_bricks')
                     .insert([payload])
@@ -1379,7 +1430,6 @@
 
                 if (error) throw error;
 
-                // Extracting the new ID and showing it to the user
                 let refId = "";
                 if (data && data.length > 0) {
                     refId = data[0].reference_id;
