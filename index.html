@@ -247,27 +247,40 @@
             color: #000000;
         }
 
-        .add-brick-btn {
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .action-btn {
             background-color: #222227;
             color: #ffffff;
             border: 1px solid #444;
-            padding: 8px 24px;
+            padding: 8px 15px;
             font-size: 0.85rem;
             font-weight: bold;
             border-radius: 30px;
             cursor: pointer;
             transition: all 0.2s;
+            flex: 1;
         }
 
-        .add-brick-btn:hover {
+        .action-btn:hover {
             border-color: #ffffff;
             color: #ffffff;
         }
-        body.rainbow-mode-active .add-brick-btn:hover {
+        
+        .action-btn.search {
+            background-color: #16161a;
+            color: #aaaaaa;
+        }
+
+        body.rainbow-mode-active .action-btn:hover {
             border-color: #00ff88;
             color: #00ff88;
         }
-        body.gentle-mode-active .add-brick-btn:hover {
+        body.gentle-mode-active .action-btn:hover {
             border-color: #ffbbdd;
             color: #ffbbdd;
         }
@@ -327,6 +340,7 @@
             align-items: center;
             text-align: center;
             cursor: pointer;
+            transition: box-shadow 0.3s ease, transform 0.15s ease, background 0.15s ease;
         }
 
         .brick-slot.filled:hover {
@@ -548,7 +562,10 @@
                 font-size: 0.75rem;
                 padding: 8px 5px;
             }
-            .add-brick-btn {
+            .btn-row {
+                flex-direction: column;
+            }
+            .action-btn {
                 width: 100%;
             }
             .spotlight-side {
@@ -609,7 +626,12 @@
                     <button class="toggle-btn" id="gentleWallBtn">Gentle Arrivals</button>
                     <button class="toggle-btn" id="rainbowWallBtn">Rainbow Bridge</button>
                 </div>
-                <button class="add-brick-btn" id="openFormBtn">+ Add Brick</button>
+                
+                <div class="btn-row">
+                    <button class="action-btn search" id="openSearchBtn">🔍 Find Brick</button>
+                    <button class="action-btn" id="openFormBtn">+ Add Brick</button>
+                </div>
+
             </div>
 
             <div id="brickCounter" style="font-size: 0.9rem; color: #ffffff; margin-top: 10px; letter-spacing: 1px; font-weight: bold;">
@@ -774,6 +796,20 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="searchModal">
+        <div class="modal-card" style="max-width: 360px;">
+            <h3 style="margin: 0; letter-spacing: 1px;">FIND A BRICK</h3>
+            <p style="font-size: 0.85rem; color: #aaaaaa; margin-top: 10px; margin-bottom: 20px; line-height: 1.4;">Search the active wall by Name or unique Reference ID (e.g. #LR42)</p>
+            <form id="searchForm">
+                <div class="form-group-block">
+                    <input type="text" id="searchInput" placeholder="Enter name or ID..." required>
+                </div>
+                <button type="submit" class="submit-btn" style="margin-top: 15px;">Search Monument</button>
+            </form>
+            <button class="close-btn" id="closeSearchBtn" style="margin-top: 15px;">Cancel</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="aboutModal">
         <div class="modal-card" style="max-width: 480px;">
             <h3 style="margin: 0 0 15px 0; letter-spacing: 1px;">ABOUT THE WALL</h3>
@@ -878,6 +914,13 @@
         const wallContainer = document.getElementById('wallContainer');
         const viewModal = document.getElementById('viewModal');
         const formModal = document.getElementById('formModal');
+        
+        // NEW SEARCH MODAL VARIABLES
+        const searchModal = document.getElementById('searchModal');
+        const openSearchBtn = document.getElementById('openSearchBtn');
+        const closeSearchBtn = document.getElementById('closeSearchBtn');
+        const searchForm = document.getElementById('searchForm');
+
         const aboutModal = document.getElementById('aboutModal');
         const founderModal = document.getElementById('founderModal');
         const contactModal = document.getElementById('contactModal');
@@ -959,7 +1002,6 @@
         }
 
         function formatDisplayDates(record) {
-            // Helper function to turn "2026-06-16" into a beautiful "June 16, 2026"
             function makePretty(dStr) {
                 if (!dStr) return '';
                 if (dStr.includes('-') && dStr.split('-').length === 3) {
@@ -1224,6 +1266,43 @@
             loadAndRenderWall();
         });
 
+        // SEARCH ENGINE FUNCTIONALITY
+        openSearchBtn.addEventListener('click', () => searchModal.classList.add('active'));
+        closeSearchBtn.addEventListener('click', () => searchModal.classList.remove('active'));
+
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            
+            // Find the record in the currently active wall data
+            const match = activeWallData.find(item => {
+                const nameMatch = item.name && item.name.toLowerCase().includes(query);
+                const refMatch = item.reference_id && item.reference_id.toLowerCase() === query;
+                return nameMatch || refMatch;
+            });
+
+            if (match) {
+                const brickEl = document.querySelector(`.brick-slot.filled[data-id="${match.id}"]`);
+                if (brickEl) {
+                    searchModal.classList.remove('active');
+                    document.getElementById('searchForm').reset();
+                    
+                    // The Magic Carpet Ride
+                    const scrollTarget = brickEl.offsetLeft - (wallViewport.clientWidth / 2) + (brickEl.clientWidth / 2);
+                    wallViewport.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+
+                    // The Unveil (Wait 800ms for scroll, then click and glow)
+                    setTimeout(() => {
+                        brickEl.click();
+                        brickEl.style.boxShadow = "0px 0px 25px rgba(255, 255, 255, 0.9)";
+                        setTimeout(() => brickEl.style.boxShadow = "", 2000);
+                    }, 800); 
+                }
+            } else {
+                alert("We couldn't find a brick matching that search in this section. Please check the spelling or try switching to another wall.");
+            }
+        });
+
         document.getElementById('openFormBtn').addEventListener('click', () => {
             if (currentSection === 'human') formTitle.textContent = 'LAY A BRICK';
             else if (currentSection === 'rainbow') formTitle.textContent = 'LAY A PET BRICK';
@@ -1332,7 +1411,6 @@
 
                 selectedBrickId = brickId; 
                 
-                // NEW: Populate the reference ID tag
                 modalRefId.textContent = record.reference_id || "";
 
                 modalName.textContent = record.name || "Little Angel";
@@ -1424,6 +1502,7 @@
             if (e.target === aboutModal) aboutModal.classList.remove('active');
             if (e.target === founderModal) founderModal.classList.remove('active');
             if (e.target === contactModal) contactModal.classList.remove('active');
+            if (e.target === searchModal) searchModal.classList.remove('active');
         });
     </script>
 </body>
