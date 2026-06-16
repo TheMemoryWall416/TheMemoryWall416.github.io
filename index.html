@@ -1168,8 +1168,8 @@
             document.getElementById('symbolSelectorWrapper').style.display = "none";
             document.getElementById('verificationWrapper').style.display = "none";
 
-            document.getElementById('dobContainer').innerHTML = '<input type="number" id="inputDOB" min="1900" max="2100" placeholder="e.g. 2012" required>';
-            document.getElementById('dodContainer').innerHTML = '<input type="number" id="inputDOD" min="1900" max="2100" placeholder="e.g. 2026" required>';
+            document.getElementById('inputDOB').required = true;
+            document.getElementById('inputDOD').required = true;
 
             loadAndRenderWall();
         });
