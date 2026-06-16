@@ -959,18 +959,26 @@
         }
 
         function formatDisplayDates(record) {
-            if (currentSection === 'gentle') {
-                return record.remembrance_date ? `Remembered: ${record.remembrance_date}` : 'Forever in our hearts';
+            // Helper function to turn "2026-06-16" into a beautiful "June 16, 2026"
+            function makePretty(dStr) {
+                if (!dStr) return '';
+                if (dStr.includes('-') && dStr.split('-').length === 3) {
+                    const [year, month, day] = dStr.split('-');
+                    const d = new Date(year, month - 1, day);
+                    if (!isNaN(d)) return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                }
+                return dStr;
             }
+
+            if (currentSection === 'gentle') {
+                return record.remembrance_date ? `Remembered: ${makePretty(record.remembrance_date)}` : 'Forever in our hearts';
+            }
+            
             const dobStr = record.date_of_birth || record.dob;
             const dodStr = record.date_of_death || record.dod;
             if(!dobStr || !dodStr) return '...';
-            if(dobStr.includes('-') && dobStr.length > 4) {
-                const d1 = new Date(dobStr).getFullYear();
-                const d2 = new Date(dodStr).getFullYear();
-                return isNaN(d1) ? `${dobStr} — ${dodStr}` : `${d1} — ${d2}`;
-            }
-            return `${dobStr} — ${dodStr}`;
+            
+            return `${makePretty(dobStr)} — ${makePretty(dodStr)}`;
         }
 
         function getDefaultIcon() {
