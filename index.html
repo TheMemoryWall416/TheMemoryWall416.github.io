@@ -399,6 +399,7 @@
             box-sizing: border-box;
             max-height: 90vh;
             overflow-y: auto;
+            position: relative;
         }
 
         form { display: flex; flex-direction: column; gap: 14px; text-align: left; margin-top: 15px; }
@@ -667,6 +668,9 @@
 
     <div class="modal-overlay" id="viewModal">
         <div class="modal-card">
+            
+            <div id="modalRefId" style="font-size: 0.75rem; color: #666666; font-weight: bold; letter-spacing: 1px; margin-bottom: 8px;"></div>
+            
             <div class="modal-photo" id="modalIcon">🕊️</div>
             <h2 class="modal-name" id="modalName">Name</h2>
             <div class="modal-origin-line" id="modalOrigin">Country</div>
@@ -877,6 +881,8 @@
         const aboutModal = document.getElementById('aboutModal');
         const founderModal = document.getElementById('founderModal');
         const contactModal = document.getElementById('contactModal');
+        
+        const modalRefId = document.getElementById('modalRefId'); 
         const modalName = document.getElementById('modalName');
         const modalOrigin = document.getElementById('modalOrigin');
         const modalDates = document.getElementById('modalDates');
@@ -1263,7 +1269,6 @@
                     });
                 }
 
-                // 2. New Supabase Insert Call
                 const payload = {
                     section: currentSection,
                     name: name,
@@ -1279,13 +1284,22 @@
                     photo_base64: base64Photo 
                 };
 
-                const { error } = await supabaseClient
+                // Added .select() to retrieve the data (including the new reference ID)
+                const { data, error } = await supabaseClient
                     .from('memorial_bricks')
-                    .insert([payload]);
+                    .insert([payload])
+                    .select();
 
                 if (error) throw error;
 
-                alert("Success! Your entry has been permanently placed onto the global monument.");
+                // Extracting the new ID and showing it to the user
+                let refId = "";
+                if (data && data.length > 0) {
+                    refId = data[0].reference_id;
+                }
+
+                alert(`Success! Your entry has been permanently placed onto the global monument.\n\nYour Unique Reference Number is: ${refId}`);
+                
                 document.getElementById('brickForm').reset();
                 formModal.classList.remove('active');
                 loadAndRenderWall(); 
@@ -1309,6 +1323,10 @@
                 if (!record) return;
 
                 selectedBrickId = brickId; 
+                
+                // NEW: Populate the reference ID tag
+                modalRefId.textContent = record.reference_id || "";
+
                 modalName.textContent = record.name || "Little Angel";
                 modalOrigin.textContent = record.country || "Location Unknown";
                 modalDates.textContent = formatDisplayDates(record);
