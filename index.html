@@ -300,78 +300,100 @@
         .wall-viewport::-webkit-scrollbar-thumb { background: #33333b; border-radius: 4px; }
         .wall-viewport::-webkit-scrollbar-thumb:hover { background: #00ff88; }
 
+        /* MORTAR BACKGROUND FOR THE WALL */
         .wall-container {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            padding: 0 50px;
+            gap: 6px; /* Slightly thicker mortar space */
+            padding: 20px 50px;
             width: max-content;
+            background-color: #141416; /* Dark cement backing */
+            border-radius: 4px;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
         }
 
         .wall-row {
             display: flex;
-            gap: 4px;
+            gap: 6px;
         }
 
         .wall-row:nth-child(even) {
-            transform: translateX(32px);
+            transform: translateX(33px);
         }
 
+        /* INDIVIDUAL BRICK FOUNDATION */
         .brick-slot {
             width: 60px;
             height: 26px;
-            border-radius: 1px;
+            border-radius: 2px; /* Realistic slight brick edge curve */
             box-sizing: border-box;
-            transition: all 0.15s ease;
+            transition: all 0.2s ease;
             flex-shrink: 0;
             position: relative;
         }
 
+        /* EMPTY SLOTS (Recessed Mortar Holes) */
         .brick-slot.empty {
-            background-color: transparent;
-            border: 1px dashed #1c1c22;
+            background-color: #0c0c0d;
+            border: 1px inset #1a1a1c;
+            box-shadow: inset 2px 2px 6px rgba(0,0,0,0.8);
         }
 
+        /* FILLED TERRACOTTA BRICKS */
         .brick-slot.filled {
-            background: linear-gradient(135deg, #241e1c 0%, #161312 100%);
-            border: 1px solid #2e2624;
+            /* Base clay color */
+            background: linear-gradient(135deg, #8a3a2b 0%, #5a2016 100%);
+            border: 1px solid #4a150d;
+            border-top-color: #9d4635; /* Simulates light hitting the top edge */
+            border-left-color: #9d4635; /* Simulates light hitting the left edge */
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.7), inset -1px -1px 2px rgba(0,0,0,0.4);
             display: flex;
             justify-content: center;
             align-items: center;
             text-align: center;
             cursor: pointer;
-            transition: box-shadow 0.3s ease, transform 0.15s ease, background 0.15s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, border-color 0.2s ease;
         }
 
+        /* KILN VARIATIONS (Making it look natural) */
+        .brick-slot.filled:nth-child(3n) { 
+            background: linear-gradient(135deg, #7a3022 0%, #4a1910 100%); 
+            border-top-color: #8b3a2a; border-left-color: #8b3a2a;
+        }
+        .brick-slot.filled:nth-child(5n) { 
+            background: linear-gradient(135deg, #964534 0%, #66271c 100%); 
+            border-top-color: #a8513e; border-left-color: #a8513e;
+        }
+        .brick-slot.filled:nth-child(7n) { 
+            background: linear-gradient(135deg, #6c2b1e 0%, #3e140d 100%); 
+            border-top-color: #7d3324; border-left-color: #7d3324;
+        }
+
+        /* BRICK HOVER STATE (Glowing warmth) */
         .brick-slot.filled:hover {
-            transform: scale(1.8);
-            background: #ffffff;
-            border-color: #ffffff;
-            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6);
+            transform: scale(1.15);
+            filter: brightness(1.2);
+            box-shadow: 0px 0px 15px rgba(255, 120, 80, 0.4), 4px 4px 8px rgba(0,0,0,0.6);
+            border-color: #ffbba5;
             z-index: 100;
         }
 
         body.rainbow-mode-active .brick-slot.filled:hover {
-            background: #00ff88;
-            border-color: #ffffff;
-            box-shadow: 0px 0px 15px rgba(0, 255, 136, 0.6);
+            box-shadow: 0px 0px 15px rgba(0, 255, 136, 0.4), 4px 4px 8px rgba(0,0,0,0.6);
+            border-color: #00ff88;
         }
 
         body.gentle-mode-active .brick-slot.filled:hover {
-            background: #ffbbdd;
-            border-color: #ffffff;
-            box-shadow: 0px 0px 15px rgba(255, 187, 221, 0.6);
+            box-shadow: 0px 0px 15px rgba(255, 187, 221, 0.4), 4px 4px 8px rgba(0,0,0,0.6);
+            border-color: #ffbbdd;
         }
 
-        .brick-slot.filled:hover .name {
-            color: #000000;
-            font-weight: bold;
-        }
-
+        /* ENGRAVED TEXT EFFECT */
         .name {
             font-size: 0.45rem;
             letter-spacing: 0.2px;
-            color: #a0a0a0;
+            color: #e6d8cc; /* Warm, stone-like off-white */
+            text-shadow: -1px -1px 0 rgba(0,0,0,0.6), 1px 1px 0 rgba(255,255,255,0.1);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
