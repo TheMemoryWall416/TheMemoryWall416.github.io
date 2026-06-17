@@ -416,6 +416,38 @@
             position: relative;
         }
 
+        /* --- LOADING OVERLAY --- */
+        #loadingOverlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(22, 22, 26, 0.95);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            border-radius: 8px;
+        }
+        #loadingOverlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .spinner {
+            width: 45px; height: 45px;
+            border: 4px solid #33333b;
+            border-top: 4px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        body.rainbow-mode-active .spinner { border-top-color: #00ff88; }
+        body.gentle-mode-active .spinner { border-top-color: #ffbbdd; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { margin-top: 15px; font-size: 0.85rem; font-weight: bold; color: #aaaaaa; letter-spacing: 1px; text-transform: uppercase; }
+
         form { display: flex; flex-direction: column; gap: 14px; text-align: left; margin-top: 15px; }
         label { font-size: 0.8rem; color: #aaaaaa; font-weight: bold; margin-bottom: -4px; }
         input, select, textarea { background-color: #222227; border: 1px solid #444; color: white; padding: 10px; border-radius: 4px; font-size: 0.9rem; font-family: Arial, sans-serif; box-sizing: border-box; width: 100%; display: block; }
@@ -720,6 +752,12 @@
 
     <div class="modal-overlay" id="formModal">
         <div class="modal-card" style="max-width: 480px;">
+            
+            <div id="loadingOverlay">
+                <div class="spinner"></div>
+                <div class="loading-text">Engraving Brick...</div>
+            </div>
+
             <h3 id="formTitle" style="margin: 0; letter-spacing: 1px; text-transform: uppercase;">LAY A BRICK</h3>
             <form id="brickForm">
                 
@@ -1144,7 +1182,6 @@
             activeWallData = []; 
             
             try {
-                // 1. New Supabase Data Call
                 const { data, error } = await supabaseClient
                     .from('memorial_bricks')
                     .select('*')
@@ -1301,7 +1338,7 @@
             loadAndRenderWall();
         });
 
-        // --- NEW: DUAL-MODE SEARCH ENGINE LOGIC ---
+        // --- DUAL-MODE SEARCH ENGINE LOGIC ---
         openSearchBtn.addEventListener('click', () => searchModal.classList.add('active'));
         closeSearchBtn.addEventListener('click', () => searchModal.classList.remove('active'));
 
@@ -1316,19 +1353,16 @@
 
             // Look through the wall to find the matching brick
             const match = activeWallData.find(item => {
-                // If they provided the exact Reference ID, just use that.
                 if (searchRef) {
                     return item.reference_id && item.reference_id.toLowerCase() === searchRef;
                 }
 
-                // If they didn't provide a Ref ID, filter using whatever details they typed in.
                 let isMatch = true;
                 if (searchName && (!item.name || !item.name.toLowerCase().includes(searchName))) isMatch = false;
                 if (searchDOB && item.date_of_birth !== searchDOB && item.dob !== searchDOB) isMatch = false;
                 if (searchDOD && item.date_of_death !== searchDOD && item.dod !== searchDOD) isMatch = false;
                 if (searchCountry && item.country !== searchCountry) isMatch = false;
 
-                // Stop the search if they literally submitted a completely blank form
                 if (!searchName && !searchDOB && !searchDOD && !searchCountry) return false;
 
                 return isMatch;
@@ -1340,11 +1374,9 @@
                     searchModal.classList.remove('active');
                     document.getElementById('searchForm').reset();
                     
-                    // The Magic Carpet Ride
                     const scrollTarget = brickEl.offsetLeft - (wallViewport.clientWidth / 2) + (brickEl.clientWidth / 2);
                     wallViewport.scrollTo({ left: scrollTarget, behavior: 'smooth' });
 
-                    // The Unveil (Wait 800ms for scroll, then click and glow)
                     setTimeout(() => {
                         brickEl.click();
                         brickEl.style.boxShadow = "0px 0px 25px rgba(255, 255, 255, 0.9)";
@@ -1375,12 +1407,16 @@
         document.getElementById('openContactBtn').addEventListener('click', () => contactModal.classList.add('active'));
         document.getElementById('closeContactBtn').addEventListener('click', () => contactModal.classList.remove('active'));
 
+        // --- OPTIMIZED FORM SUBMISSION ---
         document.getElementById('brickForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const submitButton = e.target.querySelector('.submit-btn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            // Lock the form and show the loading spinner immediately
             submitButton.disabled = true;
-            submitButton.textContent = "Processing Submission...";
+            loadingOverlay.classList.add('active');
 
             const name = document.getElementById('inputName').value;
             const dob = document.getElementById('inputDOB') ? document.getElementById('inputDOB').value : '';
@@ -1395,12 +1431,10 @@
             
             const photoInput = document.getElementById('inputPhoto');
             let base64Photo = null;
-            let photoName = null;
 
             try {
                 if (photoInput && photoInput.files.length > 0) {
                     const file = photoInput.files[0];
-                    photoName = file.name;
                     base64Photo = await new Promise((resolve) => {
                         const reader = new FileReader();
                         reader.onloadend = () => resolve(reader.result);
@@ -1433,20 +1467,26 @@
                 let refId = "";
                 if (data && data.length > 0) {
                     refId = data[0].reference_id;
+                    
+                    // Instant DOM Injection
+                    activeWallData.push(data[0]);
+                    const targetSlot = findNextEmptySlot();
+                    if (targetSlot) populateSlot(targetSlot, data[0]);
+                    updateCounterDisplay();
                 }
 
                 alert(`Success! Your entry has been permanently placed onto the global monument.\n\nYour Unique Reference Number is: ${refId}`);
                 
                 document.getElementById('brickForm').reset();
                 formModal.classList.remove('active');
-                loadAndRenderWall(); 
 
             } catch (error) {
                 console.error("Supabase Database Connection Failure:", error.message);
                 alert("SUPABASE ERROR: " + error.message);
             } finally {
+                // Unlock the form and hide the spinner
                 submitButton.disabled = false;
-                submitButton.textContent = "Place onto Wall";
+                loadingOverlay.classList.remove('active');
             }
         });
 
@@ -1502,7 +1542,6 @@
             document.getElementById(labelId).textContent = record.tributes[type];
 
             try {
-                // 3. New Supabase Tributes Update Call
                 const { error } = await supabaseClient
                     .from('memorial_bricks')
                     .update({ tributes: record.tributes })
